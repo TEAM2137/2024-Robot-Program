@@ -1,67 +1,60 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.SwerveDrivetrain;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private String selectedAutonName;
   private final SendableChooser<String> autonChooser = new SendableChooser<>();
 
-  public SwerveDrivetrain swerveDrivetrain;
-  public Autonomous autonomous;
+  public CommandScheduler scheduler;
+  public RobotContainer robotContainer;
+  
+  public Command autonCommand;
 
   /** This function is run when the robot is first started up. */
   @Override
   public void robotInit() {
-    swerveDrivetrain = new SwerveDrivetrain();
-    autonomous = new Autonomous();
     autonChooser.setDefaultOption("Default Auton", "default-auton");
     SmartDashboard.putData("AutoChooser", autonChooser);
+    // Gets an instance of the command scheduler
+    scheduler = CommandScheduler.getInstance();
+    robotContainer = new RobotContainer();
   }
 
   /** This function is called periodically during any mode. */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
   /** This function is called once when autonomous is enabled. */
   @Override
   public void autonomousInit() {
     selectedAutonName = autonChooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + selectedAutonName);
 
-    autonomous.init();
-
-    AutoBuilder.configureHolonomic(
-      null, null, // Get and reset the pose of the robot
-      null, null, // Move the robot during auton
-      new HolonomicPathFollowerConfig( // Config
-        new PIDConstants(0, 0, 0),
-        new PIDConstants(0, 0, 0),
-        kDefaultPeriod, // Max module speed
-        kDefaultPeriod, // Radius of the robot base
-        new ReplanningConfig()
-      ),
-      null // Swerve subsystem
-    );
+    autonCommand = robotContainer.getAutonomousCommand();
+    if (autonCommand != null) {
+      autonCommand.schedule();
+    }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-    
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    // Cancel autonomous in case it is still running for some reason
+    if (autonCommand != null) {
+      autonCommand.cancel();
+    }
+  }
 
   /** This function is called periodically during operator control. */
   @Override
