@@ -1,11 +1,14 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 //import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -13,8 +16,14 @@ public class RobotContainer {
 
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
+    private final SendableChooser<Command> autoChooser;
+
     public RobotContainer() {
         configureBindings();
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     public Command getAutonomousCommand() {
