@@ -13,7 +13,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.PID;
 
-public class SwerveDriveModule extends SubsystemBase {
+public class FalconModule extends SubsystemBase {
 
     public static class Constants {
         public static final double driveRatio = 1 / 6.75;
@@ -67,7 +67,7 @@ public class SwerveDriveModule extends SubsystemBase {
      * @param encoderOffset offset of the encoder on module rotation (wheels forward, bevels left)
      * @param moduleName name of the module for debug purposes
      */
-    public SwerveDriveModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
+    public FalconModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         // Drive motor setup
         this.driveMotor = new TalonFX(driveID, SwerveDrivetrain.Constants.canBusName);
         this.driveMotor.configFactoryDefault();
@@ -124,7 +124,7 @@ public class SwerveDriveModule extends SubsystemBase {
      * Creates a swerve module
      * @param constants the swerve module to create
      */
-    public SwerveDriveModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
+    public FalconModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
         this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
     }
 

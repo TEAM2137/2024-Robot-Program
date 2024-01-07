@@ -50,7 +50,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static PID autoThetaPIDConstants = new PID(2.5, 0, 0);
         public static TrapezoidProfile.Constraints autoThetaPIDConstraints = new TrapezoidProfile.Constraints(16, 16); // old
 
-        public static PID purePIDTranslationConstants = new PID(0, 0, 0);
+        public static PID purePIDTranslationConstants = new PID(0, 0, 0); // can be ignored
 
         public static class SwerveModuleConstants {
             public final int driveID;
@@ -72,12 +72,12 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     SwerveDriveKinematics kinematics;
 
-    private SwerveDriveModule frontLeftModule;
-    private SwerveDriveModule frontRightModule;
-    private SwerveDriveModule backLeftModule;
-    private SwerveDriveModule backRightModule;
+    private FalconModule frontLeftModule;
+    private FalconModule frontRightModule;
+    private FalconModule backLeftModule;
+    private FalconModule backRightModule;
 
-    private SwerveDriveModule[] swerveArray;
+    private FalconModule[] swerveArray;
     private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 
     private double[] lastDistances;
@@ -104,13 +104,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
         // each of the modules
-        frontLeftModule = new SwerveDriveModule(Constants.frontLeft);
-        frontRightModule = new SwerveDriveModule(Constants.frontRight);
-        backLeftModule = new SwerveDriveModule(Constants.backLeft);
-        backRightModule = new SwerveDriveModule(Constants.backRight);
+        frontLeftModule = new FalconModule(Constants.frontLeft);
+        frontRightModule = new FalconModule(Constants.frontRight);
+        backLeftModule = new FalconModule(Constants.backLeft);
+        backRightModule = new FalconModule(Constants.backRight);
 
         // an array of the swerve modules, to make life easier
-        swerveArray = new SwerveDriveModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
+        swerveArray = new FalconModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
 
         // the gyro
         pigeonIMU = new Pigeon2(Constants.gyroID, Constants.canBusName);
@@ -204,7 +204,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void resetModuleAngles() {
-        for(SwerveDriveModule module : swerveArray) {
+        for(FalconModule module : swerveArray) {
             module.homeTurningMotor();
         }
     }
