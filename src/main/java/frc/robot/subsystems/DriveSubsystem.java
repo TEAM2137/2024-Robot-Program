@@ -13,7 +13,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
 
-    boolean ranCommand = false;
+    // Swerve can be imported back in when the libraries are updated
+    //private final SwerveDrivetrain drivetrain = new SwerveDrivetrain();
+    
+    public boolean ranCommand = false;
 
     public DriveSubsystem() {
         super();
