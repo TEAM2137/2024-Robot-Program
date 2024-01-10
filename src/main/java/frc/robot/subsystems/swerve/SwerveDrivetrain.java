@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -115,7 +116,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         // the gyro
         pigeonIMU = new Pigeon2(Constants.gyroID, Constants.canBusName);
-        pigeonIMU.configFactoryDefault();
+        pigeonIMU.getConfigurator().apply(new Pigeon2Configuration());
 
         // create pose estimator
         updateModulePositions();
@@ -214,7 +215,7 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @return the angle of the robot (CCW positive (normal))
      */
     public Rotation2d getRobotAngle() {
-        double raw = pigeonIMU.getYaw(); // % 360;
+        double raw = pigeonIMU.getYaw().getValueAsDouble(); // % 360;
 //        while (raw <= -180) raw += 360;
 //        while (raw > 180) raw -= 360;
         return Rotation2d.fromDegrees(raw);
@@ -238,9 +239,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public double getThetaVelocity() {
-        double[] tmp = new double[3];
-        pigeonIMU.getRawGyro(tmp);
-        return tmp[2];
+        //double[] tmp = new double[3];
+        //pigeonIMU.getRawGyro(tmp);
+        
+        //return tmp[2];
+        return pigeonIMU.getAngularVelocityZDevice().getValueAsDouble();
     }
 
     public void resetGyro() {

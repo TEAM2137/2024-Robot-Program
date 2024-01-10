@@ -1,7 +1,11 @@
 package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
@@ -88,8 +92,12 @@ public class NeoModule extends SubsystemBase {
 
         // Encoder setup
         this.encoder = new CANcoder(encoderID, SwerveDrivetrain.Constants.canBusName);
-        this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
-        this.encoder.configMagnetOffset(0);
+        //this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
+        this.encoder.getConfigurator().apply(
+            new MagnetSensorConfigs()
+            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
+            .withMagnetOffset(0));
+        //this.encoder.configMagnetOffset(0);
 
         this.encoderOffset = encoderOffset;
 
@@ -165,7 +173,7 @@ public class NeoModule extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Position", getModuleRotation().getDegrees());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading RAW", encoder.getAbsolutePosition() + encoderOffset);
+        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Target", targetDegrees);
 //        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Error", turningPID.getPositionError());
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Power", turningMotor.getAppliedOutput());
@@ -191,7 +199,7 @@ public class NeoModule extends SubsystemBase {
     }
 
     public void homeTurningMotor() {
-        turningEncoder.setPosition(encoder.getAbsolutePosition());
+        turningEncoder.setPosition(encoder.getAbsolutePosition().getValueAsDouble());
     }
 
     /**
