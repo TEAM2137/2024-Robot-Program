@@ -1,15 +1,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-  private String selectedAutonName;
-  private final SendableChooser<String> autonChooser = new SendableChooser<>();
-
+  
   public CommandScheduler scheduler;
   public RobotContainer robotContainer;
   
@@ -18,8 +14,6 @@ public class Robot extends TimedRobot {
   /** This function is run when the robot is first started up. */
   @Override
   public void robotInit() {
-    autonChooser.setDefaultOption("Default Auton", "default-auton");
-    SmartDashboard.putData("AutoChooser", autonChooser);
     // Gets an instance of the command scheduler
     scheduler = CommandScheduler.getInstance();
     robotContainer = new RobotContainer();
@@ -34,9 +28,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when autonomous is enabled. */
   @Override
   public void autonomousInit() {
-    selectedAutonName = autonChooser.getSelected();
-    System.out.println("Auto selected: " + selectedAutonName);
-
     autonCommand = robotContainer.getAutonomousCommand();
     if (autonCommand != null) {
       autonCommand.schedule();
