@@ -7,10 +7,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkRelativeEncoder;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -51,8 +51,8 @@ public class NeoModule extends SubsystemBase {
     private RelativeEncoder driveEncoder;
     private RelativeEncoder turningEncoder;
 
-    private SparkMaxPIDController drivePID;
-    private SparkMaxPIDController turningPID;
+    private SparkPIDController drivePID;
+    private SparkPIDController turningPID;
 
     // private PIDController turningPID;
 
