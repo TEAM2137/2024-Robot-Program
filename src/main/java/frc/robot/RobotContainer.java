@@ -5,8 +5,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-//import frc.robot.subsystems.SwerveDrivetrain;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -14,7 +13,7 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
-    private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
 
     private final SendableChooser<Command> autoChooser;
 
