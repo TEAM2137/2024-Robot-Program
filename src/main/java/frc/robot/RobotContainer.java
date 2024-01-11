@@ -4,8 +4,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,6 +23,16 @@ public class RobotContainer {
         configureBindings();
 
         autoChooser = AutoBuilder.buildAutoChooser();
+
+        driveSubsystem.setDefaultCommand(
+            new RunCommand(
+                () -> {
+                    driveSubsystem.driveTranslationRotationRaw(
+                        new ChassisSpeeds(driverController.getLeftX(), driverController.getLeftY(), driverController.getRightX() * Math.PI)
+                    );
+                },
+                driveSubsystem
+        ));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
