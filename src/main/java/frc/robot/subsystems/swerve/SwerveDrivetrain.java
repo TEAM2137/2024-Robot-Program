@@ -44,10 +44,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static final double driveMaxSpeed = 3.0;
         public static final double driveMaxAccel = 1.0;
 
-        public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(10, 11, 12, -199.25079345703125, "Front Left");
-        public static SwerveModuleConstants frontRight = new SwerveModuleConstants(15, 16, 17, -169.189453125, "Front Right");
-        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(20, 21, 22, -152.60009765625, "Back Left");
-        public static SwerveModuleConstants backRight = new SwerveModuleConstants(25, 26, 27, -21.6156005859375, "Back Right");
+        public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(10, 31, 4, 0, "Front Left");
+        public static SwerveModuleConstants frontRight = new SwerveModuleConstants(16, 20, 14, 0, "Front Right");
+        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(12, 13, 27, 0, "Back Left");
+        public static SwerveModuleConstants backRight = new SwerveModuleConstants(41, 21, 22, 0, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
