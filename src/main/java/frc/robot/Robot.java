@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
     if (autonCommand != null) {
       autonCommand.cancel();
     }
+    robotContainer.runTeleop();
   }
 
   /** This function is called periodically during operator control. */

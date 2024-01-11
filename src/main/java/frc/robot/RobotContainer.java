@@ -24,6 +24,10 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser();
 
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+    }
+
+    public void runTeleop() {
         driveSubsystem.setDefaultCommand(
             new RunCommand(
                 () -> {
@@ -33,8 +37,6 @@ public class RobotContainer {
                 },
                 driveSubsystem
         ));
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     public Command getAutonomousCommand() {
