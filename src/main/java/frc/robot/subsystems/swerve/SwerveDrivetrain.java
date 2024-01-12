@@ -36,7 +36,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     public static class Constants {
         public static final int gyroID = 4;
 
-        public static final String canBusName = "canivore";
+        public static final String canBusName = "rio";
 
         public static final double length = Units.inchesToMeters(24.5);
         public static final double width = Units.inchesToMeters(21.5);
