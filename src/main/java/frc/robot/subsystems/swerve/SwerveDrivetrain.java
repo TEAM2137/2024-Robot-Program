@@ -135,16 +135,16 @@ public class SwerveDrivetrain extends SubsystemBase {
 //        SmartDashboard.putBoolean("Reset Position", false);
 
 //        resetGyro();
+        timer = new Timer();
+        timer.reset();
+        timer.start();
+        
         resetOdometry();
 
         lastDistances = new double[]{frontLeftModule.getDriveDistance(),
                 frontRightModule.getDriveDistance(),
                 backLeftModule.getDriveDistance(),
                 backRightModule.getDriveDistance()};
-
-        timer = new Timer();
-        timer.reset();
-        timer.start();
 
         // Pathplanner Initialization
         AutoBuilder.configureHolonomic(

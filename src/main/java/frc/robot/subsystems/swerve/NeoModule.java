@@ -102,8 +102,6 @@ public class NeoModule extends SubsystemBase {
 
         this.moduleName = moduleName;
 
-        homeTurningMotor();
-
         this.driveEncoder = driveMotor.getEncoder();
         this.driveEncoder.setPositionConversionFactor(Constants.driveRatio * Math.PI * Constants.measuredWheelDiameter);
         this.driveEncoder.setVelocityConversionFactor(Constants.driveRatio / 60 * Math.PI * Constants.measuredWheelDiameter);
@@ -135,7 +133,8 @@ public class NeoModule extends SubsystemBase {
         this.drivePID.setD(drivePIDConstants.getD());
         this.driveFeedForward = Constants.driveFeedforward;
 
-        this.selfTargetAngle();
+        selfTargetAngle();
+        homeTurningMotor();
     }
 
     /**
