@@ -38,9 +38,9 @@ public class RobotContainer {
                     double rot = driverController.getRightX();
 
                     // Controller deadzones
-                    speedX = Math.abs(speedX) < 0.2 ? 0 : speedX;
-                    speedY = Math.abs(speedY) < 0.2 ? 0 : speedY;
-                    rot = Math.abs(rot) < 0.2 ? 0 : rot;
+                    speedX = Math.abs(speedX) < 0.3 ? 0 : speedX;
+                    speedY = Math.abs(speedY) < 0.3 ? 0 : speedY;
+                    rot = Math.abs(rot) < 0.3 ? 0 : rot;
                     
                     driveSubsystem.driveTranslationRotationRaw(
                         new ChassisSpeeds(speedX, speedY, rot * Math.PI)

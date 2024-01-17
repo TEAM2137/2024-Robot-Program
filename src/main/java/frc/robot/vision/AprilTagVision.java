@@ -26,7 +26,7 @@ public class AprilTagVision {
     private double rotation;
 
     public void init() {
-        table = NetworkTableInstance.getDefault().getTable("limelight-0");
+        table = NetworkTableInstance.getDefault().getTable("limelight-a");
         botpose = table.getEntry("botpose");
     }
 

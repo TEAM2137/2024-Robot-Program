@@ -131,7 +131,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         // new MatBuilder<>(Nat.N1(), Nat.N1()).fill(Units.degreesToRadians(0.01)), // Local measurement standard deviations. Gyro.
         // new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.5, 0.5, Units.degreesToRadians(30))); // Vision measurement standard deviations. X, Y, and theta.
 
-        SmartDashboard.putData("Field", field2d);
 //        SmartDashboard.putBoolean("Reset Position", false);
 
 //        resetGyro();
@@ -199,6 +198,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 //        }
 
         SmartDashboard.putNumber("FusedHeading", getRobotAngle().getDegrees());
+        SmartDashboard.putData("Field", field2d);
     }
 
     private void updateOdometry() {
