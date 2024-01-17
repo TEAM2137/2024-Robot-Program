@@ -34,7 +34,7 @@ import frc.robot.util.PID;
 public class SwerveDrivetrain extends SubsystemBase {
 
     public static class Constants {
-        public static final int gyroID = 4;
+        public static final int gyroID = 5;
 
         public static final String canBusName = "rio";
 
@@ -46,7 +46,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(10, 31, 4, 0, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(16, 20, 14, 0, "Front Right");
-        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(12, 13, 27, 0, "Back Left");
+        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(13, 12, 27, 0, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(41, 21, 22, 0, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
@@ -138,13 +138,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         timer = new Timer();
         timer.reset();
         timer.start();
-        
-        resetOdometry();
 
         lastDistances = new double[]{frontLeftModule.getDriveDistance(),
-                frontRightModule.getDriveDistance(),
-                backLeftModule.getDriveDistance(),
-                backRightModule.getDriveDistance()};
+        frontRightModule.getDriveDistance(),
+        backLeftModule.getDriveDistance(),
+        backRightModule.getDriveDistance()};
+        
+        resetOdometry();
 
         // Pathplanner Initialization
         AutoBuilder.configureHolonomic(
@@ -184,10 +184,10 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         field2d.setRobotPose(getPose());
 
-        SmartDashboard.putNumber("drivetrain/Pigeon Angle", getRobotAngle().getDegrees());
-        SmartDashboard.putNumber("drivetrain/Drivetrain Angle", getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("drivetrain/Drivetrain X", getPose().getX());
-        SmartDashboard.putNumber("drivetrain/Drivetrain Y", getPose().getY());
+        SmartDashboard.putNumber("Pigeon Angle", getRobotAngle().getDegrees());
+        SmartDashboard.putNumber("Drivetrain Angle", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("Drivetrain X", getPose().getX());
+        SmartDashboard.putNumber("drivetrainDrivetrain Y", getPose().getY());
 
 //        if(SmartDashboard.getBoolean("Reset Position", false)) {
 //            resetOdometry();

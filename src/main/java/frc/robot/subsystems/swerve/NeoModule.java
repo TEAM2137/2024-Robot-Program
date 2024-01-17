@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
@@ -34,13 +35,11 @@ public class NeoModule extends SubsystemBase {
 
         public static final double driveMotorRamp = 0.0;
 
-        public static double turningFeedForward = 0.75; //0.8
-        //        public static PID turningPIDConstants = new PID(0.21, 0, 0.0015); // in the air
-//        public staticPID turningPIDConstants = new PID(0.1, 0, -0.0000000000000000000000001); // carpet
-        public static PID turningPIDConstants = new PID(0.2, 0, 0.1); // carpet
+        public static double turningFeedForward = 0.75;
+        public static PID turningPIDConstants = new PID(0.3, 0, 0.1);
 
-        public static PID drivePIDConstants = new PID(0.10237, 0, 0);// 0.1
-        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911); //0.7, 2.15
+        public static PID drivePIDConstants = new PID(3, 0, 0);
+        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);
     }
 
     private CANSparkMax driveMotor;
@@ -108,6 +107,8 @@ public class NeoModule extends SubsystemBase {
         this.turningEncoder = turningMotor.getEncoder();
         this.turningEncoder.setPositionConversionFactor(Constants.turningRatio * 360);
 
+        SmartDashboard.putBoolean("Turning encoder is null:", turningEncoder == null);
+
         // Setup turning pid
         this.turningPID = this.turningMotor.getPIDController();
         this.turningPID.setFeedbackDevice(turningEncoder);
@@ -157,9 +158,15 @@ public class NeoModule extends SubsystemBase {
         }
 
         double targetDegrees = turningSetpointRaw.getDegrees();
-        
-        turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
-                Constants.turningFeedForward * ((targetDegrees - getModuleRotation().getDegrees() > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
+        double currentDegrees = getModuleRotation().getDegrees();
+        boolean stopTurn = Math.abs(targetDegrees - currentDegrees) < 2;
+
+        if (stopTurn) {
+            turningMotor.set(0);
+        } else {
+            turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
+                    Constants.turningFeedForward * ((targetDegrees - currentDegrees > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
+        }
 
         switch(driveMode) {
             case RawPower: //for use in teleop
@@ -170,15 +177,16 @@ public class NeoModule extends SubsystemBase {
                 break;
         }
 
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Position", getModuleRotation().getDegrees());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Target", targetDegrees);
-//        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Error", turningPID.getPositionError());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Power", turningMotor.getAppliedOutput());
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);
+        SmartDashboard.putBoolean("Module-" + moduleName + "-Stop Rotation?", stopTurn);
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetDegrees);
+//        SmartDashboard.putNumber("" + moduleName + "/Heading Error", turningPID.getPositionError());
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Power", turningMotor.getAppliedOutput());
 
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Drive Power", driveMotor.getAppliedOutput());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity Target", Math.abs(driveVelocityTarget));
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity", Math.abs(getDriveVelocity()));
+        SmartDashboard.putNumber("Module-" + moduleName + "-Drive Power", driveMotor.getAppliedOutput());
+        SmartDashboard.putNumber("Module-" + moduleName + "-Velocity Target", Math.abs(driveVelocityTarget));
+        SmartDashboard.putNumber("Module-" + moduleName + "-Velocity", Math.abs(getDriveVelocity()));
     }
 
     /**

@@ -31,8 +31,17 @@ public class RobotContainer {
         driveSubsystem.setDefaultCommand(
             new RunCommand(
                 () -> {
+                    double speedX = driverController.getLeftX();
+                    double speedY = driverController.getLeftY();
+                    double rot = driverController.getRightX();
+
+                    // Controller deadzones
+                    speedX = Math.abs(speedX) < 0.2 ? 0 : speedX;
+                    speedY = Math.abs(speedY) < 0.2 ? 0 : speedY;
+                    rot = Math.abs(rot) < 0.2 ? 0 : rot;
+                    
                     driveSubsystem.driveTranslationRotationRaw(
-                        new ChassisSpeeds(driverController.getLeftX(), driverController.getLeftY(), driverController.getRightX() * Math.PI)
+                        new ChassisSpeeds(speedX, speedY, rot * Math.PI)
                     );
                 },
                 driveSubsystem
