@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,13 +18,14 @@ public class RobotContainer {
 
     private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
 
+    private final AprilTagVision vision = new AprilTagVision();
+
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
         configureBindings();
 
         autoChooser = AutoBuilder.buildAutoChooser();
-
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 

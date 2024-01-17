@@ -187,7 +187,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Pigeon Angle", getRobotAngle().getDegrees());
         SmartDashboard.putNumber("Drivetrain Angle", getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Drivetrain X", getPose().getX());
-        SmartDashboard.putNumber("drivetrainDrivetrain Y", getPose().getY());
+        SmartDashboard.putNumber("Drivetrain Y", getPose().getY());
 
 //        if(SmartDashboard.getBoolean("Reset Position", false)) {
 //            resetOdometry();
