@@ -19,10 +19,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.util.PID;
 
 public class NeoModule extends SubsystemBase {
-
     public static class Constants {
         public static final double driveRatio = 1 / 6.75;
         public static final double measuredWheelDiameter = Units.inchesToMeters(4.0);
@@ -36,7 +36,7 @@ public class NeoModule extends SubsystemBase {
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(0.3, 0, 0.1);
+        public static PID turningPIDConstants = new PID(1, 0, 0.5);
 
         public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);
@@ -157,24 +157,26 @@ public class NeoModule extends SubsystemBase {
             selfTargetAngle();
         }
 
-        double targetDegrees = turningSetpointRaw.getDegrees();
+        double targetDegrees = turningSetpointRaw.getDegrees() + encoderOffset;
         double currentDegrees = getModuleRotation().getDegrees();
-        boolean stopTurn = Math.abs(targetDegrees - currentDegrees) < 2;
+        boolean stopTurn = Math.abs(targetDegrees - currentDegrees) < 2 || Math.abs(targetDegrees + 360 - currentDegrees) < 2 || Math.abs(targetDegrees - 360 - currentDegrees) < 2;;
 
-        if (stopTurn) {
-            turningMotor.set(0);
-        } else {
-            turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
-                    Constants.turningFeedForward * ((targetDegrees - currentDegrees > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
-        }
+        if (!RobotContainer.disableSwerve) {
+            if (stopTurn) {
+                turningMotor.set(0);
+            } else {
+                turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
+                        Constants.turningFeedForward * ((targetDegrees - currentDegrees > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
+            }
 
-        switch(driveMode) {
-            case RawPower: //for use in teleop
-                driveMotor.set(driveRawPower);
-                break;
-            case Velocity: //for use in auto and autonomous trajectories
-                drivePID.setReference(driveVelocityTarget, ControlType.kVelocity, 0, driveFeedForward.calculate(driveVelocityTarget), ArbFFUnits.kPercentOut);
-                break;
+            switch(driveMode) {
+                case RawPower: //for use in teleop
+                    driveMotor.set(driveRawPower);
+                    break;
+                case Velocity: //for use in auto and autonomous trajectories
+                    drivePID.setReference(driveVelocityTarget, ControlType.kVelocity, 0, driveFeedForward.calculate(driveVelocityTarget), ArbFFUnits.kPercentOut);
+                    break;
+            }
         }
 
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);

@@ -17,6 +17,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
+    public static final boolean disableSwerve = true;
 
     private final AprilTagVision vision = new AprilTagVision();
 
@@ -30,6 +31,7 @@ public class RobotContainer {
     }
 
     public void runTeleop() {
+        if (disableSwerve) return;
         driveSubsystem.setDefaultCommand(
             new RunCommand(
                 () -> {

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
 
 /**
@@ -44,10 +45,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static final double driveMaxSpeed = 3.0;
         public static final double driveMaxAccel = 1.0;
 
-        public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(10, 31, 4, 0, "Front Left");
-        public static SwerveModuleConstants frontRight = new SwerveModuleConstants(16, 20, 14, 0, "Front Right");
-        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(13, 12, 27, 0, "Back Left");
-        public static SwerveModuleConstants backRight = new SwerveModuleConstants(41, 21, 22, 0, "Back Right");
+        public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(CanIDs.get("fl-drive"), CanIDs.get("fl-turn"), CanIDs.get("fl-encoder"), 22.708288, "Front Left");
+        public static SwerveModuleConstants frontRight = new SwerveModuleConstants(CanIDs.get("fr-drive"), CanIDs.get("fr-turn"), CanIDs.get("fr-encoder"), 184.297150, "Front Right");
+        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(CanIDs.get("bl-drive"), CanIDs.get("bl-turn"), CanIDs.get("bl-encoder"), 22.555698, "Back Left");
+        public static SwerveModuleConstants backRight = new SwerveModuleConstants(CanIDs.get("br-drive"), CanIDs.get("br-turn"), CanIDs.get("br-encoder"), -5.006835, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -102,10 +103,10 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     public SwerveDrivetrain() {
         // locations of all of the modules (for kinematics)
-        Translation2d frontLeftLocation = new Translation2d(Constants.length/2, Constants.width/2);
-        Translation2d frontRightLocation = new Translation2d(Constants.length/2, -Constants.width/2);
-        Translation2d backLeftLocation = new Translation2d(-Constants.length/2, Constants.width/2);
-        Translation2d backRightLocation = new Translation2d(-Constants.length/2, -Constants.width/2);
+        Translation2d frontLeftLocation = new Translation2d(Constants.length / 2, Constants.width / 2);
+        Translation2d frontRightLocation = new Translation2d(Constants.length / 2, -Constants.width / 2);
+        Translation2d backLeftLocation = new Translation2d(-Constants.length / 2, Constants.width / 2);
+        Translation2d backRightLocation = new Translation2d(-Constants.length / 2, -Constants.width / 2);
 
         // the kinematics object for converting chassis speeds to module rotations and powers
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
