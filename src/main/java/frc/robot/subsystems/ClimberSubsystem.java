@@ -59,6 +59,11 @@ public class ClimberSubsystem extends SubsystemBase {
         return runOnce(() -> climbMotor.stopMotor());
     }
 
+    /**
+     * Command to set the climber position
+     * @param percentage percent of the max height to move the climber to, from 0.0 to 1.0
+     * @return Command that moves the climber
+     */
     public Command setClimberPositionCommand(double percentage) {
         return runOnce(() -> climbPID.setReference((percentage * Constants.ClimbMax), CANSparkBase.ControlType.kPosition));
     }
