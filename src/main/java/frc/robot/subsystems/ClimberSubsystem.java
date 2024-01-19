@@ -20,7 +20,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
         public static final double ClimbGearRatio = .4;
 
-        public static PID climbPID = new PID(.5, .1, .3, .5);
+        public static PID climbPID = new PID(.1, 0.0, .01, .1);
     }
 
     private CANSparkMax climbMotor;
