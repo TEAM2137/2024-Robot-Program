@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -8,12 +9,18 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.PID;
 
 public class ClimberSubsystem extends SubsystemBase {
     public static class Constants {
+        // All placeholder values to be changed later
         public static final int ClimbID = 70;
 
-        public static final double ClimbMax = 100;
+        public static final double ClimbMax = 100; // Motor rotations at which climb maxes out
+
+        public static final double ClimbGearRatio = .4;
+
+        public static PID climbPID = new PID(.5, .1, .3, .5);
     }
 
     private CANSparkMax climbMotor;
@@ -28,6 +35,11 @@ public class ClimberSubsystem extends SubsystemBase {
         climbEncoder = climbMotor.getEncoder();
 
         climbPID = climbMotor.getPIDController();
+        climbPID.setFeedbackDevice(climbEncoder);
+        climbPID.setP(Constants.climbPID.getP());
+        climbPID.setI(Constants.climbPID.getI());
+        climbPID.setD(Constants.climbPID.getD());
+        climbPID.setFF(Constants.climbPID.getFF());
     }
 
     /**
@@ -45,5 +57,9 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public Command youShallNotPass() {
         return runOnce(() -> climbMotor.stopMotor());
+    }
+
+    public Command setClimberPositionCommand(double percentage) {
+        return runOnce(() -> climbPID.setReference((percentage * Constants.ClimbMax), CANSparkBase.ControlType.kPosition));
     }
 }
