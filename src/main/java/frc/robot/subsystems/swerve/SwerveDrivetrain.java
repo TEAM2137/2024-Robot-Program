@@ -27,10 +27,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
 
-/**
- * This code was taken from the 2022 robot code, it might not work properly (-Avery)
- */
-
 // Everything in this file will be done in the order front left, front right, back left, back right
 public class SwerveDrivetrain extends SubsystemBase {
 
@@ -45,10 +41,26 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static final double driveMaxSpeed = 3.0;
         public static final double driveMaxAccel = 1.0;
 
-        public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(CanIDs.get("fl-drive"), CanIDs.get("fl-turn"), CanIDs.get("fl-encoder"), 22.708288, "Front Left");
-        public static SwerveModuleConstants frontRight = new SwerveModuleConstants(CanIDs.get("fr-drive"), CanIDs.get("fr-turn"), CanIDs.get("fr-encoder"), 184.297150, "Front Right");
-        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(CanIDs.get("bl-drive"), CanIDs.get("bl-turn"), CanIDs.get("bl-encoder"), 22.555698, "Back Left");
-        public static SwerveModuleConstants backRight = new SwerveModuleConstants(CanIDs.get("br-drive"), CanIDs.get("br-turn"), CanIDs.get("br-encoder"), -5.006835, "Back Right");
+        public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(
+            CanIDs.get("fl-drive"), 
+            CanIDs.get("fl-turn"), 
+            CanIDs.get("fl-encoder"), 
+            22.708288, "Front Left");
+        public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
+            CanIDs.get("fr-drive"), 
+            CanIDs.get("fr-turn"), 
+            CanIDs.get("fr-encoder"), 
+            184.297150, "Front Right");
+        public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
+            CanIDs.get("bl-drive"), 
+            CanIDs.get("bl-turn"), 
+            CanIDs.get("bl-encoder"), 
+            22.555698, "Back Left");
+        public static SwerveModuleConstants backRight = new SwerveModuleConstants(
+            CanIDs.get("br-drive"), 
+            CanIDs.get("br-turn"), 
+            CanIDs.get("br-encoder"), 
+            -5.006835, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -139,10 +151,12 @@ public class SwerveDrivetrain extends SubsystemBase {
         timer.reset();
         timer.start();
 
-        lastDistances = new double[]{frontLeftModule.getDriveDistance(),
-        frontRightModule.getDriveDistance(),
-        backLeftModule.getDriveDistance(),
-        backRightModule.getDriveDistance()};
+        lastDistances = new double[] {
+            frontLeftModule.getDriveDistance(),
+            frontRightModule.getDriveDistance(),
+            backLeftModule.getDriveDistance(),
+            backRightModule.getDriveDistance()
+        };
         
         resetOdometry();
 
@@ -211,10 +225,12 @@ public class SwerveDrivetrain extends SubsystemBase {
             return;
         }
 
-        double[] distances = new double[]{frontLeftModule.getDriveDistance(),
-                frontRightModule.getDriveDistance(),
-                backLeftModule.getDriveDistance(),
-                backRightModule.getDriveDistance()};
+        double[] distances = new double[] {
+            frontLeftModule.getDriveDistance(),
+            frontRightModule.getDriveDistance(),
+            backLeftModule.getDriveDistance(),
+            backRightModule.getDriveDistance()
+        };
 
         modulePositions[0] = new SwerveModulePosition(-(distances[0] - lastDistances[0]) / dt, frontLeftModule.getModuleRotation());
         modulePositions[1] = new SwerveModulePosition(-(distances[1] - lastDistances[1]) / dt, frontRightModule.getModuleRotation());
@@ -227,10 +243,12 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     private void updateModulePositions() {
-        double[] distances = new double[]{frontLeftModule.getDriveDistance(),
+        double[] distances = new double[] {
+            frontLeftModule.getDriveDistance(),
             frontRightModule.getDriveDistance(),
             backLeftModule.getDriveDistance(),
-            backRightModule.getDriveDistance()};
+            backRightModule.getDriveDistance()
+        };
 
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
         modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());

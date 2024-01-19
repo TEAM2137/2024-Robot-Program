@@ -17,7 +17,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
-    public static final boolean disableSwerve = true;
+    public static final boolean disableSwerve = false;
 
     private final AprilTagVision vision = new AprilTagVision();
 

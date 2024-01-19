@@ -1,23 +1,31 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CanIDs;
  
 public class ShooterSubsystem extends SubsystemBase {
 
     private CANSparkMax launcherMotor1;
     private CANSparkMax launcherMotor2;
-    //private CANSparkMax pivotMotor;
+
+    private CANSparkMax pivotMotor;
+    private RelativeEncoder pivotEncoder;
+    private SparkPIDController pivotPID;
 
     public ShooterSubsystem() {
         super();
-        launcherMotor1 = new CANSparkMax(0, MotorType.kBrushless);
-        launcherMotor2 = new CANSparkMax(0, MotorType.kBrushless);
-        //pivotMotor = new CANSparkMax(0, MotorType.kBrushless);
+        launcherMotor1 = new CANSparkMax(CanIDs.get("launcher-1"), MotorType.kBrushless);
+        launcherMotor2 = new CANSparkMax(CanIDs.get("launcher-2"), MotorType.kBrushless);
+
+        pivotMotor = new CANSparkMax(CanIDs.get(""), MotorType.kBrushless);
+        pivotEncoder = pivotMotor.getEncoder();
+        pivotPID = pivotMotor.getPIDController();
     }
 
     /**
@@ -26,12 +34,11 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The command that runs the shooter
      */
     public Command runShooter(double time, double speed) {
-        return new RunCommand(
-            () -> {
-                launcherMotor1.set(speed);
-                launcherMotor2.set(speed);
-            }
-        ).withTimeout(time).andThen(runOnce(() -> {
+        return run(() -> {
+            launcherMotor1.set(speed);
+            launcherMotor2.set(speed);
+        }).withTimeout(time).andThen(runOnce(() -> {
+            // Stop the motors when the time is up
             launcherMotor1.set(0);
             launcherMotor2.set(0);
         }));

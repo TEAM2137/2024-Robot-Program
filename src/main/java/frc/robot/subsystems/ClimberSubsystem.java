@@ -9,13 +9,11 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
 
 public class ClimberSubsystem extends SubsystemBase {
     public static class Constants {
-        // All placeholder values to be changed later
-        public static final int ClimbID = 70;
-
         public static final double ClimbMax = 100; // Motor rotations at which climb maxes out
 
         public static final double ClimbGearRatio = .4;
@@ -31,7 +29,7 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem() {
         super();
 
-        climbMotor = new CANSparkMax(Constants.ClimbID, CANSparkLowLevel.MotorType.kBrushless);
+        climbMotor = new CANSparkMax(CanIDs.get("climber"), CANSparkLowLevel.MotorType.kBrushless);
         climbEncoder = climbMotor.getEncoder();
 
         climbPID = climbMotor.getPIDController();

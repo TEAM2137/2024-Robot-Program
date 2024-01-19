@@ -107,8 +107,6 @@ public class NeoModule extends SubsystemBase {
         this.turningEncoder = turningMotor.getEncoder();
         this.turningEncoder.setPositionConversionFactor(Constants.turningRatio * 360);
 
-        SmartDashboard.putBoolean("Turning encoder is null:", turningEncoder == null);
-
         // Setup turning pid
         this.turningPID = this.turningMotor.getPIDController();
         this.turningPID.setFeedbackDevice(turningEncoder);
