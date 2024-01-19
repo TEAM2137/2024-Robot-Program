@@ -7,13 +7,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkLowLevel;
+import frc.robot.util.PID;
 
 
- 
+ //everything number is a placeholder
 public class IntakeSubsystem extends SubsystemBase {
-    private final int pivotID = 40;
-    private final int rollerID = 50;
+    public static class Constants {
+        public static final int pivotID = 40;
 
+        public static final int rollerID = 50;
+
+        public static PID rollerPID = new PID(0.1, 0.2, 0.3, 0.4);
+        public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
+    }
+    
 
     private CANSparkMax pivotMotor;
     private CANSparkMax rollerMotor;
@@ -28,21 +35,23 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         super();
 
-        pivotMotor = new CANSparkMax(pivotID, CANSparkLowLevel.MotorType.kBrushless);
+        pivotMotor = new CANSparkMax(Constants.pivotID, CANSparkLowLevel.MotorType.kBrushless);
         pivotEncoder = pivotMotor.getEncoder();
+
         pivotPIDController = pivotMotor.getPIDController();
         pivotPIDController.setFeedbackDevice(pivotEncoder);
-        pivotPIDController.setP(0.1);
-        pivotPIDController.setI(0.2);
-        pivotPIDController.setD(0.3);
-        pivotPIDController.setFF(0.4);
+        pivotPIDController.setP(Constants.pivotPID.getP());
+        pivotPIDController.setI(Constants.pivotPID.getI());
+        pivotPIDController.setD(Constants.pivotPID.getD());
+        pivotPIDController.setFF(Constants.pivotPID.getFF());
 
-        rollerMotor = new CANSparkMax(rollerID, CANSparkLowLevel.MotorType.kBrushless);
+        rollerMotor = new CANSparkMax(Constants.rollerID, CANSparkLowLevel.MotorType.kBrushless);
+
         rollerPIDController = rollerMotor.getPIDController();
-        rollerPIDController.setP(0.01);
-        rollerPIDController.setI(0.02);
-        rollerPIDController.setD(0.03);
-        rollerPIDController.setFF(0.04);
+        rollerPIDController.setP(Constants.rollerPID.getP());
+        rollerPIDController.setI(Constants.rollerPID.getI());
+        rollerPIDController.setD(Constants.rollerPID.getD());
+        rollerPIDController.setFF(Constants.rollerPID.getFF());
     }
 
     
