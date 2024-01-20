@@ -36,7 +36,7 @@ public class NeoModule extends SubsystemBase {
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(1, 0, 0.2);
+        public static PID turningPIDConstants = new PID(100, 0, 0.1);
 
         public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);
@@ -92,9 +92,8 @@ public class NeoModule extends SubsystemBase {
         this.encoder = new CANcoder(encoderID, SwerveDrivetrain.Constants.canBusName);
         //this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
         this.encoder.getConfigurator().apply(
-            new MagnetSensorConfigs()
-            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
-            .withMagnetOffset(0));
+            new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1));
+            //.withMagnetOffset(0));
         //this.encoder.configMagnetOffset(0);
 
         this.encoderOffset = encoderOffset;
@@ -106,7 +105,7 @@ public class NeoModule extends SubsystemBase {
         this.driveEncoder.setVelocityConversionFactor(Constants.driveRatio / 60 * Math.PI * Constants.measuredWheelDiameter);
         this.turningEncoder = turningMotor.getEncoder();
         this.turningEncoder.setPositionConversionFactor(Constants.turningRatio * 360);
-
+        
         // Setup turning pid
         this.turningPID = this.turningMotor.getPIDController();
         this.turningPID.setFeedbackDevice(turningEncoder);
@@ -151,13 +150,18 @@ public class NeoModule extends SubsystemBase {
     public void periodic() {
         // if robot is disabled, target modules to their current angle
         // if you're doing some types of debugging, disable this
+
+        double targetDegrees = turningSetpointRaw.getDegrees();
+        double currentDegrees = getModuleRotation().getDegrees();
+
+        boolean stopTurn = 
+            Math.abs(targetDegrees - currentDegrees) < 2 || 
+            Math.abs(targetDegrees + 360 - currentDegrees) < 2 || 
+            Math.abs(targetDegrees - 360 - currentDegrees) < 2;
+
         if(DriverStation.isDisabled()) {
             selfTargetAngle();
         }
-
-        double targetDegrees = turningSetpointRaw.getDegrees();
-        double currentDegrees = getModuleRotation().getDegrees() + encoderOffset;
-        boolean stopTurn = Math.abs(targetDegrees - currentDegrees) < 2 || Math.abs(targetDegrees + 360 - currentDegrees) < 2 || Math.abs(targetDegrees - 360 - currentDegrees) < 2;;
 
         if (!RobotContainer.disableSwerve) {
             if (stopTurn) {
@@ -177,7 +181,7 @@ public class NeoModule extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees - encoderOffset);
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetDegrees);
         // SmartDashboard.putBoolean("Module-" + moduleName + "-Stop Rotation?", stopTurn);
         // SmartDashboard.putNumber("Module-" + moduleName + "-Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
@@ -194,7 +198,7 @@ public class NeoModule extends SubsystemBase {
      * @return Rotation2d with the rotation of the module direct from encoder (not dealing with optimization)
      */
     public Rotation2d getModuleRotation() {
-        return Rotation2d.fromDegrees(turningEncoder.getPosition() % 360);
+        return Rotation2d.fromDegrees((turningEncoder.getPosition() % 360));
     }
 
     /**
@@ -205,7 +209,7 @@ public class NeoModule extends SubsystemBase {
     }
 
     public void homeTurningMotor() {
-        turningEncoder.setPosition(encoder.getAbsolutePosition().getValueAsDouble());
+        turningEncoder.setPosition(encoder.getAbsolutePosition().getValueAsDouble() * 360 - encoderOffset);
     }
 
     /**

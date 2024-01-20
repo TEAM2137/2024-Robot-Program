@@ -45,22 +45,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            -138.05198669, "Front Left");
+        275.8886, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            -49.9307556152, "Front Right");
+            145.5468, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            -43.503131866, "Back Left");
+            335.4785, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            -127.7991027, "Back Right");
+            88.6816, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -198,7 +198,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         field2d.setRobotPose(getPose());
 
-        SmartDashboard.putNumber("Pigeon Angle", getRobotAngle().getDegrees());
+        // SmartDashboard.putNumber("Pigeon Angle", getRobotAngle().getDegrees());
         SmartDashboard.putNumber("Drivetrain Angle", getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Drivetrain X", getPose().getX());
         SmartDashboard.putNumber("Drivetrain Y", getPose().getY());

@@ -43,9 +43,14 @@ public class RobotContainer {
         driveSubsystem.setDefaultCommand(
             new RunCommand(
                 () -> {
-                    double speedX = driverController.getLeftX();
-                    double speedY = driverController.getLeftY();
-                    double rot = driverController.getRightX();
+                    double direction = driveSubsystem.getRobotAngle().getRadians();
+
+                    double controllerX = -driverController.getLeftX();
+                    double controllerY = -driverController.getLeftY();
+
+                    double speedX = controllerX;//Math.sin(direction) * controllerX + Math.cos(direction) * controllerY;
+                    double speedY = controllerY;//Math.cos(direction) * controllerX + Math.sin(direction) * controllerY;
+                    double rot = -driverController.getRightX();
 
                     // Controller deadzones
                     speedX = Math.abs(speedX) < 0.3 ? 0 : speedX;
@@ -54,8 +59,8 @@ public class RobotContainer {
                     
                     driveSubsystem.driveTranslationRotationRaw(
                         new ChassisSpeeds(
-                            moveRight ? 0.5 : speedX * 0.5,
-                            moveForward ? 0.5 : speedY * 0.5,
+                            moveForward ? 0.5 : speedY * SmartDashboard.getNumber("Speed Multiplier", 0.5),
+                            moveRight ? 0.5 : speedX * SmartDashboard.getNumber("Speed Multiplier", 0.5),
                             rot * 1.0
                         )
                     );
