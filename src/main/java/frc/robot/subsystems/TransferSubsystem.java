@@ -54,6 +54,7 @@ public class TransferSubsystem extends SubsystemBase {
         super.periodic();
 
         SmartDashboard.putBoolean("Transfer Occupied", occupied);
+        SmartDashboard.putBoolean("Beam Break Output", beamBreak.get());
         SmartDashboard.updateValues();
     }
 }

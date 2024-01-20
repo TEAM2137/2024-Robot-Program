@@ -65,4 +65,13 @@ public class ClimberSubsystem extends SubsystemBase {
     public Command setClimberPositionCommand(double percentage) {
         return runOnce(() -> climbPID.setReference((percentage * Constants.ClimbMax), CANSparkBase.ControlType.kPosition));
     }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        SmartDashboard.putNumber("Climb Position Raw", climbEncoder.getPosition());
+        SmartDashboard.putNumber("Climb Position %", climbEncoder.getPosition() / Constants.ClimbMax);
+        SmartDashboard.updateValues();
+    }
 }
