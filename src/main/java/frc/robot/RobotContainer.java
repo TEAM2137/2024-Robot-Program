@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -23,6 +24,9 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
+    private boolean moveForward;
+    private boolean moveRight;
+
     public RobotContainer() {
         configureBindings();
 
@@ -32,6 +36,10 @@ public class RobotContainer {
 
     public void runTeleop() {
         if (disableSwerve) return;
+        driverController.a().onTrue(Commands.runOnce(() -> moveForward = true));
+        driverController.a().onFalse(Commands.runOnce(() -> moveForward = false));
+        driverController.b().onTrue(Commands.runOnce(() -> moveRight = true));
+        driverController.b().onFalse(Commands.runOnce(() -> moveRight = false));
         driveSubsystem.setDefaultCommand(
             new RunCommand(
                 () -> {
@@ -45,7 +53,11 @@ public class RobotContainer {
                     rot = Math.abs(rot) < 0.3 ? 0 : rot;
                     
                     driveSubsystem.driveTranslationRotationRaw(
-                        new ChassisSpeeds(speedX, speedY, rot * Math.PI)
+                        new ChassisSpeeds(
+                            moveRight ? 0.5 : speedX * 0.5,
+                            moveForward ? 0.5 : speedY * 0.5,
+                            rot * 1.0
+                        )
                     );
                 },
                 driveSubsystem

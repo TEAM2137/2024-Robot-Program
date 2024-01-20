@@ -36,7 +36,7 @@ public class NeoModule extends SubsystemBase {
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(1, 0, 0.5);
+        public static PID turningPIDConstants = new PID(1, 0, 0.2);
 
         public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);
@@ -155,8 +155,8 @@ public class NeoModule extends SubsystemBase {
             selfTargetAngle();
         }
 
-        double targetDegrees = turningSetpointRaw.getDegrees() + encoderOffset;
-        double currentDegrees = getModuleRotation().getDegrees();
+        double targetDegrees = turningSetpointRaw.getDegrees();
+        double currentDegrees = getModuleRotation().getDegrees() + encoderOffset;
         boolean stopTurn = Math.abs(targetDegrees - currentDegrees) < 2 || Math.abs(targetDegrees + 360 - currentDegrees) < 2 || Math.abs(targetDegrees - 360 - currentDegrees) < 2;;
 
         if (!RobotContainer.disableSwerve) {
@@ -177,16 +177,16 @@ public class NeoModule extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);
-        SmartDashboard.putBoolean("Module-" + moduleName + "-Stop Rotation?", stopTurn);
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees - encoderOffset);
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetDegrees);
-//        SmartDashboard.putNumber("" + moduleName + "/Heading Error", turningPID.getPositionError());
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Power", turningMotor.getAppliedOutput());
+        // SmartDashboard.putBoolean("Module-" + moduleName + "-Stop Rotation?", stopTurn);
+        // SmartDashboard.putNumber("Module-" + moduleName + "-Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
+        // SmartDashboard.putNumber("" + moduleName + "/Heading Error", turningPID.getPositionError());
+        //SmartDashboard.putNumber("Module-" + moduleName + "-Heading Power", turningMotor.getAppliedOutput());
 
         SmartDashboard.putNumber("Module-" + moduleName + "-Drive Power", driveMotor.getAppliedOutput());
-        SmartDashboard.putNumber("Module-" + moduleName + "-Velocity Target", Math.abs(driveVelocityTarget));
-        SmartDashboard.putNumber("Module-" + moduleName + "-Velocity", Math.abs(getDriveVelocity()));
+        //SmartDashboard.putNumber("Module-" + moduleName + "-Velocity Target", Math.abs(driveVelocityTarget));
+        //SmartDashboard.putNumber("Module-" + moduleName + "-Velocity", Math.abs(getDriveVelocity()));
     }
 
     /**

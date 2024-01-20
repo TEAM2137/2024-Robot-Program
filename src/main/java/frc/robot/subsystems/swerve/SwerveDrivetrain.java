@@ -45,22 +45,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            22.708288, "Front Left");
+            -138.05198669, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            184.297150, "Front Right");
+            -49.9307556152, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
-            CanIDs.get("bl-encoder"), 
-            22.555698, "Back Left");
+            CanIDs.get("bl-encoder"),
+            -43.503131866, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
-            CanIDs.get("br-drive"), 
+            CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            -5.006835, "Back Right");
+            -127.7991027, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -212,7 +212,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 //            module.periodic();
 //        }
 
-        SmartDashboard.putNumber("FusedHeading", getRobotAngle().getDegrees());
+        //SmartDashboard.putNumber("FusedHeading", getRobotAngle().getDegrees());
         SmartDashboard.putData("Field", field2d);
     }
 
