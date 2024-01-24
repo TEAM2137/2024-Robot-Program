@@ -1,9 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -54,7 +52,8 @@ public class NeoModule extends SubsystemBase {
 
     // private PIDController turningPID;
 
-    private double encoderOffset;
+    public double encoderOffset;
+    public double currentPosition;
 
     private Rotation2d turningSetpointRaw = Rotation2d.fromDegrees(0);
     // private Rotation2d turningSetpointCorrected = Rotation2d.fromDegrees(0);
@@ -90,11 +89,9 @@ public class NeoModule extends SubsystemBase {
 
         // Encoder setup
         this.encoder = new CANcoder(encoderID, SwerveDrivetrain.Constants.canBusName);
-        //this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
-        this.encoder.getConfigurator().apply(
-            new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1));
-            //.withMagnetOffset(0));
-        //this.encoder.configMagnetOffset(0);
+        CANcoderConfiguration config = new CANcoderConfiguration();
+        config.MagnetSensor.MagnetOffset = -encoderOffset;
+        encoder.getConfigurator().apply(config);
 
         this.encoderOffset = encoderOffset;
 
@@ -148,9 +145,6 @@ public class NeoModule extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        // if robot is disabled, target modules to their current angle
-        // if you're doing some types of debugging, disable this
-
         double targetDegrees = turningSetpointRaw.getDegrees();
         double currentDegrees = getModuleRotation().getDegrees();
 
@@ -181,16 +175,12 @@ public class NeoModule extends SubsystemBase {
             }
         }
 
+        currentPosition = currentDegrees;
+
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetDegrees);
-        // SmartDashboard.putBoolean("Module-" + moduleName + "-Stop Rotation?", stopTurn);
-        // SmartDashboard.putNumber("Module-" + moduleName + "-Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
-        // SmartDashboard.putNumber("" + moduleName + "/Heading Error", turningPID.getPositionError());
-        //SmartDashboard.putNumber("Module-" + moduleName + "-Heading Power", turningMotor.getAppliedOutput());
-
+        SmartDashboard.putNumber("Module-" + moduleName + "-CANCoder Position", encoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.putNumber("Module-" + moduleName + "-Drive Power", driveMotor.getAppliedOutput());
-        //SmartDashboard.putNumber("Module-" + moduleName + "-Velocity Target", Math.abs(driveVelocityTarget));
-        //SmartDashboard.putNumber("Module-" + moduleName + "-Velocity", Math.abs(getDriveVelocity()));
     }
 
     /**
@@ -209,7 +199,7 @@ public class NeoModule extends SubsystemBase {
     }
 
     public void homeTurningMotor() {
-        turningEncoder.setPosition(encoder.getAbsolutePosition().getValueAsDouble() * 360 - encoderOffset);
+        turningEncoder.setPosition(encoder.getAbsolutePosition().getValueAsDouble() * 360);
     }
 
     /**

@@ -45,22 +45,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-        275.8886, "Front Left");
+        -0.22998046875, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            145.5468, "Front Right");
+            0.405517578125, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            335.4785, "Back Left");
+            0.23974609375, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            88.6816, "Back Right");
+            -0.077392578125, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -77,7 +77,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             public final int turningID;
             public final int encoderID;
 
-            public final double offset;
+            public double offset;
             public final String moduleName;
 
             SwerveModuleConstants(int driveID, int turningID, int encoderID, double offsetDegrees, String moduleName) {
@@ -91,6 +91,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     SwerveDriveKinematics kinematics;
+
+    private double[] offsets = new double[4];
 
     private NeoModule frontLeftModule;
     private NeoModule frontRightModule;
@@ -135,6 +137,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         // the gyro
         pigeonIMU = new Pigeon2(Constants.gyroID, Constants.canBusName);
         pigeonIMU.getConfigurator().apply(new Pigeon2Configuration());
+        pigeonIMU.reset();
 
         // create pose estimator
         updateModulePositions();
@@ -146,7 +149,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
 //        SmartDashboard.putBoolean("Reset Position", false);
 
-//        resetGyro();
         timer = new Timer();
         timer.reset();
         timer.start();
@@ -186,6 +188,32 @@ public class SwerveDrivetrain extends SubsystemBase {
             },
             this // Reference to this subsystem to set requirements
         );
+    }
+
+    public void displayCurrentOffsets() {
+        SmartDashboard.putNumber("Offset FL", swerveArray[0].encoderOffset);
+        SmartDashboard.putNumber("Offset FR", swerveArray[1].encoderOffset);
+        SmartDashboard.putNumber("Offset BL", swerveArray[2].encoderOffset);
+        SmartDashboard.putNumber("Offset BR", swerveArray[3].encoderOffset);
+    }
+
+    public void saveOffsets() {
+        SmartDashboard.putNumber("Offset FL", swerveArray[0].currentPosition);
+        SmartDashboard.putNumber("Offset FR", swerveArray[1].currentPosition);
+        SmartDashboard.putNumber("Offset BL", swerveArray[2].currentPosition);
+        SmartDashboard.putNumber("Offset BR", swerveArray[3].currentPosition);
+        loadOffsets();
+    }
+
+    public void loadOffsets() {
+        offsets[0] = SmartDashboard.getNumber("Offset FL", 0);
+        offsets[1] = SmartDashboard.getNumber("Offset FR", 0);
+        offsets[2] = SmartDashboard.getNumber("Offset BL", 0);
+        offsets[3] = SmartDashboard.getNumber("Offset BR", 0);
+        swerveArray[0].encoderOffset = offsets[0];
+        swerveArray[1].encoderOffset = offsets[1];
+        swerveArray[2].encoderOffset = offsets[2];
+        swerveArray[3].encoderOffset = offsets[3];
     }
 
     /**

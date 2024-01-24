@@ -32,6 +32,9 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putBoolean("Save Offsets", false);
+        //driveSubsystem.displayCurrentOffsets();
+        //driveSubsystem.loadOffsets();
     }
 
     public void runTeleop() {

@@ -22,11 +22,11 @@ public class CanIDs {
 
         ids.put("bl-drive", 13);
         ids.put("bl-turn", 12);
-        ids.put("bl-encoder", 22);
+        ids.put("bl-encoder", 27);
 
         ids.put("br-drive", 41);
         ids.put("br-turn", 21);
-        ids.put("br-encoder", 27);
+        ids.put("br-encoder", 22);
 
         // ++++ Climber ++++
         ids.put("climber", 70); //TODO
