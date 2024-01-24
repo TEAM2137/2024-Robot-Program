@@ -51,8 +51,8 @@ public class RobotContainer {
                     double controllerX = -driverController.getLeftX();
                     double controllerY = -driverController.getLeftY();
 
-                    double speedX = Math.sin(direction) * controllerX + Math.cos(direction) * controllerY;
-                    double speedY = Math.cos(direction) * controllerX + Math.sin(direction) * controllerY;
+                    double speedX = Math.sin(direction) * controllerY + Math.cos(direction) * controllerX;
+                    double speedY = Math.cos(direction) * controllerY + Math.sin(direction) * controllerX;
                     double rot = -driverController.getRightX();
 
                     // Controller deadzones
