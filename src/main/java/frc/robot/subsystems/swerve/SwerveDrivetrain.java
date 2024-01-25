@@ -102,7 +102,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     private NeoModule[] swerveArray;
     private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 
-    private double[] lastDistances;
     private Timer timer;
     private double lastTime;
 
@@ -152,13 +151,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         timer = new Timer();
         timer.reset();
         timer.start();
-
-        lastDistances = new double[] {
-            frontLeftModule.getDriveDistance(),
-            frontRightModule.getDriveDistance(),
-            backLeftModule.getDriveDistance(),
-            backRightModule.getDriveDistance()
-        };
         
         resetOdometry();
 
@@ -260,24 +252,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             backRightModule.getDriveDistance()
         };
 
-        SmartDashboard.putNumber("FrontLeft-DriveDistance", frontLeftModule.getDriveDistance());
-        SmartDashboard.putNumber("FrontRight-DriveDistance", frontRightModule.getDriveDistance());
-        SmartDashboard.putNumber("BackLeft-DriveDistance", backLeftModule.getDriveDistance());
-        SmartDashboard.putNumber("BackRight-DriveDistance", backRightModule.getDriveDistance());
+        SmartDashboard.putNumber("FrontLeft-DriveDistance", distances[0]);
+        SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
+        SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
+        SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
 
         // modulePositions[0] = new SwerveModulePosition(-(distances[0] - lastDistances[0]) / dt, frontLeftModule.getModuleRotation());
         // modulePositions[1] = new SwerveModulePosition(-(distances[1] - lastDistances[1]) / dt, frontRightModule.getModuleRotation());
         // modulePositions[2] = new SwerveModulePosition(-(distances[2] - lastDistances[2]) / dt, backLeftModule.getModuleRotation());
         // modulePositions[3] = new SwerveModulePosition(-(distances[3] - lastDistances[3]) / dt, backRightModule.getModuleRotation());
 
-        modulePositions[0] = new SwerveModulePosition(frontLeftModule.getDriveDistance(), frontLeftModule.getModuleRotation());
-        modulePositions[1] = new SwerveModulePosition(frontRightModule.getDriveDistance(), frontRightModule.getModuleRotation());
-        modulePositions[2] = new SwerveModulePosition(backLeftModule.getDriveDistance(), backLeftModule.getModuleRotation());
-        modulePositions[3] = new SwerveModulePosition(backRightModule.getDriveDistance(), backRightModule.getModuleRotation());
+        modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
+        modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());
+        modulePositions[2] = new SwerveModulePosition(distances[2], backLeftModule.getModuleRotation());
+        modulePositions[3] = new SwerveModulePosition(distances[3], backRightModule.getModuleRotation());
 
         poseEstimator.updateWithTime(time, getRobotAngle(), modulePositions);
-
-        lastDistances = distances;
     }
 
     private void updateModulePositions() {
