@@ -165,12 +165,12 @@ public class SwerveDrivetrain extends SubsystemBase {
         // Pathplanner Initialization
         AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
-            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::resetOdometry, // Method to reset odometry
             this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             this::driveTranslationRotationRaw, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+            new HolonomicPathFollowerConfig(
+                new PIDConstants(2.0, 0.0, 0.01), // Translation PID constants
+                new PIDConstants(6.0, 0.0, 0.01), // Rotation PID constants
                 4.5, // Max module speed, in m/s
                 0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                 new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -260,10 +260,20 @@ public class SwerveDrivetrain extends SubsystemBase {
             backRightModule.getDriveDistance()
         };
 
-        modulePositions[0] = new SwerveModulePosition(-(distances[0] - lastDistances[0]) / dt, frontLeftModule.getModuleRotation());
-        modulePositions[1] = new SwerveModulePosition(-(distances[1] - lastDistances[1]) / dt, frontRightModule.getModuleRotation());
-        modulePositions[2] = new SwerveModulePosition(-(distances[2] - lastDistances[2]) / dt, backLeftModule.getModuleRotation());
-        modulePositions[3] = new SwerveModulePosition(-(distances[3] - lastDistances[3]) / dt, backRightModule.getModuleRotation());
+        SmartDashboard.putNumber("FrontLeft-DriveDistance", frontLeftModule.getDriveDistance());
+        SmartDashboard.putNumber("FrontRight-DriveDistance", frontRightModule.getDriveDistance());
+        SmartDashboard.putNumber("BackLeft-DriveDistance", backLeftModule.getDriveDistance());
+        SmartDashboard.putNumber("BackRight-DriveDistance", backRightModule.getDriveDistance());
+
+        // modulePositions[0] = new SwerveModulePosition(-(distances[0] - lastDistances[0]) / dt, frontLeftModule.getModuleRotation());
+        // modulePositions[1] = new SwerveModulePosition(-(distances[1] - lastDistances[1]) / dt, frontRightModule.getModuleRotation());
+        // modulePositions[2] = new SwerveModulePosition(-(distances[2] - lastDistances[2]) / dt, backLeftModule.getModuleRotation());
+        // modulePositions[3] = new SwerveModulePosition(-(distances[3] - lastDistances[3]) / dt, backRightModule.getModuleRotation());
+
+        modulePositions[0] = new SwerveModulePosition(frontLeftModule.getDriveDistance(), frontLeftModule.getModuleRotation());
+        modulePositions[1] = new SwerveModulePosition(frontRightModule.getDriveDistance(), frontRightModule.getModuleRotation());
+        modulePositions[2] = new SwerveModulePosition(backLeftModule.getDriveDistance(), backLeftModule.getModuleRotation());
+        modulePositions[3] = new SwerveModulePosition(backRightModule.getDriveDistance(), backRightModule.getModuleRotation());
 
         poseEstimator.updateWithTime(time, getRobotAngle(), modulePositions);
 
@@ -323,6 +333,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         
         //return tmp[2];
         return pigeonIMU.getAngularVelocityZDevice().getValueAsDouble();
+    }
+
+    public void resetDriveDistances() {
+        frontLeftModule.resetDriveEncoder();
+        frontRightModule.resetDriveEncoder();
+        backLeftModule.resetDriveEncoder();
+        backRightModule.resetDriveEncoder();
     }
 
     public void resetGyro() {

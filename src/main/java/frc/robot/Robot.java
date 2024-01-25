@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when autonomous is enabled. */
   @Override
   public void autonomousInit() {
+    robotContainer.autonomousInit();
     autonCommand = robotContainer.getAutonomousCommand();
     if (autonCommand != null) {
       autonCommand.schedule();

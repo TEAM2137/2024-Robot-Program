@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.823572994714199,
-      "y": 6.144799573110416
+      "x": 0.0,
+      "y": 0.0
     },
     "rotation": 0
   },
@@ -14,13 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Forward and Back"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New New Path"
+            "pathName": "New Path"
           }
         }
       ]

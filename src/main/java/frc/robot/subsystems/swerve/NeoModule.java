@@ -34,7 +34,7 @@ public class NeoModule extends SubsystemBase {
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(100, 0, 0.1);
+        public static PID turningPIDConstants = new PID(100, 0, 0.7);
 
         public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);
@@ -98,6 +98,7 @@ public class NeoModule extends SubsystemBase {
         this.moduleName = moduleName;
 
         this.driveEncoder = driveMotor.getEncoder();
+        this.driveEncoder.setPosition(0);
         this.driveEncoder.setPositionConversionFactor(Constants.driveRatio * Math.PI * Constants.measuredWheelDiameter);
         this.driveEncoder.setVelocityConversionFactor(Constants.driveRatio / 60 * Math.PI * Constants.measuredWheelDiameter);
         this.turningEncoder = turningMotor.getEncoder();

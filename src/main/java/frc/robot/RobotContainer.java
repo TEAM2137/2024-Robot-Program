@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -27,6 +28,8 @@ public class RobotContainer {
     private boolean moveForward;
     private boolean moveRight;
 
+    private double rightStickRot;
+
     public RobotContainer() {
         configureBindings();
 
@@ -43,6 +46,7 @@ public class RobotContainer {
         driverController.a().onFalse(Commands.runOnce(() -> moveForward = false));
         driverController.b().onTrue(Commands.runOnce(() -> moveRight = true));
         driverController.b().onFalse(Commands.runOnce(() -> moveRight = false));
+        
         driveSubsystem.setDefaultCommand(
             new RunCommand(
                 () -> {
@@ -51,7 +55,14 @@ public class RobotContainer {
                     double controllerX = -driverController.getLeftX();
                     double controllerY = -driverController.getLeftY();
 
-                    double speedX = Math.sin(direction) * controllerY + Math.cos(direction) * controllerX;
+                    double rotationX = -driverController.getRightX();
+                    double rotationY = -driverController.getRightY();
+                    double rotation = Math.toDegrees(Math.atan2(rotationY, rotationX));
+
+                    rightStickRot = rotation;
+                    SmartDashboard.putNumber("Right Stick Rotation", rightStickRot);
+
+                    double speedX = Math.sin(direction) * -controllerY + Math.cos(direction) * controllerX;
                     double speedY = Math.cos(direction) * controllerY + Math.sin(direction) * controllerX;
                     double rot = -driverController.getRightX();
 
@@ -62,9 +73,9 @@ public class RobotContainer {
                     
                     driveSubsystem.driveTranslationRotationRaw(
                         new ChassisSpeeds(
-                            moveForward ? 0.5 : speedY * SmartDashboard.getNumber("Speed Multiplier", 0.5),
-                            moveRight ? 0.5 : speedX * SmartDashboard.getNumber("Speed Multiplier", 0.5),
-                            rot * 1.0
+                            moveForward ? 0.5 : speedY * 0.5,
+                            moveRight ? 0.5 : speedX * 0.5,
+                            rot
                         )
                     );
                 },
@@ -79,5 +90,10 @@ public class RobotContainer {
     private void configureBindings() {
         // Example usage of this method:
         // driverController.b().whileTrue(exampleCommand());
+    }
+
+    public void autonomousInit() {
+        driveSubsystem.resetGyro();
+        driveSubsystem.resetDriveDistances();
     }
 }
