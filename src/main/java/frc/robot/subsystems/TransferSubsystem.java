@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class TransferSubsystem extends SubsystemBase {
     private boolean occupied = false;
@@ -25,14 +27,18 @@ public class TransferSubsystem extends SubsystemBase {
         beltMotor = new CANSparkMax(CanIDs.get("transfer-motor"), CANSparkLowLevel.MotorType.kBrushless);
     }
 
-    public Command intakeCommand() {
+    public Command intakeCommand(Trigger button) {
         return runEnd(
             () -> beltMotor.set(.5),
             () -> {
                 beltMotor.set(0);
-                occupied = true;
+                occupied = beamBreak.get();
             }
-        ).until(() -> beamBreak.get()); // Stop when the beam breaks
+        ).until(() -> beamBreak.get() || !button.getAsBoolean()); // Stop when the beam breaks
+    }
+
+    public Command shutoffCommand() {
+        return runOnce(() -> beltMotor.stopMotor());
     }
 
     public Command feedCommand() {
