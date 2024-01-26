@@ -32,8 +32,9 @@ public class CanIDs {
         ids.put("climber", 70); //TODO
 
         // ++++ Shooter ++++
-        ids.put("launcher-1", 60); //TODO
-        ids.put("launcher-2", 61); //TODO
+        ids.put("shooter-1", 60); //TODO
+        ids.put("shooter-2", 61); //TODO
+        ids.put("shooter-pivot", 62); //TODO
 
         // ++++ Intake ++++
         ids.put("intake-pivot", 50); //TODO
