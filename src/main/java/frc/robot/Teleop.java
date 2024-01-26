@@ -9,13 +9,23 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class Teleop {
-    private CommandXboxController driverController = new CommandXboxController(0);
-    private CommandXboxController operatorController = new CommandXboxController(1);
-    private SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
+    // Enables and disables field centric modes
+    private final boolean fieldCentricMovement = true;
+    private final boolean fieldCentricRotation = false;
 
-    private boolean moveForward;
-    private boolean moveRight;
+    // Declare controllers and necessary subsystems
+    private CommandXboxController driverController;
+    private CommandXboxController operatorController;
+    private SwerveDrivetrain driveSubsystem;
 
+    // The threshold for input on the controller sticks (0.0 - 1.0)
+    private double stickDeadzone = 0.3;
+
+    // These ones are self explanatory
+    private double driveSpeed = 0.5;
+    private double rotationSpeed = Math.PI;
+
+    // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
             CommandXboxController operatorController) {
         this.driveSubsystem = driveSubsystem;
@@ -25,13 +35,9 @@ public class Teleop {
 
     public void teleopInit() {
         // Configure controller bindings here
+        // TODO: Bind commands to controllers
 
-        // Bindings for swerve debug (delete these when necessary)
-        driverController.a().onTrue(Commands.runOnce(() -> moveForward = true));
-        driverController.a().onFalse(Commands.runOnce(() -> moveForward = false));
-        driverController.b().onTrue(Commands.runOnce(() -> moveRight = true));
-        driverController.b().onFalse(Commands.runOnce(() -> moveRight = false));
-        
+        // Init teleop command
         driveSubsystem.setDefaultCommand(getTeleopCommand());
     }
 
@@ -39,33 +45,38 @@ public class Teleop {
     public Command getTeleopCommand() {
         return new RunCommand(
             () -> {
+                // Controller + Pigeon inputs
                 double direction = driveSubsystem.getRobotAngle().getRadians();
-
                 double controllerX = -driverController.getLeftX();
                 double controllerY = -driverController.getLeftY();
-
-                // double rotationX = -driverController.getRightX();
-                // double rotationY = -driverController.getRightY();
-                // double rotation = Math.toDegrees(Math.atan2(rotationY, rotationX)) - 90;
-
-                // rotation = (Math.abs(rotationX) < 0.3 && Math.abs(rotationY) < 0.3) ? 0 : rotation;
-                // SmartDashboard.putNumber("Right Stick Rotation", rotation);
-
-                double speedX = Math.sin(direction) * -controllerY + Math.cos(direction) * controllerX;
-                double speedY = Math.cos(direction) * controllerY + Math.sin(direction) * controllerX;
-                double rot = -driverController.getRightX();
+                double rotationX = -driverController.getRightX();
+                double rotationY = -driverController.getRightY();
 
                 // Controller deadzones
-                speedX = Math.abs(speedX) < 0.3 ? 0 : speedX;
-                speedY = Math.abs(speedY) < 0.3 ? 0 : speedY;
-                rot = Math.abs(rot) < 0.3 ? 0 : rot;
+                controllerX = Math.abs(controllerX) < stickDeadzone ? 0 : controllerX;
+                controllerY = Math.abs(controllerY) < stickDeadzone ? 0 : controllerY;
+                rotationX = Math.abs(rotationX) < stickDeadzone ? 0 : rotationX;
+                rotationY = Math.abs(rotationY) < stickDeadzone ? 0 : rotationY;
+
+                // Field-centric rotation calculations, these are temporary I think
+                double rotation = Math.toDegrees(Math.atan2(rotationY, rotationX)) - 90;
+                rotation = (Math.abs(rotationX) < 0.3 && Math.abs(rotationY) < 0.3) ? 0 : rotation;
+                SmartDashboard.putNumber("Right Stick Rotation", rotation);
+
+                // Sets speeds and applies field centric if enabled
+                double speedX = (fieldCentricMovement
+                    ? Math.sin(direction) * -controllerY + Math.cos(direction) * controllerX
+                    : controllerX) * driveSpeed;
+                double speedY = (fieldCentricMovement 
+                    ? Math.cos(direction) * controllerY + Math.sin(direction) * controllerX
+                    : controllerY) * driveSpeed;
+                double rot = (fieldCentricRotation 
+                    ? 0 // TODO: field centric rotation
+                    : rotationX) * rotationSpeed;
                 
+                // Actually drive the swerve base
                 driveSubsystem.driveTranslationRotationRaw(
-                    new ChassisSpeeds(
-                        moveForward ? 0.5 : speedY * 0.5,
-                        moveRight ? 0.5 : speedX * 0.5,
-                        rot * Math.PI
-                    )
+                    new ChassisSpeeds(speedY * 0.5, speedX * 0.5, rot)
                 );
             },
             driveSubsystem
