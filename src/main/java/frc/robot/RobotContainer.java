@@ -4,6 +4,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,6 +20,10 @@ public class RobotContainer {
 
     // Subsystems
     private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
+    // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    // private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    // private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+    // private final TransferSubsystem TransferSubsystem = new TransferSubsystem();
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
