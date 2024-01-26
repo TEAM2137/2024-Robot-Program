@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import frc.robot.util.CanIDs;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -27,14 +29,14 @@ public class TransferSubsystem extends SubsystemBase {
         beltMotor = new CANSparkMax(CanIDs.get("transfer-motor"), CANSparkLowLevel.MotorType.kBrushless);
     }
 
-    public Command intakeCommand(Trigger button) {
+    public Command intakeCommand(BooleanSupplier earlyStop) {
         return runEnd(
             () -> beltMotor.set(.5),
             () -> {
                 beltMotor.set(0);
                 occupied = beamBreak.get();
             }
-        ).until(() -> beamBreak.get() || !button.getAsBoolean()); // Stop when the beam breaks
+        ).until(() -> beamBreak.get() || earlyStop.getAsBoolean()); // Stop when the beam breaks
     }
 
     public Command shutoffCommand() {
