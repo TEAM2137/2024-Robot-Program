@@ -1,9 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -33,7 +33,7 @@ public class Teleop {
         this.operatorController = operatorController;
     }
 
-    public void teleopInit() {
+    public void init() {
         // Configure controller bindings here
         // TODO: Bind commands to controllers
 
@@ -58,21 +58,28 @@ public class Teleop {
                 rotationX = Math.abs(rotationX) < stickDeadzone ? 0 : rotationX;
                 rotationY = Math.abs(rotationY) < stickDeadzone ? 0 : rotationY;
 
-                // Field-centric rotation calculations, these are temporary I think
-                double rotation = Math.toDegrees(Math.atan2(rotationY, rotationX)) - 90;
-                rotation = (Math.abs(rotationX) < 0.3 && Math.abs(rotationY) < 0.3) ? 0 : rotation;
-                SmartDashboard.putNumber("Right Stick Rotation", rotation);
+                // Field-centric rotation calculations
+                double stickAngle = Math.toDegrees(Math.atan2(rotationY, rotationX)) - 90;
+                stickAngle = (Math.abs(rotationX) < 0.3 && Math.abs(rotationY) < 0.3) ? 0 : stickAngle;
+                SmartDashboard.putNumber("Right Stick Angle", stickAngle);
+
+                double kP = 0.005;
+                Rotation2d currentAngle = Rotation2d.fromDegrees(direction); // Current angle
+                Rotation2d targetAngle = Rotation2d.fromDegrees(stickAngle); // Desired angle
+                double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error
 
                 // Sets speeds and applies field centric if enabled
                 double speedX = (fieldCentricMovement
-                    ? Math.sin(direction) * -controllerY + Math.cos(direction) * controllerX
-                    : controllerX) * driveSpeed;
+                    ? Math.sin(direction) * -controllerY + 
+                      Math.cos(direction) * controllerX /* Field centric */
+                    : controllerX) /* Robot centric */ * driveSpeed;
                 double speedY = (fieldCentricMovement 
-                    ? Math.cos(direction) * controllerY + Math.sin(direction) * controllerX
-                    : controllerY) * driveSpeed;
-                double rot = (fieldCentricRotation 
-                    ? 0 // TODO: field centric rotation
-                    : rotationX) * rotationSpeed;
+                    ? Math.cos(direction) * controllerY + 
+                      Math.sin(direction) * controllerX /* Field centric */
+                    : controllerY) /* Robot centric */ * driveSpeed;
+                double rot = (fieldCentricRotation
+                    ? error * kP /* Field centric */
+                    : rotationX) /* Robot centric */ * rotationSpeed;
                 
                 // Actually drive the swerve base
                 driveSubsystem.driveTranslationRotationRaw(

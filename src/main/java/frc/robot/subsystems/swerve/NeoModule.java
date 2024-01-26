@@ -158,22 +158,20 @@ public class NeoModule extends SubsystemBase {
             selfTargetAngle();
         }
 
-        if (!RobotContainer.disableSwerve) {
-            if (stopTurn) {
-                turningMotor.set(0);
-            } else {
-                turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
-                        Constants.turningFeedForward * ((targetDegrees - currentDegrees > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
-            }
+        if (stopTurn) {
+            turningMotor.set(0);
+        } else {
+            turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
+                    Constants.turningFeedForward * ((targetDegrees - currentDegrees > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
+        }
 
-            switch(driveMode) {
-                case RawPower: //for use in teleop
-                    driveMotor.set(driveRawPower);
-                    break;
-                case Velocity: //for use in auto and autonomous trajectories
-                    drivePID.setReference(driveVelocityTarget, ControlType.kVelocity, 0, driveFeedForward.calculate(driveVelocityTarget), ArbFFUnits.kPercentOut);
-                    break;
-            }
+        switch(driveMode) {
+            case RawPower: //for use in teleop
+                driveMotor.set(driveRawPower);
+                break;
+            case Velocity: //for use in auto and autonomous trajectories
+                drivePID.setReference(driveVelocityTarget, ControlType.kVelocity, 0, driveFeedForward.calculate(driveVelocityTarget), ArbFFUnits.kPercentOut);
+                break;
         }
 
         currentPosition = currentDegrees;

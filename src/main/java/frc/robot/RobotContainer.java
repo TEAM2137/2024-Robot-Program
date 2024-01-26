@@ -1,52 +1,42 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
+    // Controllers
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
+    // Subsystems
     private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
-    public static final boolean disableSwerve = false;
 
-    //private final AprilTagVision vision = new AprilTagVision();
+    // Misc stuff
+    private final AprilTagVision vision = new AprilTagVision();
+    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
+    // OpModes
     private final Teleop teleop = new Teleop(driveSubsystem, driverController, operatorController);
-
-    private final SendableChooser<Command> autoChooser;
+    private final Autonomous auto = new Autonomous(driveSubsystem, autoChooser);
 
     public RobotContainer() {
-        configureBindings();
-
-        autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
-        SmartDashboard.putBoolean("Save Offsets", false);
-        //driveSubsystem.displayCurrentOffsets();
-        //driveSubsystem.loadOffsets();
     }
 
     public void runTeleop() {
-        teleop.teleopInit();
+        // Cancel autonomous in case it's still running for whatever reason
+        auto.cancelAutonomous();
+        teleop.init();
     }
 
-    public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Test Auto");
-    }
-
-    private void configureBindings() {
-        // Example usage of this method:
-        // driverController.b().whileTrue(exampleCommand());
-    }
-
-    public void autonomousInit() {
-        driveSubsystem.resetGyro();
-        driveSubsystem.resetDriveDistances();
+    public void runAutonomous() {
+        auto.init();
     }
 }

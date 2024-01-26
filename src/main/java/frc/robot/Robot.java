@@ -8,8 +8,6 @@ public class Robot extends TimedRobot {
   
   public CommandScheduler scheduler;
   public RobotContainer robotContainer;
-  
-  public Command autonCommand;
 
   /** This function is run when the robot is first started up. */
   @Override
@@ -28,11 +26,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when autonomous is enabled. */
   @Override
   public void autonomousInit() {
-    robotContainer.autonomousInit();
-    autonCommand = robotContainer.getAutonomousCommand();
-    if (autonCommand != null) {
-      autonCommand.schedule();
-    }
+    robotContainer.runAutonomous();
   }
 
   /** This function is called periodically during autonomous. */
@@ -42,10 +36,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    // Cancel autonomous in case it is still running for some reason
-    if (autonCommand != null) {
-      autonCommand.cancel();
-    }
     robotContainer.runTeleop();
   }
 
