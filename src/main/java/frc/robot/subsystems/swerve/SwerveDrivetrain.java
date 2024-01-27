@@ -35,7 +35,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         public static final String canBusName = "rio";
 
-        public static final double length = Units.inchesToMeters(24.5);
+        public static final double length = Units.inchesToMeters(21.5);
         public static final double width = Units.inchesToMeters(21.5);
 
         public static final double driveMaxSpeed = 3.0;
@@ -45,22 +45,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-        -0.22998046875, "Front Left");
+            0.391845703125, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            0.405517578125, "Front Right");
+            -0.32763671875, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            0.23974609375, "Back Left");
+            -0.097900390625, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            -0.077392578125, "Back Right");
+            0.257568359275, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 

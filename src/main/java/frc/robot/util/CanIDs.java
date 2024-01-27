@@ -14,19 +14,19 @@ public class CanIDs {
 
         ids.put("fl-drive", 10);
         ids.put("fl-turn", 31);
-        ids.put("fl-encoder", 4);
+        ids.put("fl-encoder", 27);
 
         ids.put("fr-drive", 16);
         ids.put("fr-turn", 20);
-        ids.put("fr-encoder", 14);
+        ids.put("fr-encoder", 22);
 
         ids.put("bl-drive", 13);
         ids.put("bl-turn", 12);
-        ids.put("bl-encoder", 27);
+        ids.put("bl-encoder", 14);
 
         ids.put("br-drive", 41);
         ids.put("br-turn", 21);
-        ids.put("br-encoder", 22);
+        ids.put("br-encoder", 4);
 
         // ++++ Climber ++++
         ids.put("climber", 70); //TODO
