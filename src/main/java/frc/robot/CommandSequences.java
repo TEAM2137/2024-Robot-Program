@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 
@@ -19,5 +20,17 @@ public class CommandSequences {
             .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
             .andThen(intake.PleaseStop())) // When transfer finishes stop the intake
             .andThen(intake.MoveIntakeUp()); // Raise intake again
+    }
+
+    public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
+        return
+            intake.MoveIntakeDown()
+            .andThen(climb.setClimberPositionCommand(1.0));
+    }
+
+    public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
+        return
+            intake.MoveIntakeDown()
+            .andThen(climb.setClimberPositionCommand(0.0));
     }
 }
