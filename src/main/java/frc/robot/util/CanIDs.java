@@ -44,7 +44,7 @@ public class CanIDs {
         ids.put("transfer-motor", 80); //TODO
 
         // ++++ Random Test Thing ++++
-        ids.put("testing-motor", 90); //TODO
+        ids.put("testing-motor", 62); //TODO
     }
 
     /**
