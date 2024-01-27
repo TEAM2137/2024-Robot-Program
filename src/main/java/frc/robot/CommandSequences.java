@@ -14,8 +14,10 @@ public class CommandSequences {
 
     public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer, BooleanSupplier earlyStop) {
         return 
-            intake.StartMotors() // Start intake
+            intake.MoveIntakeDown() // Lower intake
+            .andThen(intake.StartMotors()) // Start intake
             .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
-            .andThen(intake.PleaseStop())); // When transfer finishes stop the intake
+            .andThen(intake.PleaseStop())) // When transfer finishes stop the intake
+            .andThen(intake.MoveIntakeUp()); // Raise intake again
     }
 }
