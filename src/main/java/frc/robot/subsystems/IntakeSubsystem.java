@@ -57,4 +57,11 @@ public class IntakeSubsystem extends SubsystemBase {
         return runOnce(() -> rollerMotor.set(0));
     }
 
+    public Command MoveIntakeDown() {
+        return runOnce(() -> pivotMotor.set(0.3)).alongWith(run(() -> {})).until(() -> pivotMotor.getOutputCurrent() > 1).andThen(() -> pivotMotor.set(0));
+    }
+
+    public Command MoveIntakeUp() {
+        return runOnce(() -> pivotMotor.set(-0.3)).alongWith(run(() -> {})).until(() -> pivotMotor.getOutputCurrent() > 1).andThen(() -> pivotMotor.set(0));
+    }
 }
