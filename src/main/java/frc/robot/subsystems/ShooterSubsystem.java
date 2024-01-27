@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
  
 public class ShooterSubsystem extends SubsystemBase {
-
     private CANSparkMax shooterMotor1;
     private CANSparkMax shooterMotor2;
 
@@ -28,6 +27,7 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotEncoder = pivotMotor.getEncoder();
         pivotPID = pivotMotor.getPIDController();
+        pivotPID.setFeedbackDevice(pivotEncoder);
     }
 
     /**
