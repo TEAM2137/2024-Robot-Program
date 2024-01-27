@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.util.CanIDs;
 
 public class TestingSubsystem extends SubsystemBase {
-    private CANSparkMax testMotor = new CANSparkMax(CanIDs.get("test-motor"), MotorType.kBrushless);
+    private CANSparkMax testMotor = new CANSparkMax(CanIDs.get("testing-motor"), MotorType.kBrushless);
 
     public Command testMotorOn() {
         return runOnce(() -> testMotor.set(.3));
