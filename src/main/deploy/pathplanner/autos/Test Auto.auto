@@ -28,6 +28,24 @@
           "data": {
             "pathName": "New Path"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "testMotorOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "testMotorOff"
+          }
         }
       ]
     }
