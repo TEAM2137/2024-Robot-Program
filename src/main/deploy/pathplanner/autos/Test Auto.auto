@@ -24,15 +24,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "New Path"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "testMotorOn"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "New Path"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "testMotorOn"
+                }
+              }
+            ]
           }
         },
         {
