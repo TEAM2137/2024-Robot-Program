@@ -16,7 +16,8 @@ public class TransferSubsystem extends SubsystemBase {
     private boolean occupied = false;
 
     private CANSparkMax beltMotor;
-    private DigitalInput beamBreak = new DigitalInput(0);
+    private DigitalInput inBeamBreak = new DigitalInput(0); // TODO: get real input channel
+    private DigitalInput outBeamBreak = new DigitalInput(1); // TODO: get real input channel
 
     public TransferSubsystem() {
         super();
@@ -34,9 +35,9 @@ public class TransferSubsystem extends SubsystemBase {
             () -> beltMotor.set(.5),
             () -> {
                 beltMotor.set(0);
-                occupied = beamBreak.get();
+                occupied = inBeamBreak.get();
             }
-        ).until(() -> beamBreak.get() || earlyStop.getAsBoolean()); // Stop when the beam breaks
+        ).until(() -> inBeamBreak.get() || earlyStop.getAsBoolean()); // Stop when the beam breaks
     }
 
     /**
@@ -58,7 +59,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).withTimeout(.5); // Stop after a timeout
+        ).until(() -> outBeamBreak.get()); // Stop when beam breaks
     }
 
     /**
@@ -74,7 +75,8 @@ public class TransferSubsystem extends SubsystemBase {
         super.periodic();
 
         SmartDashboard.putBoolean("Transfer Occupied", occupied);
-        SmartDashboard.putBoolean("Beam Break Output", beamBreak.get());
+        SmartDashboard.putBoolean("Intaking Beam Break Output", inBeamBreak.get());
+        SmartDashboard.putBoolean("Outtaking Beam Break", outBeamBreak.get());
         SmartDashboard.updateValues();
     }
 }
