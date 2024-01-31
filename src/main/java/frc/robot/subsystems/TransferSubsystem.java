@@ -70,6 +70,14 @@ public class TransferSubsystem extends SubsystemBase {
         return occupied;
     }
 
+    public boolean getInBeamBreak() {
+        return inBeamBreak.get();
+    }
+
+    public boolean getOutBeamBreak() {
+        return outBeamBreak.get();
+    }
+
     @Override
     public void periodic() {
         super.periodic();
