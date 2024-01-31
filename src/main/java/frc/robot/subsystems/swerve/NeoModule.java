@@ -17,7 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.util.PID;
 
 public class NeoModule extends SubsystemBase {
@@ -179,7 +178,7 @@ public class NeoModule extends SubsystemBase {
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);
         SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetDegrees);
         SmartDashboard.putNumber("Module-" + moduleName + "-CANCoder Position", encoder.getAbsolutePosition().getValueAsDouble());
-        SmartDashboard.putNumber("Module-" + moduleName + "-Drive Power", driveMotor.getAppliedOutput());
+        //SmartDashboard.putNumber("Module-" + moduleName + "-Drive Power", driveMotor.getAppliedOutput());
     }
 
     /**

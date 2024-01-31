@@ -17,15 +17,9 @@ public class AprilTagVision {
     private double posX;
     private double posY;
 
-    private double velocityX;
-    private double velocityY;
-
-    private double lastPosX;
-    private double lastPosY; 
-
     private double rotation;
 
-    public void init() {
+    public AprilTagVision() {
         table = NetworkTableInstance.getDefault().getTable("limelight-a");
         botpose = table.getEntry("botpose");
     }
@@ -36,29 +30,13 @@ public class AprilTagVision {
     public void updateValues() {
         pose = botpose.getDoubleArray(new double[6]);
 
-        double poseX = pose[0];
-        double poseY = pose[1];
-
+        posX = pose[0];
+        posY = pose[1];
         rotation = pose[5];
-
-        if (!(poseX == 0.0 && poseY == 0.0)) {
-            posX = (poseX * 39.37) + (fieldSizeX / 2);
-            posY = (poseY * 39.37) + (fieldSizeY / 2);
-
-            velocityX = posX - lastPosX;
-            velocityY = posY - lastPosY;
-
-            lastPosX = posX;
-            lastPosY = posY;
-        }
     
         // Post botpose to smart dashboard
-        SmartDashboard.putNumber("Field Position X", poseX);
-        SmartDashboard.putNumber("Field Position Y", poseY);
-
-        SmartDashboard.putNumber("Velocity X", velocityX);
-        SmartDashboard.putNumber("Velocity Y", velocityY);
-
+        SmartDashboard.putNumber("Field Position X", posX);
+        SmartDashboard.putNumber("Field Position Y", posY);
         SmartDashboard.putNumber("Robot Rotation", rotation);
     }
 
@@ -67,13 +45,6 @@ public class AprilTagVision {
      */
     public double getX() {
         return posX;
-    }
-
-    /**
-     * @return the amount the robot moved on the x axis since the last update (inches)
-     */
-    public double getXVelocity() {
-        return velocityX;
     }
     
     /**
@@ -84,13 +55,6 @@ public class AprilTagVision {
     }
 
     /**
-     * @return the amount the robot moved on the y axis since the last update (inches)
-     */
-    public double getYVelocity() {
-        return velocityY;
-    }
-
-     /**
      * @return the z rotation of the robot (degrees)
      */
     public double getRotation() {
@@ -102,9 +66,7 @@ public class AprilTagVision {
      */
     public boolean hasTarget() {
         pose = botpose.getDoubleArray(new double[6]);
-        if (pose[0] == 0.0) {
-            return false;
-        }
+        if (pose.length == 0 || pose[0] == 0) return false;
         return true;
     }
 }

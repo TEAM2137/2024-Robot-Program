@@ -2,8 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -13,7 +11,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.util.CanIDs;
 import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +32,7 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
     // OpModes
-    private final Teleop teleop = new Teleop(driveSubsystem, driverController, operatorController);
+    private final Teleop teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
     private final Autonomous auto = new Autonomous(driveSubsystem, autoChooser);
 
     // Auton Test stuff
