@@ -16,6 +16,9 @@ public class TransferSubsystem extends SubsystemBase {
     private boolean occupied = false;
 
     private CANSparkMax beltMotor;
+
+    // inBeamBreak is mounted so it's broken when a NOTE is fully in the transfer
+    // outBeamBreak is mounted so it's brokken when a NOTE enters the shooter
     private DigitalInput inBeamBreak = new DigitalInput(0); // TODO: get real input channel
     private DigitalInput outBeamBreak = new DigitalInput(1); // TODO: get real input channel
 
@@ -49,10 +52,24 @@ public class TransferSubsystem extends SubsystemBase {
     }
 
     /**
+     * Command to feed the NOTE into the trapper
+     * @return The command
+     */
+    public Command feedTrapperCommand() {
+        return runEnd(
+            () -> beltMotor.set(.5),
+            () -> {
+                beltMotor.set(0);
+                occupied = false;
+            }
+        ).until(() -> !inBeamBreak.get()); // Stop when beam breaks
+    }
+
+    /**
      * Command to feed the NOTE into the shooter
      * @return The command
      */
-    public Command feedCommand() {
+    public Command feedShooterCommand() {
         return runEnd(
             () -> beltMotor.set(.5),
             () -> {
