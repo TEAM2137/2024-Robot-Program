@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Forward and Back"
+            "pathName": null
           }
         },
         {
@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "New Path"
+                  "pathName": null
                 }
               },
               {

@@ -43,6 +43,7 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
         NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
+        NamedCommands.registerCommand("pointToSpeaker", teleop.pointToSpeakerCommand());
     }
 
     public void runTeleop() {
