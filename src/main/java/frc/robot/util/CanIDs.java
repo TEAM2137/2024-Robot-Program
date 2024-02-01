@@ -35,6 +35,7 @@ public class CanIDs {
         ids.put("shooter-1", 60); //TODO
         ids.put("shooter-2", 61); //TODO
         ids.put("shooter-pivot", 62); //TODO
+        ids.put("shooter-arm", 63); //TODO
 
         // ++++ Intake ++++
         ids.put("intake-pivot", 50); //TODO

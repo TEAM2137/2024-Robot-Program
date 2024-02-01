@@ -19,6 +19,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private RelativeEncoder pivotEncoder;
     private SparkPIDController pivotPID;
 
+    private CANSparkMax armMotor;
+    private RelativeEncoder armEncoder;
+    private SparkPIDController armPID;
+
     public ShooterSubsystem() {
         super();
         shooterMotor1 = new CANSparkMax(CanIDs.get("shooter-1"), MotorType.kBrushless);
@@ -28,6 +32,11 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotEncoder = pivotMotor.getEncoder();
         pivotPID = pivotMotor.getPIDController();
         pivotPID.setFeedbackDevice(pivotEncoder);
+
+        armMotor = new CANSparkMax(CanIDs.get("shooter-arm"), MotorType.kBrushless);
+        armEncoder = armMotor.getEncoder();
+        armPID = armMotor.getPIDController();
+        armPID.setFeedbackDevice(armEncoder);
     }
 
     /**
@@ -50,9 +59,15 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(() -> pivotPID.setReference(target, CANSparkBase.ControlType.kPosition));
     }
 
+    public Command setArmTarget(double target) {
+        return runOnce(() -> armPID.setReference(target, CANSparkBase.ControlType.kPosition));
+    }
+
     @Override
     public void periodic() {
         super.periodic();
         SmartDashboard.putNumber("Shooter Pivot Encoder Position", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Shooter Arm Encoder Position", armEncoder.getPosition());
+        SmartDashboard.updateValues();
     }
 }
