@@ -1,32 +1,71 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 2.0,
+      "y": 6.5
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Speaker Test"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Speaker Test"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "testMotorOn"
+                }
+              }
+            ]
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 0.5
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "pointToSpeaker"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pointToSpeaker"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "testMotorOff"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

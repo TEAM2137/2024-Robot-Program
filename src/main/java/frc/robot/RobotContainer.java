@@ -29,21 +29,24 @@ public class RobotContainer {
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
-    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
+    private final SendableChooser<Command> autoChooser;
 
     // OpModes
     private final Teleop teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
-    private final Autonomous auto = new Autonomous(driveSubsystem, autoChooser);
+    private final Autonomous auto;
 
     // Auton Test stuff
     private final TestingSubsystem testSubsystem = new TestingSubsystem();
 
     public RobotContainer() {
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-        
         NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
         NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
         NamedCommands.registerCommand("pointToSpeaker", teleop.pointToSpeakerCommand());
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+        auto = new Autonomous(driveSubsystem, autoChooser);
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     public void runTeleop() {
