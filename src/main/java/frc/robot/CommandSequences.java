@@ -9,10 +9,6 @@ import frc.robot.subsystems.TransferSubsystem;
 
 public class CommandSequences {
 
-    public CommandSequences() {
-        // Leaving this here in case we need to store variables between commands
-    }
-
     public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer, BooleanSupplier earlyStop) {
         return 
             intake.MoveIntakeDown() // Lower intake
