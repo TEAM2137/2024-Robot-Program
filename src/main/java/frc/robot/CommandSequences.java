@@ -25,12 +25,12 @@ public class CommandSequences {
     public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
         return
             intake.MoveIntakeDown()
-            .andThen(climb.setClimberPositionCommand(1.0));
+            .andThen(climb.climberUpCommand());
     }
 
     public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
         return
             intake.MoveIntakeDown()
-            .andThen(climb.setClimberPositionCommand(0.0));
+            .andThen(climb.climberDownCommand());
     }
 }

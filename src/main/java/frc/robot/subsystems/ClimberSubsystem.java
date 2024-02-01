@@ -19,6 +19,8 @@ public class ClimberSubsystem extends SubsystemBase {
         public static final double ClimbGearRatio = .4;
 
         public static PID climbPID = new PID(.1, 0.0, .01, .1);
+
+        public static double HardStopThreshold = .5;
     }
 
     private CANSparkMax climbMotor;
@@ -58,12 +60,37 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * Command to set the climber position
+     * Command to set the climber position.
+     * DO NOT USE
      * @param percentage percent of the max height to move the climber to, from 0.0 to 1.0
      * @return Command that moves the climber
      */
     public Command setClimberPositionCommand(double percentage) {
         return runOnce(() -> climbPID.setReference((percentage * Constants.ClimbMax), CANSparkBase.ControlType.kPosition));
+    }
+
+    /**
+     * Command to move the climber all the way up
+     * @return the command
+     */
+    public Command climberUpCommand() {
+        return 
+            setSpeedCommand(.5)
+            .alongWith(run(() -> {}))
+            .until(() -> climbMotor.getOutputCurrent() > Constants.HardStopThreshold)
+            .andThen(setSpeedCommand(0));
+    }
+
+    /**
+     * Command to move the climber all the way down
+     * @return the command
+     */
+    public Command climberDownCommand() {
+        return 
+            setSpeedCommand(-0.5)
+            .alongWith(run(() -> {}))
+            .until(() -> climbMotor.getOutputCurrent() > Constants.HardStopThreshold)
+            .andThen(setSpeedCommand(0));
     }
 
     @Override
