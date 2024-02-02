@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -58,12 +59,17 @@ public class CommandSequences {
         ).withTimeout(1.5);
     }
 
-    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision) {
-        return pointToSpeakerCommand(driveSubsystem, vision).andThen(new RunCommand(() -> {
-
-            // TODO: shoot the ring, obviously
-            
-        }, driveSubsystem).withTimeout(2.0));
+    public static Command speakerAimAndShootCommand(
+        SwerveDrivetrain driveSubsystem,
+        AprilTagVision vision,
+        TransferSubsystem transfer,
+        TrapperSubsystem trapper,
+        ShooterSubsystem shooter
+        ) {
+        return pointToSpeakerCommand(driveSubsystem, vision)
+        .andThen(shooter.runShooter(1.0, .7))
+        .alongWith(transferToShooter(transfer, trapper))
+        .withTimeout(2.0);
     }
 
     public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer, BooleanSupplier earlyStop) {
