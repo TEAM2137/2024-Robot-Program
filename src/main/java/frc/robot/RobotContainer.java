@@ -45,8 +45,8 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
         NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
-        NamedCommands.registerCommand("aimAndShootAtSpeaker", 
-            CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision));
+        //NamedCommands.registerCommand("aimAndShootAtSpeaker", 
+        //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision));
         NamedCommands.registerCommand("pointToSpeaker", 
             CommandSequences.pointToSpeakerCommand(driveSubsystem, vision));
 
