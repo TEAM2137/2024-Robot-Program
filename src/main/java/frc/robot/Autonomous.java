@@ -12,9 +12,8 @@ public class Autonomous {
 
     private Command autonomousCommand;
 
-    public Autonomous(SwerveDrivetrain driveSubsystem, SendableChooser<Command> autoChooser) {
+    public Autonomous(SwerveDrivetrain driveSubsystem) {
         this.driveSubsystem = driveSubsystem;
-        this.autoChooser = autoChooser;
     }
 
     public void init() {
@@ -25,7 +24,10 @@ public class Autonomous {
         CommandScheduler.getInstance().schedule(autonomousCommand);
     }
 
+    public void setAutoChooser(SendableChooser<Command> autoChooser) { this.autoChooser = autoChooser; }
+
     public void cancelAutonomous() {
-        autonomousCommand.cancel();
+        if (autonomousCommand != null && !autonomousCommand.isFinished())
+            autonomousCommand.cancel();
     }
 }

@@ -11,7 +11,7 @@ public class TestingSubsystem extends SubsystemBase {
     private CANSparkMax testMotor = new CANSparkMax(CanIDs.get("testing-motor"), MotorType.kBrushless);
 
     public Command testMotorOn() {
-        return runOnce(() -> testMotor.set(.3));
+        return runOnce(() -> testMotor.set(.1));
     }
 
     public Command testMotorOff() {

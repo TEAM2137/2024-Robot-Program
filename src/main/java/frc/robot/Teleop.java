@@ -2,14 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.vision.AprilTagVision;
 
 public class Teleop {
     // Enables and disables field centric modes
@@ -20,7 +17,6 @@ public class Teleop {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
     private SwerveDrivetrain driveSubsystem;
-    private AprilTagVision vision;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
     private double stickDeadzone = 0.3;
@@ -33,18 +29,17 @@ public class Teleop {
 
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
-            CommandXboxController operatorController, AprilTagVision vision) {
+            CommandXboxController operatorController) {
         this.driveSubsystem = driveSubsystem;
         this.driverController = driverController;
         this.operatorController = operatorController;
-        this.vision = vision;
     }
 
     public void init() {
         // Configure controller bindings here
 
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
-        driverController.a().onTrue(pointToSpeakerCommand());
+        //operatorController.a().onTrue(CommandSequences.pointToSpeakerCommand(driveSubsystem, vision));
 
         // Init teleop command
 
@@ -102,42 +97,5 @@ public class Teleop {
             },
             driveSubsystem
         );
-    }
-
-    // Uses the limelight and AprilTags to point towards the speaker target.
-    public Command pointToSpeakerCommand() {
-        return new RunCommand(
-            () -> {
-                // Where should it point (field space coords)
-                double targetX = 8.308467;
-                double targetY = 1.442593;
-            
-                if (vision.hasTarget()) vision.updateValues();
-
-                // Gets the position of the robot from the limelight data
-                double robotX = vision.getX();
-                double robotY = vision.getY();
-
-                // Calculate necessary angle to point to the speaker
-                double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX);
-
-                SmartDashboard.putNumber("Desired angle", Units.radiansToDegrees(desiredAngle));
-                SmartDashboard.putNumber("Current angle", driveSubsystem.getRobotAngle().getDegrees());
-
-                Rotation2d currentAngle = driveSubsystem.getRobotAngle().plus(Rotation2d.fromDegrees(180));
-                Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
-
-                double kP = 0.03; // The amount of force it turns to the target with
-                double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error
-                if (error > 10) error = 10;
-                if (error < -10) error = -10;
-
-                // Actually drive the swerve base
-                driveSubsystem.driveTranslationRotationRaw(
-                    new ChassisSpeeds(0, 0, error * kP)
-                );
-            },
-            driveSubsystem
-        ).withTimeout(1.5);
     }
 }

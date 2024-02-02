@@ -5,17 +5,16 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TestingSubsystem;
-import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
+    
+    private static RobotContainer inst;
+
     // Controllers
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -32,30 +31,40 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     // OpModes
-    private final Teleop teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
-    private final Autonomous auto;
+    public final Teleop teleop;
+    public final Autonomous auto;
 
     // Auton Test stuff
     private final TestingSubsystem testSubsystem = new TestingSubsystem();
 
     public RobotContainer() {
+        inst = this;
+
+        auto = new Autonomous(driveSubsystem);
+        teleop = new Teleop(driveSubsystem, driverController, operatorController);
+
         NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
         NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
-        NamedCommands.registerCommand("pointToSpeaker", teleop.pointToSpeakerCommand());
+        NamedCommands.registerCommand("aimAndShootAtSpeaker", 
+            CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision));
+        NamedCommands.registerCommand("pointToSpeaker", 
+            CommandSequences.pointToSpeakerCommand(driveSubsystem, vision));
 
         autoChooser = AutoBuilder.buildAutoChooser();
-        auto = new Autonomous(driveSubsystem, autoChooser);
+        auto.setAutoChooser(autoChooser);
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     public void runTeleop() {
         // Cancel autonomous in case it's still running for whatever reason
-        //auto.cancelAutonomous();
+        auto.cancelAutonomous();
         teleop.init();
     }
 
     public void runAutonomous() {
         auto.init();
     }
+
+    public static RobotContainer getInstance() { return inst; }
 }
