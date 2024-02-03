@@ -3,66 +3,35 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+/**
+ * This is the main robot class. It shouldn't need to be modified
+ * unless absolutely necessary.
+ */
 public class Robot extends TimedRobot {
-  
-  public CommandScheduler scheduler;
   public RobotContainer robotContainer;
 
-  /** This function is run when the robot is first started up. */
   @Override
-  public void robotInit() {
-    // Gets an instance of the command scheduler
-    scheduler = CommandScheduler.getInstance();
-    robotContainer = new RobotContainer();
-  }
-
-  /** This function is called periodically during any mode. */
+  public void robotInit() { robotContainer = new RobotContainer(); }
   @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
-
-  /** This function is called once when autonomous is enabled. */
+  public void robotPeriodic() { CommandScheduler.getInstance().run(); }
   @Override
-  public void autonomousInit() {
-    robotContainer.runAutonomous();
-  }
-
-  /** This function is called periodically during autonomous. */
+  public void autonomousInit() { robotContainer.runAutonomous(); }
   @Override
   public void autonomousPeriodic() {}
-
-  /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-    robotContainer.runTeleop();
-  }
-
-  /** This function is called periodically during operator control. */
+  public void teleopInit() { robotContainer.runTeleop(); }
   @Override
   public void teleopPeriodic() {}
-
-  /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {}
-
-  /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {}
-
-  /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {}
-
-  /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
-
-  /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {}
-
-  /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
 }

@@ -11,6 +11,9 @@ import frc.robot.vision.AprilTagVision;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * Main class that contains all the robot subsystems, controllers, opModes, etc.
+ */
 public class RobotContainer {
     
     private static RobotContainer inst;
@@ -38,6 +41,7 @@ public class RobotContainer {
     // Auton Test stuff
     private final TestingSubsystem testSubsystem = new TestingSubsystem();
 
+    // Initialize all subsystems and stuff here.
     public RobotContainer() {
         inst = this;
 
@@ -58,15 +62,24 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
+    /**
+     * Called when teleop is enabled
+     */
     public void runTeleop() {
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
         teleop.init();
     }
 
+    /**
+     * Called when autonomous is enabled
+     */
     public void runAutonomous() {
         auto.init();
     }
 
+    /**
+     * Use this to get the main instance of the container when necessary
+     */
     public static RobotContainer getInstance() { return inst; }
 }
