@@ -16,13 +16,14 @@ import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 
+/**
+ * Static class containing all of the necessary command sequences for auton/teleop
+ */
 public class CommandSequences {
-
-    public CommandSequences() {
-        // Leaving this here in case we need to store variables between commands
-    }
-
-    // Uses the limelight and AprilTags to point towards the speaker.
+    /**
+     * Uses the limelight and AprilTags to just point towards the speaker, from
+     * wherever the robot is on the field.
+     */
     public static Command pointToSpeakerCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision) {
         return new RunCommand(
             () -> {
@@ -59,8 +60,11 @@ public class CommandSequences {
         ).withTimeout(1.5);
     }
 
-    public static Command speakerAimAndShootCommand(
-        SwerveDrivetrain driveSubsystem, AprilTagVision vision,
+    /**
+     * Uses the limelight and AprilTags to point towards the speaker and
+     * shoot a stored note once centered. Has a 2 second timeout.
+     */
+    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
         TransferSubsystem transfer, TrapperSubsystem trapper, ShooterSubsystem shooter) {
         return pointToSpeakerCommand(driveSubsystem, vision)
         .andThen(shooter.runShooter(1.0, .7))
@@ -68,39 +72,55 @@ public class CommandSequences {
         .withTimeout(2.0);
     }
 
-    public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer, BooleanSupplier earlyStop, double timeout) {
+    /**
+     * Starts the intake rollers until either there is a note in the intake
+     * or the early stop condition is met.
+     * 
+     * @param timeout the amount of time the intake will move up for.
+     * @param earlyStop BooleanSupplier to stop the command early for whatever reason
+     */
+    public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer,
+        BooleanSupplier earlyStop, double timeout) {
         return 
-            intake.MoveIntakeDown() // Lower intake
-            .andThen(intake.StartMotors()) // Start intake
+            intake.moveIntakeDown() // Lower intake
+            .andThen(intake.startMotors()) // Start intake
             .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
-            .andThen(intake.PleaseStop())) // When transfer finishes stop the intake
-            .andThen(intake.MoveIntakeUp()) // Raise intake again
+            .andThen(intake.pleaseStop())) // When transfer finishes stop the intake
+            .andThen(intake.moveIntakeUp()) // Raise intake again
             .withTimeout(timeout);
     }
 
+    /**
+     * Starts the intake rollers. autonStopIntake() must be called after
+     * to stop the rollers.
+     */
     public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
-            intake.MoveIntakeDown()
-            .andThen(intake.StartMotors())
+            intake.moveIntakeDown()
+            .andThen(intake.startMotors())
             .alongWith(transfer.intakeCommand(() -> false));
     }
 
+    /**
+     * Stops the intake rollers if they are running and moves the intake
+     * back up.
+     */
     public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
-            intake.PleaseStop()
+            intake.pleaseStop()
             .andThen(transfer.shutoffCommand())
-            .andThen(intake.MoveIntakeUp());
+            .andThen(intake.moveIntakeUp());
     }
-
+    
     public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
         return
-            intake.MoveIntakeDown()
+            intake.moveIntakeDown()
             .andThen(climb.climberUpCommand());
     }
 
     public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
         return
-            intake.MoveIntakeDown()
+            intake.moveIntakeDown()
             .andThen(climb.climberDownCommand());
     }
 

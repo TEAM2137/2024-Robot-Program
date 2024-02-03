@@ -49,19 +49,19 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     
-    public Command StartMotors() {
+    public Command startMotors() {
         return runOnce(() -> rollerMotor.set(1));
     }
 
-    public Command PleaseStop() {
+    public Command pleaseStop() {
         return runOnce(() -> rollerMotor.set(0));
     }
 
-    public Command MoveIntakeDown() {
+    public Command moveIntakeDown() {
         return runOnce(() -> pivotMotor.set(0.3)).alongWith(run(() -> {})).until(() -> pivotMotor.getOutputCurrent() > 1).andThen(() -> pivotMotor.set(0));
     }
 
-    public Command MoveIntakeUp() {
+    public Command moveIntakeUp() {
         return runOnce(() -> pivotMotor.set(-0.3)).alongWith(run(() -> {})).until(() -> pivotMotor.getOutputCurrent() > 1).andThen(() -> pivotMotor.set(0));
     }
 }
