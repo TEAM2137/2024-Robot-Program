@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8665842666707855,
-        "y": 5.465129796105418
+        "x": 1.9229372326987895,
+        "y": 5.53985875384916
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0511197480684302,
-        "y": 5.550139705642588
+        "x": 2.107472714096434,
+        "y": 5.624868663386329
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 1 5 Ring Shoot Position"
     },
     {
       "anchor": {

@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 1.8665842666707855,
-        "y": 5.465129796105418
+        "x": 1.9229372326987895,
+        "y": 5.53985875384916
       },
       "prevControl": {
-        "x": 2.1794100355514887,
-        "y": 5.171407339643051
+        "x": 2.2357630015794925,
+        "y": 5.246136297386792
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 1 5 Ring Shoot Position"
     }
   ],
   "rotationTargets": [],
