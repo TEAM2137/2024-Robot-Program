@@ -95,9 +95,9 @@ public class CommandSequences {
 
     public static Command transferToShooter(TransferSubsystem transfer, TrapperSubsystem trapper) {
         return
-            transfer.feedShooterCommand()
-            .alongWith(trapper.runMotor())
-            .andThen(trapper.stopMotor());
+            trapper.setArmTarget(30)
+            .andThen(transfer.feedShooterCommand())
+            .andThen(trapper.setArmTarget(0)); // Might need to break this into a separate command to reset the trapper position.
     }
 
     public static Command transferToTrapper(TransferSubsystem transfer, TrapperSubsystem trapper) {
