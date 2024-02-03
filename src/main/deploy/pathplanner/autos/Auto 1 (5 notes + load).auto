@@ -158,6 +158,25 @@
                 "data": {
                   "name": "aimAndShootAtSpeaker"
                 }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "A1-5n Get One Last Ring"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "startIntake"
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
