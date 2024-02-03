@@ -6,6 +6,24 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Auto 1 Shoot Preloaded"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "aimAndShootAtSpeaker"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
