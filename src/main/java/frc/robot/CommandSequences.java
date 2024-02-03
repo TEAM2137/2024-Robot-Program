@@ -72,13 +72,28 @@ public class CommandSequences {
         .withTimeout(2.0);
     }
 
-    public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer, BooleanSupplier earlyStop) {
+    public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer, BooleanSupplier earlyStop, double timeout) {
         return 
             intake.MoveIntakeDown() // Lower intake
             .andThen(intake.StartMotors()) // Start intake
             .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
             .andThen(intake.PleaseStop())) // When transfer finishes stop the intake
-            .andThen(intake.MoveIntakeUp()); // Raise intake again
+            .andThen(intake.MoveIntakeUp()) // Raise intake again
+            .withTimeout(timeout);
+    }
+
+    public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
+        return
+            intake.MoveIntakeDown()
+            .andThen(intake.StartMotors())
+            .alongWith(transfer.intakeCommand(() -> false));
+    }
+
+    public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
+        return
+            intake.PleaseStop()
+            .andThen(transfer.shutoffCommand())
+            .andThen(intake.MoveIntakeUp());
     }
 
     public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
