@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5089825187788395,
-        "y": 6.995067232211992
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.2618139476759667,
-        "y": 6.488082383606877
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 1.9229372326987895,
         "y": 5.53985875384916
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1457162974327355,
+        "y": 5.164405255656304
+      },
+      "isLocked": false,
+      "linkedName": "Auto 1 5 Ring Shoot Position"
+    },
+    {
+      "anchor": {
+        "x": 2.5094827280905965,
+        "y": 4.121726985887813
+      },
       "prevControl": {
-        "x": 2.1316918163907412,
-        "y": 6.051207526669875
+        "x": 2.091528083829499,
+        "y": 4.236522624865527
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 1 5 Ring Shoot Position"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 2",
+  "folder": "Auto 1 (5 notes)",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }
