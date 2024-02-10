@@ -54,7 +54,7 @@ public class Teleop {
 
         operatorController.rightBumper().onTrue(intake.moveIntakeDown(0.3));
         operatorController.rightBumper().onFalse(intake.pivotForceStop());
-
+        
         operatorController.leftBumper().onTrue(intake.moveIntakeDown(0.3));
         operatorController.leftBumper().onFalse(intake.pivotForceStop());
 

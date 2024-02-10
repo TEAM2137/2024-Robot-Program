@@ -93,6 +93,17 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
+    /**
+     * Stops the pivot by setting the target to its
+     * current position.
+     * @return The command that stops the pivot
+     */
+    public Command stopPivot() {
+        return runOnce(() -> {
+            pivotPID.setReference(relativePivotEncoder.getPosition(), CANSparkBase.ControlType.kPosition);
+        });
+    }
+
     @Override
     public void periodic() {
         super.periodic();
