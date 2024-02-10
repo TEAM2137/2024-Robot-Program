@@ -49,7 +49,7 @@ public class TransferSubsystem extends SubsystemBase {
      * Command to shut off the motor
      * @return The command
      */
-    public Command stopTransfer() {
+    public Command forceStopTransfer() {
         return runOnce(() -> {
             beltMotor.stopMotor();
             motorsStopped = true;

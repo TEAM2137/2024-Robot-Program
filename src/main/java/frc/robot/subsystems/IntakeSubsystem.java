@@ -3,6 +3,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkLowLevel;
@@ -17,6 +18,8 @@ public class IntakeSubsystem extends SubsystemBase {
         public static PID rollerPID = new PID(0.1, 0.2, 0.3, 0.4);
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
+
+    private double currentThreshold = 10.0;
     
     private CANSparkMax pivotMotor;
     private CANSparkMax rollerMotor;
@@ -25,6 +28,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkPIDController rollerPIDController;
 
     private RelativeEncoder pivotEncoder;
+
+    private boolean forceStop;
   
     public IntakeSubsystem() {
         super();
@@ -57,11 +62,32 @@ public class IntakeSubsystem extends SubsystemBase {
         return runOnce(() -> rollerMotor.set(0));
     }
 
-    public Command moveIntakeDown() {
-        return runOnce(() -> pivotMotor.set(0.3)).alongWith(run(() -> {})).until(() -> pivotMotor.getOutputCurrent() > 1).andThen(() -> pivotMotor.set(0));
+    public Command moveIntakeDown(double speed) {
+        return runOnce(() -> pivotMotor.set(speed)).alongWith(run(() -> {}))
+            .until(() -> pivotMotor.getOutputCurrent() > currentThreshold || forceStop)
+            .andThen(() -> {
+                pivotMotor.set(0);
+                forceStop = false;
+            });
     }
 
-    public Command moveIntakeUp() {
-        return runOnce(() -> pivotMotor.set(-0.3)).alongWith(run(() -> {})).until(() -> pivotMotor.getOutputCurrent() > 1).andThen(() -> pivotMotor.set(0));
+    public Command moveIntakeUp(double speed) {
+        return runOnce(() -> pivotMotor.set(-speed)).alongWith(run(() -> {}))
+            .until(() -> pivotMotor.getOutputCurrent() > currentThreshold || forceStop)
+            .andThen(() -> {
+                pivotMotor.set(0);
+                forceStop = false;
+            });
+    }
+
+    public Command pivotForceStop() {
+        return runOnce(() -> forceStop = true);
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        SmartDashboard.putNumber("Intake Output Current", pivotMotor.getOutputCurrent());
+        SmartDashboard.updateValues();
     }
 }

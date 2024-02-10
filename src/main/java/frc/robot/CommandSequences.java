@@ -82,11 +82,11 @@ public class CommandSequences {
     public static Command startIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer,
         BooleanSupplier earlyStop, double timeout) {
         return 
-            intake.moveIntakeDown() // Lower intake
+            intake.moveIntakeDown(0.3) // Lower intake
             .andThen(intake.startMotors()) // Start intake
             .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
             .andThen(intake.stopIntake())) // When transfer finishes stop the intake
-            .andThen(intake.moveIntakeUp()) // Raise intake again
+            .andThen(intake.moveIntakeUp(0.3)) // Raise intake again
             .withTimeout(timeout);
     }
 
@@ -96,7 +96,7 @@ public class CommandSequences {
      */
     public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
-            intake.moveIntakeDown()
+            intake.moveIntakeDown(0.3)
             .andThen(intake.startMotors())
             .alongWith(transfer.intakeCommand(() -> false));
     }
@@ -108,19 +108,19 @@ public class CommandSequences {
     public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
             intake.stopIntake()
-            .andThen(transfer.stopTransfer())
-            .andThen(intake.moveIntakeUp());
+            .andThen(transfer.forceStopTransfer())
+            .andThen(intake.moveIntakeUp(0.3));
     }
     
     public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
         return
-            intake.moveIntakeDown()
+            intake.moveIntakeDown(0.3)
             .andThen(climb.climberUpCommand());
     }
 
     public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
         return
-            intake.moveIntakeDown()
+            intake.moveIntakeDown(0.3)
             .andThen(climb.climberDownCommand());
     }
 

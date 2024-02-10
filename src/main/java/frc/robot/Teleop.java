@@ -46,11 +46,17 @@ public class Teleop {
         operatorController.a().onTrue(shooter.startShooter(1));
         operatorController.a().onFalse(shooter.stopShooter());
 
+        operatorController.x().onTrue(transfer.intakeCommand(() -> true));
+        operatorController.x().onFalse(transfer.forceStopTransfer());
+
         operatorController.b().onTrue(intake.startMotors());
         operatorController.b().onFalse(intake.stopIntake());
 
-        operatorController.x().onTrue(transfer.intakeCommand(() -> true));
-        operatorController.x().onFalse(transfer.stopTransfer());
+        operatorController.rightBumper().onTrue(intake.moveIntakeDown(0.3));
+        operatorController.rightBumper().onFalse(intake.pivotForceStop());
+
+        operatorController.leftBumper().onTrue(intake.moveIntakeDown(0.3));
+        operatorController.leftBumper().onFalse(intake.pivotForceStop());
 
         // Init teleop command
 
