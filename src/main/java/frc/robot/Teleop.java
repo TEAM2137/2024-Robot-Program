@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class Teleop {
@@ -35,11 +38,19 @@ public class Teleop {
         this.operatorController = operatorController;
     }
 
-    public void init() {
+    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer) {
         // Configure controller bindings here
 
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
-        //operatorController.a().onTrue(CommandSequences.pointToSpeakerCommand(driveSubsystem, vision));
+
+        operatorController.a().onTrue(shooter.startShooter(1));
+        operatorController.a().onFalse(shooter.stopShooter());
+
+        operatorController.b().onTrue(intake.startMotors());
+        operatorController.b().onFalse(intake.stopIntake());
+
+        operatorController.x().onTrue(transfer.intakeCommand(() -> true));
+        operatorController.x().onFalse(transfer.stopTransfer());
 
         // Init teleop command
 

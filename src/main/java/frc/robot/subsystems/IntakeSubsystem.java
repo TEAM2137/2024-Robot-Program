@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
         return runOnce(() -> rollerMotor.set(1));
     }
 
-    public Command pleaseStop() {
+    public Command stopIntake() {
         return runOnce(() -> rollerMotor.set(0));
     }
 

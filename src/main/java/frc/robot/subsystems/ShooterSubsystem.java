@@ -3,11 +3,9 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,6 +65,20 @@ public class ShooterSubsystem extends SubsystemBase {
             topPID.setReference(0, CANSparkBase.ControlType.kVelocity);
             bottomPID.setReference(0, ControlType.kVelocity);
         }));
+    }
+
+    public Command startShooter(double speed) {
+        return runOnce(() -> {
+            topPID.setReference(speed, CANSparkBase.ControlType.kVelocity);
+            bottomPID.setReference(speed, ControlType.kVelocity);
+        });
+    }
+
+    public Command stopShooter() {
+        return runOnce(() -> {
+            topPID.setReference(0, CANSparkBase.ControlType.kVelocity);
+            bottomPID.setReference(0, ControlType.kVelocity);
+        });
     }
 
     /**

@@ -85,7 +85,7 @@ public class CommandSequences {
             intake.moveIntakeDown() // Lower intake
             .andThen(intake.startMotors()) // Start intake
             .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
-            .andThen(intake.pleaseStop())) // When transfer finishes stop the intake
+            .andThen(intake.stopIntake())) // When transfer finishes stop the intake
             .andThen(intake.moveIntakeUp()) // Raise intake again
             .withTimeout(timeout);
     }
@@ -107,8 +107,8 @@ public class CommandSequences {
      */
     public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
-            intake.pleaseStop()
-            .andThen(transfer.shutoffCommand())
+            intake.stopIntake()
+            .andThen(transfer.stopTransfer())
             .andThen(intake.moveIntakeUp());
     }
     

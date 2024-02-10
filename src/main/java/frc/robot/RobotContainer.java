@@ -68,7 +68,7 @@ public class RobotContainer {
     public void runTeleop() {
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
-        teleop.init();
+        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem);
     }
 
     /**

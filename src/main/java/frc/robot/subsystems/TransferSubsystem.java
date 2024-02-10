@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TransferSubsystem extends SubsystemBase {
     private boolean occupied = false;
+    private boolean motorsStopped = false;
 
     private CANSparkMax beltMotor;
 
@@ -37,18 +38,22 @@ public class TransferSubsystem extends SubsystemBase {
         return runEnd(
             () -> beltMotor.set(.5),
             () -> {
+                motorsStopped = false;
                 beltMotor.set(0);
                 occupied = inBeamBreak.get();
             }
-        ).until(() -> inBeamBreak.get() || earlyStop.getAsBoolean()); // Stop when the beam breaks
+        ).until(() -> inBeamBreak.get() || earlyStop.getAsBoolean() || motorsStopped); // Stop when the beam breaks
     }
 
     /**
      * Command to shut off the motor
      * @return The command
      */
-    public Command shutoffCommand() {
-        return runOnce(() -> beltMotor.stopMotor());
+    public Command stopTransfer() {
+        return runOnce(() -> {
+            beltMotor.stopMotor();
+            motorsStopped = true;
+        });
     }
 
     /**
