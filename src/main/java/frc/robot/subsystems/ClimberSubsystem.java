@@ -14,7 +14,7 @@ import frc.robot.util.PID;
 
 public class ClimberSubsystem extends SubsystemBase {
     public static class Constants {
-        public static final double ClimbMax = 100; // Motor rotations at which climb maxes out
+        public static final double ClimbMax = 100;
 
         public static final double ClimbGearRatio = .4;
 
@@ -23,7 +23,8 @@ public class ClimberSubsystem extends SubsystemBase {
         public static double HardStopThreshold = .5;
     }
 
-    private CANSparkMax climbMotor;
+    private CANSparkMax climbLeft;
+    private CANSparkMax climbRight;
     private RelativeEncoder climbEncoder;
 
     private SparkPIDController climbPID;
@@ -31,10 +32,13 @@ public class ClimberSubsystem extends SubsystemBase {
     public ClimberSubsystem() {
         super();
 
-        climbMotor = new CANSparkMax(CanIDs.get("climber"), CANSparkLowLevel.MotorType.kBrushless);
-        climbEncoder = climbMotor.getEncoder();
+        // TODO: This class have to be changed so that the left motor actually does stuff
+        climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
 
-        climbPID = climbMotor.getPIDController();
+        climbRight = new CANSparkMax(CanIDs.get("climber-right"), CANSparkLowLevel.MotorType.kBrushless);
+        climbEncoder = climbRight.getEncoder();
+
+        climbPID = climbRight.getPIDController();
         climbPID.setFeedbackDevice(climbEncoder);
         climbPID.setP(Constants.climbPID.getP());
         climbPID.setI(Constants.climbPID.getI());
@@ -48,7 +52,7 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return Command that sets the speed
      */
     public Command setSpeedCommand(double speed) {
-        return runOnce(() -> climbMotor.set(speed));
+        return runOnce(() -> climbRight.set(speed));
     }
 
     /**
@@ -56,7 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return Command that stops the motor
      */
     public Command youShallNotPass() {
-        return runOnce(() -> climbMotor.stopMotor());
+        return runOnce(() -> climbRight.stopMotor());
     }
 
     /**
@@ -77,7 +81,7 @@ public class ClimberSubsystem extends SubsystemBase {
         return 
             setSpeedCommand(.5)
             .alongWith(run(() -> {}))
-            .until(() -> climbMotor.getOutputCurrent() > Constants.HardStopThreshold)
+            .until(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold)
             .andThen(setSpeedCommand(0));
     }
 
@@ -89,7 +93,7 @@ public class ClimberSubsystem extends SubsystemBase {
         return 
             setSpeedCommand(-0.5)
             .alongWith(run(() -> {}))
-            .until(() -> climbMotor.getOutputCurrent() > Constants.HardStopThreshold)
+            .until(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold)
             .andThen(setSpeedCommand(0));
     }
 

@@ -29,19 +29,20 @@ public class CanIDs {
         ids.put("br-encoder", 4);
 
         // ++++ Climber ++++
-        ids.put("climber", 32); //TODO
+        ids.put("climber-left", 35);
+        ids.put("climber-right", 34);
 
         // ++++ Shooter ++++
-        ids.put("shooter-1", 33); //TODO
-        ids.put("shooter-2", 34); //TODO
-        ids.put("shooter-pivot", 35); //TODO
+        ids.put("shooter-top", 39);
+        ids.put("shooter-bottom", 30);
+        ids.put("shooter-pivot", 38);
 
         // ++++ Intake ++++
-        ids.put("intake-pivot", 36); //TODO
-        ids.put("roller", 37); //TODO
+        ids.put("intake-pivot", 32);
+        ids.put("intake-rollers", 33);
 
         // ++++ Transfer ++++
-        ids.put("transfer-motor", 38); //TODO
+        ids.put("transfer-motor", 36);
 
         // ++++ Trapper ++++
         ids.put("trapper-motor", 39); //TODO

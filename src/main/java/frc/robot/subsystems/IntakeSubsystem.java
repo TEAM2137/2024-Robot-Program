@@ -39,7 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
         pivotPIDController.setD(Constants.pivotPID.getD());
         pivotPIDController.setFF(Constants.pivotPID.getFF());
 
-        rollerMotor = new CANSparkMax(CanIDs.get("roller"), CANSparkLowLevel.MotorType.kBrushless);
+        rollerMotor = new CANSparkMax(CanIDs.get("intake-rollers"), CANSparkLowLevel.MotorType.kBrushless);
 
         rollerPIDController = rollerMotor.getPIDController();
         rollerPIDController.setP(Constants.rollerPID.getP());

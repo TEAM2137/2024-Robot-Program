@@ -29,8 +29,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         super();
-        shooterMotor1 = new CANSparkMax(CanIDs.get("shooter-1"), MotorType.kBrushless);
-        shooterMotor2 = new CANSparkMax(CanIDs.get("shooter-2"), MotorType.kBrushless);
+        shooterMotor1 = new CANSparkMax(CanIDs.get("shooter-top"), MotorType.kBrushless);
+        shooterMotor2 = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
         shooterEncoder1 = shooterMotor1.getEncoder();
         shooterEncoder2 = shooterMotor2.getEncoder();
         shooterMotor1PID = shooterMotor1.getPIDController();
