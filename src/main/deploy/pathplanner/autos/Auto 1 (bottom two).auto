@@ -127,12 +127,6 @@
           "data": {
             "name": "aimAndShootAtSpeaker"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Auto 1 Leave Parking Area"
-          }
         }
       ]
     }

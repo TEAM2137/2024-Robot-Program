@@ -8,48 +8,38 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.4810509108197705,
-        "y": 1.492599348835061
+        "x": 6.673192943064415,
+        "y": 3.3499382775752506
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.840298216726969,
-        "y": 1.8657491860438267
+        "x": 4.180215620217718,
+        "y": 5.093074765034466
       },
       "prevControl": {
-        "x": 4.672709392038831,
-        "y": 1.703094128798979
-      },
-      "nextControl": {
-        "x": 2.957155669177696,
-        "y": 2.038317270047709
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.8980054743326267,
-        "y": 4.468230101961369
-      },
-      "prevControl": {
-        "x": 1.869301640701183,
-        "y": 2.258034912340221
+        "x": 5.319584162299998,
+        "y": 4.5087832049922705
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": -30.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [
     {
       "name": "Slow for Shoot",
-      "minWaypointRelativePos": 1.5,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.75,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 3.0,

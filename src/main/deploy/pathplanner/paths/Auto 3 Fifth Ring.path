@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.44,
-        "y": 6.05
+        "x": 3.7,
+        "y": 5.9
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.144296694284287,
-        "y": 7.644481243880303
+        "x": 5.446180666975807,
+        "y": 6.953069564502119
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 5.74553367374317
       },
       "prevControl": {
-        "x": 7.7753452453362115,
-        "y": 5.868350670071227
+        "x": 7.773608714477215,
+        "y": 5.872130178424058
       },
       "nextControl": {
-        "x": 7.746047254191644,
-        "y": 5.554766533460269
+        "x": 7.749175630597675,
+        "y": 5.554500088076802
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 6.05
       },
       "prevControl": {
-        "x": 5.553300786313823,
-        "y": 7.644481243880303
+        "x": 5.942828493011672,
+        "y": 7.157571610516887
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,23 +45,11 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Slow for Ring",
-      "minWaypointRelativePos": 0.7,
-      "maxWaypointRelativePos": 1.25,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
