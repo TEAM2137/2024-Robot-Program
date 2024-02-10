@@ -67,8 +67,8 @@ public class CommandSequences {
     public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
         TransferSubsystem transfer, TrapperSubsystem trapper, ShooterSubsystem shooter) {
         return pointToSpeakerCommand(driveSubsystem, vision)
-        .andThen(shooter.runShooter(1.0, .7))
-        .alongWith(transferToShooter(transfer, trapper))
+        //.andThen(shooter.runShooter(1.0, .7))
+        .andThen(transferToShooter(transfer, trapper))
         .withTimeout(2.0);
     }
 

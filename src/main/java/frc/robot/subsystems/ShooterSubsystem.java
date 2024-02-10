@@ -69,8 +69,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command startShooter(double speed) {
         return runOnce(() -> {
-            topPID.setReference(speed, CANSparkBase.ControlType.kVelocity);
-            bottomPID.setReference(speed, ControlType.kVelocity);
+            topPID.setReference(speed / 1.25, CANSparkBase.ControlType.kVelocity);
+            bottomPID.setReference(speed / 1.25, ControlType.kVelocity);
         });
     }
 
