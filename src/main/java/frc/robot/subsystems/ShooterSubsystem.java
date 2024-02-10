@@ -9,39 +9,48 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
  
 public class ShooterSubsystem extends SubsystemBase {
-    private CANSparkMax shooterMotor1;
-    private CANSparkMax shooterMotor2;
+    private CANSparkMax topMotor;
+    private CANSparkMax bottomMotor;
 
-    private SparkPIDController shooterMotor1PID;
-    private SparkPIDController shooterMotor2PID;
-    private RelativeEncoder shooterEncoder1;
-    private RelativeEncoder shooterEncoder2;
+    private SparkPIDController topPID;
+    private SparkPIDController bottomPID;
+
+    private RelativeEncoder topEncoder;
+    private RelativeEncoder bottomEncoder;
 
     private CANSparkMax pivotMotor;
-    private SparkAbsoluteEncoder pivotEncoder;
+
+    private DutyCycleEncoder absolutePivotEncoder;
+
+    private RelativeEncoder relativePivotEncoder;
     private SparkPIDController pivotPID;
 
     public ShooterSubsystem() {
         super();
-        shooterMotor1 = new CANSparkMax(CanIDs.get("shooter-top"), MotorType.kBrushless);
-        shooterMotor2 = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
-        shooterEncoder1 = shooterMotor1.getEncoder();
-        shooterEncoder2 = shooterMotor2.getEncoder();
-        shooterMotor1PID = shooterMotor1.getPIDController();
-        shooterMotor2PID = shooterMotor2.getPIDController();
+        topMotor = new CANSparkMax(CanIDs.get("shooter-top"), MotorType.kBrushless);
+        bottomMotor = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
 
+        topEncoder = topMotor.getEncoder();
+        bottomEncoder = bottomMotor.getEncoder();
+        topPID = topMotor.getPIDController();
+        bottomPID = bottomMotor.getPIDController();
+        topPID.setFeedbackDevice(topEncoder);
+        bottomPID.setFeedbackDevice(bottomEncoder);
+
+        absolutePivotEncoder = new DutyCycleEncoder(3); // TODO replace with actual DIO input
+        absolutePivotEncoder.setPositionOffset(0); // TODO set encoder offset
+
+        relativePivotEncoder = pivotMotor.getEncoder();
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
-        pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotPID = pivotMotor.getPIDController();
-        pivotPID.setFeedbackDevice(pivotEncoder);
-        shooterMotor1PID.setFeedbackDevice(shooterEncoder1);
-        shooterMotor2PID.setFeedbackDevice(shooterEncoder2);
+        pivotPID.setFeedbackDevice(relativePivotEncoder);
     }
 
     /**
@@ -51,12 +60,12 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command runShooter(double time, double speed) {
         return run(() -> {
-            shooterMotor1PID.setReference(speed / 1.25, CANSparkBase.ControlType.kVelocity);
-            shooterMotor2PID.setReference(speed / 1.25, ControlType.kVelocity);
+            topPID.setReference(speed / 1.25, CANSparkBase.ControlType.kVelocity);
+            bottomPID.setReference(speed / 1.25, ControlType.kVelocity);
         }).withTimeout(time).andThen(runOnce(() -> {
             // Stop the motors when the time is up
-            shooterMotor1PID.setReference(0, CANSparkBase.ControlType.kVelocity);
-            shooterMotor2PID.setReference(0, ControlType.kVelocity);
+            topPID.setReference(0, CANSparkBase.ControlType.kVelocity);
+            bottomPID.setReference(0, ControlType.kVelocity);
         }));
     }
 
@@ -66,13 +75,17 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The command that moves the pivot
      */
     public Command setPivotTarget(double target) {
-        return runOnce(() -> pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition));
+        return runOnce(() -> {
+            // Apply the absolute encoder's position to the relative encoder
+            relativePivotEncoder.setPosition(absolutePivotEncoder.getAbsolutePosition());
+            pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition);
+        });
     }
 
     @Override
     public void periodic() {
         super.periodic();
-        SmartDashboard.putNumber("Shooter Pivot Encoder Position", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getAbsolutePosition());
         SmartDashboard.updateValues();
     }
 }
