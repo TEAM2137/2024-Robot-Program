@@ -21,7 +21,7 @@ public class TransferSubsystem extends SubsystemBase {
     // inBeamBreak is mounted so it's broken when a NOTE is fully in the transfer
     // outBeamBreak is mounted so it's brokken when a NOTE enters the shooter
     private DigitalInput inBeamBreak = new DigitalInput(0); // TODO: get real input channel
-    private DigitalInput outBeamBreak = new DigitalInput(1); // TODO: get real input channel
+    //private DigitalInput outBeamBreak = new DigitalInput(1); // TODO: get real input channel
 
     public TransferSubsystem() {
         super();
@@ -67,7 +67,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> !inBeamBreak.get()); // Stop when beam breaks
+        ).until(() -> inBeamBreak.get()); // Stop when beam breaks
     }
 
     /**
@@ -81,7 +81,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> outBeamBreak.get()); // Stop when beam breaks
+        ).until(() -> !inBeamBreak.get()); // Stop when beam unbreaks
     }
 
     /**
@@ -96,9 +96,9 @@ public class TransferSubsystem extends SubsystemBase {
         return inBeamBreak.get();
     }
 
-    public boolean getOutBeamBreak() {
-        return outBeamBreak.get();
-    }
+    //public boolean getOutBeamBreak() {
+    //    return outBeamBreak.get();
+    //}
 
     @Override
     public void periodic() {
@@ -106,7 +106,7 @@ public class TransferSubsystem extends SubsystemBase {
 
         SmartDashboard.putBoolean("Transfer Occupied", occupied);
         SmartDashboard.putBoolean("Intaking Beam Break Output", inBeamBreak.get());
-        SmartDashboard.putBoolean("Outtaking Beam Break", outBeamBreak.get());
+        //SmartDashboard.putBoolean("Outtaking Beam Break", outBeamBreak.get());
         SmartDashboard.updateValues();
     }
 }
