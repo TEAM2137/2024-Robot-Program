@@ -2,8 +2,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
@@ -16,6 +18,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax shooterMotor1;
     private CANSparkMax shooterMotor2;
 
+    private SparkPIDController shooterMotor1PID;
+    private SparkPIDController shooterMotor2PID;
+    private RelativeEncoder shooterEncoder1;
+    private RelativeEncoder shooterEncoder2;
+
     private CANSparkMax pivotMotor;
     private SparkAbsoluteEncoder pivotEncoder;
     private SparkPIDController pivotPID;
@@ -24,11 +31,17 @@ public class ShooterSubsystem extends SubsystemBase {
         super();
         shooterMotor1 = new CANSparkMax(CanIDs.get("shooter-1"), MotorType.kBrushless);
         shooterMotor2 = new CANSparkMax(CanIDs.get("shooter-2"), MotorType.kBrushless);
+        shooterEncoder1 = shooterMotor1.getEncoder();
+        shooterEncoder2 = shooterMotor2.getEncoder();
+        shooterMotor1PID = shooterMotor1.getPIDController();
+        shooterMotor2PID = shooterMotor2.getPIDController();
 
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotPID = pivotMotor.getPIDController();
         pivotPID.setFeedbackDevice(pivotEncoder);
+        shooterMotor1PID.setFeedbackDevice(shooterEncoder1);
+        shooterMotor2PID.setFeedbackDevice(shooterEncoder2);
     }
 
     /**
@@ -38,12 +51,12 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command runShooter(double time, double speed) {
         return run(() -> {
-            shooterMotor1.set(speed);
-            shooterMotor2.set(speed);
+            shooterMotor1PID.setReference(speed, CANSparkBase.ControlType.kVelocity);
+            shooterMotor2PID.setReference(speed, ControlType.kVelocity);
         }).withTimeout(time).andThen(runOnce(() -> {
             // Stop the motors when the time is up
-            shooterMotor1.set(0);
-            shooterMotor2.set(0);
+            shooterMotor1PID.setReference(0, CANSparkBase.ControlType.kVelocity);
+            shooterMotor2PID.setReference(0, ControlType.kVelocity);
         }));
     }
 
