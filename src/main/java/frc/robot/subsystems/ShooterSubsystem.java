@@ -46,7 +46,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         absolutePivotEncoder = new DutyCycleEncoder(3); // TODO replace with actual DIO input
         absolutePivotEncoder.setPositionOffset(0); // TODO set encoder offset
-
+        
         relativePivotEncoder = pivotMotor.getEncoder();
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotPID = pivotMotor.getPIDController();
@@ -76,7 +76,6 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command setPivotTarget(double target) {
         return runOnce(() -> {
-            // Apply the absolute encoder's position to the relative encoder
             relativePivotEncoder.setPosition(absolutePivotEncoder.getAbsolutePosition());
             pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition);
         });
@@ -85,6 +84,10 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+        // Apply the absolute encoder's position to the relative encoder
+        relativePivotEncoder.setPosition(absolutePivotEncoder.getAbsolutePosition());
+
+        // Display values
         SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getAbsolutePosition());
         SmartDashboard.updateValues();
     }
