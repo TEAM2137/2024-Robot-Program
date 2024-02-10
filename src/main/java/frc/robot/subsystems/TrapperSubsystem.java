@@ -2,9 +2,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,11 +16,11 @@ public class TrapperSubsystem extends SubsystemBase {
     private CANSparkMax trapperMotor;
 
     private CANSparkMax pivotMotor;
-    private RelativeEncoder pivotEncoder;
+    private SparkAbsoluteEncoder pivotEncoder;
     private SparkPIDController pivotPID;
 
     private CANSparkMax armMotor;
-    private RelativeEncoder armEncoder;
+    private SparkAbsoluteEncoder armEncoder;
     private SparkPIDController armPID;
 
     public TrapperSubsystem() {
@@ -27,12 +28,12 @@ public class TrapperSubsystem extends SubsystemBase {
         trapperMotor = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
 
         pivotMotor = new CANSparkMax(CanIDs.get("trapper-pivot"), MotorType.kBrushless);
-        pivotEncoder = pivotMotor.getEncoder();
+        pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotPID = pivotMotor.getPIDController();
         pivotPID.setFeedbackDevice(pivotEncoder);
 
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
-        armEncoder = armMotor.getEncoder();
+        armEncoder = armMotor.getAbsoluteEncoder(Type.kDutyCycle);
         armPID = armMotor.getPIDController();
         armPID.setFeedbackDevice(armEncoder);
     }
@@ -46,11 +47,11 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command setPivotTarget(double target) {
-        return runOnce(() -> pivotPID.setReference(target, CANSparkBase.ControlType.kPosition));
+        return runOnce(() -> pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition));
     }
 
     public Command setArmTarget(double target) {
-        return runOnce(() -> armPID.setReference(target, CANSparkBase.ControlType.kPosition));
+        return runOnce(() -> armPID.setReference(target / 360, CANSparkBase.ControlType.kPosition));
     }
 
     @Override

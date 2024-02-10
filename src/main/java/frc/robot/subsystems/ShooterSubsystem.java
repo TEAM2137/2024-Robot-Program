@@ -2,9 +2,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax shooterMotor2;
 
     private CANSparkMax pivotMotor;
-    private RelativeEncoder pivotEncoder;
+    private SparkAbsoluteEncoder pivotEncoder;
     private SparkPIDController pivotPID;
 
     public ShooterSubsystem() {
@@ -25,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2 = new CANSparkMax(CanIDs.get("shooter-2"), MotorType.kBrushless);
 
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
-        pivotEncoder = pivotMotor.getEncoder();
+        pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotPID = pivotMotor.getPIDController();
         pivotPID.setFeedbackDevice(pivotEncoder);
     }
@@ -46,8 +47,13 @@ public class ShooterSubsystem extends SubsystemBase {
         }));
     }
 
+    /**
+     * Set the position of the shooter pivot
+     * @param target The target angle in degrees
+     * @return The command that moves the pivot
+     */
     public Command setPivotTarget(double target) {
-        return runOnce(() -> pivotPID.setReference(target, CANSparkBase.ControlType.kPosition));
+        return runOnce(() -> pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition));
     }
 
     @Override
