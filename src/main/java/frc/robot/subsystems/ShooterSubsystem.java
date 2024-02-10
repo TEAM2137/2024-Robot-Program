@@ -51,8 +51,8 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command runShooter(double time, double speed) {
         return run(() -> {
-            shooterMotor1PID.setReference(speed, CANSparkBase.ControlType.kVelocity);
-            shooterMotor2PID.setReference(speed, ControlType.kVelocity);
+            shooterMotor1PID.setReference(speed / 1.25, CANSparkBase.ControlType.kVelocity);
+            shooterMotor2PID.setReference(speed / 1.25, ControlType.kVelocity);
         }).withTimeout(time).andThen(runOnce(() -> {
             // Stop the motors when the time is up
             shooterMotor1PID.setReference(0, CANSparkBase.ControlType.kVelocity);
