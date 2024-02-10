@@ -43,23 +43,23 @@ public class Teleop {
 
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
 
+        // Shooter
         operatorController.a().onTrue(shooter.startShooter(1));
         operatorController.a().onFalse(shooter.stopShooter());
 
+        // Transfer
         operatorController.x().onTrue(transfer.intakeCommand(() -> true));
         operatorController.x().onFalse(transfer.forceStopTransfer());
 
+        // Intake
         operatorController.b().onTrue(intake.startMotors());
         operatorController.b().onFalse(intake.stopIntake());
-
         operatorController.rightBumper().onTrue(intake.moveIntakeDown(0.3));
         operatorController.rightBumper().onFalse(intake.pivotForceStop());
-        
         operatorController.leftBumper().onTrue(intake.moveIntakeDown(0.3));
         operatorController.leftBumper().onFalse(intake.pivotForceStop());
 
         // Init teleop command
-
         driveSubsystem.resetGyro();
         driveSubsystem.setDefaultCommand(getTeleopCommand());
     }
