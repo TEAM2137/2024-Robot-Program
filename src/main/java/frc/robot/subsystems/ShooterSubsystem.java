@@ -1,13 +1,14 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private CANSparkMax pivotMotor;
 
-    private DutyCycleEncoder absolutePivotEncoder;
+    private AbsoluteEncoder absolutePivotEncoder;
 
     private RelativeEncoder relativePivotEncoder;
     private SparkPIDController pivotPID;
@@ -42,9 +43,9 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setFeedbackDevice(topEncoder);
         bottomPID.setFeedbackDevice(bottomEncoder);
 
-        absolutePivotEncoder = new DutyCycleEncoder(3); // TODO replace with actual DIO input
-        absolutePivotEncoder.setPositionOffset(0); // TODO set encoder offset
-        
+        absolutePivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
+        absolutePivotEncoder.setZeroOffset(0); // TODO replace with actual offset
+
         relativePivotEncoder = pivotMotor.getEncoder();
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotPID = pivotMotor.getPIDController();
@@ -90,7 +91,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command setPivotTarget(double target) {
         return runOnce(() -> {
-            relativePivotEncoder.setPosition(absolutePivotEncoder.getAbsolutePosition());
+            relativePivotEncoder.setPosition(absolutePivotEncoder.getPosition());
             pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition);
         });
     }
@@ -110,10 +111,10 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
         // Apply the absolute encoder's position to the relative encoder
-        relativePivotEncoder.setPosition(absolutePivotEncoder.getAbsolutePosition());
+        relativePivotEncoder.setPosition(absolutePivotEncoder.getPosition());
 
         // Display values
-        SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }
 }
