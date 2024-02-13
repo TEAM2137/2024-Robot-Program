@@ -19,16 +19,16 @@ public class RobotContainer {
     private static RobotContainer inst;
 
     // Controllers
-    private final CommandXboxController driverController = new CommandXboxController(0);
-    private final CommandXboxController operatorController = new CommandXboxController(1);
+    private CommandXboxController driverController;
+    private CommandXboxController operatorController;
 
     // Subsystems
-    private final SwerveDrivetrain driveSubsystem = new SwerveDrivetrain();
-    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-    private final TransferSubsystem transferSubsystem = new TransferSubsystem();
-    // TODO: private final TrapperSubsystem trapperSubsystem = new TrapperSubsystem();
+    private SwerveDrivetrain driveSubsystem;
+    private IntakeSubsystem intakeSubsystem;
+    private ShooterSubsystem shooterSubsystem;
+    private ClimberSubsystem climberSubsystem;
+    private TransferSubsystem transferSubsystem;
+    // TODO: private TrapperSubsystem trapperSubsystem = new TrapperSubsystem();
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
@@ -44,6 +44,17 @@ public class RobotContainer {
     // Initialize all subsystems and stuff here.
     public RobotContainer() {
         inst = this;
+
+        // Init controllers
+        driverController = new CommandXboxController(0);
+        operatorController = new CommandXboxController(1);
+
+        // Initialize subsystems
+        driveSubsystem = new SwerveDrivetrain();
+        intakeSubsystem = new IntakeSubsystem();
+        shooterSubsystem = new ShooterSubsystem();
+        climberSubsystem = new ClimberSubsystem();
+        transferSubsystem = new TransferSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController);
