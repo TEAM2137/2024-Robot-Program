@@ -83,9 +83,9 @@ public class CommandSequences {
         BooleanSupplier earlyStop, double timeout) {
         return 
             intake.moveIntakeDown(0.3) // Lower intake
-            .andThen(intake.startMotors()) // Start intake
-            .alongWith(transfer.intakeCommand(earlyStop) // Start transfer
-            .andThen(intake.stopIntake())) // When transfer finishes stop the intake
+            .andThen(intake.startRollers()) // Start intake
+            .alongWith(transfer.intakeNoteCommand(earlyStop) // Start transfer
+            .andThen(intake.stopRollers())) // When transfer finishes stop the intake
             .andThen(intake.moveIntakeUp(0.3)) // Raise intake again
             .withTimeout(timeout);
     }
@@ -97,8 +97,8 @@ public class CommandSequences {
     public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
             intake.moveIntakeDown(0.3)
-            .andThen(intake.startMotors())
-            .alongWith(transfer.intakeCommand(() -> false));
+            .andThen(intake.startRollers())
+            .alongWith(transfer.intakeNoteCommand(() -> false));
     }
 
     /**
@@ -107,8 +107,8 @@ public class CommandSequences {
      */
     public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
-            intake.stopIntake()
-            .andThen(transfer.forceStopTransfer())
+            intake.stopRollers()
+            .andThen(transfer.transferForceStop())
             .andThen(intake.moveIntakeUp(0.3));
     }
     
@@ -136,5 +136,25 @@ public class CommandSequences {
             transfer.feedTrapperCommand()
             .alongWith(trapper.runMotor()) // I'm thinking to transfer it completely we'll need the trapper to intake a little bit
             .andThen(trapper.stopMotor());
+    }
+
+    public static Command startShooterAndTransfer(double speed, ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return shooter.startShooter(speed)
+            .alongWith(transfer.unlockTransfer().andThen(transfer.feedShooterCommand()));
+    }
+
+    public static Command stopShooterAndTransfer(ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return shooter.stopShooter()
+            .alongWith(transfer.transferForceStop());
+    }
+
+    public static Command intakeAndTransfer(double speed, IntakeSubsystem intake, TransferSubsystem transfer) {
+        return transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake(speed))
+            .andThen(intake.stopRollers()).andThen(intake.moveIntakeUp(0.3));
+    }
+
+    public static Command stopIntakeAndTransfer(double d, IntakeSubsystem intake, TransferSubsystem transfer) {
+        return transfer.transferForceStop().andThen(intake.stopRollers())
+            .andThen(intake.moveIntakeUp(0.25));
     }
 }

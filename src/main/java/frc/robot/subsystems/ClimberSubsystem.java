@@ -33,7 +33,7 @@ public class ClimberSubsystem extends SubsystemBase {
         super();
 
         // TODO: This class have to be changed so that the left motor actually does stuff
-        climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
+        //climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
 
         climbRight = new CANSparkMax(CanIDs.get("climber-right"), CANSparkLowLevel.MotorType.kBrushless);
         climbEncoder = climbRight.getEncoder();

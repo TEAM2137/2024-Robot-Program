@@ -43,21 +43,24 @@ public class Teleop {
 
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
 
-        // Shooter
-        operatorController.a().onTrue(shooter.startShooter(1));
-        operatorController.a().onFalse(shooter.stopShooter());
+        // Shooter warm-up
+        operatorController.y().onTrue(shooter.toggleShooter(0.75));
 
-        // Transfer
-        operatorController.x().onTrue(transfer.intakeCommand(() -> true));
-        operatorController.x().onFalse(transfer.forceStopTransfer());
+        // Shooting phase
+        operatorController.b().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
+        operatorController.b().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
 
-        // Intake
-        operatorController.b().onTrue(intake.startMotors());
-        operatorController.b().onFalse(intake.stopIntake());
-        operatorController.rightBumper().onTrue(intake.moveIntakeDown(0.3));
-        operatorController.rightBumper().onFalse(intake.pivotForceStop());
-        operatorController.leftBumper().onTrue(intake.moveIntakeDown(0.3));
-        operatorController.leftBumper().onFalse(intake.pivotForceStop());
+        // Intake phase
+        operatorController.a().onTrue(CommandSequences.intakeAndTransfer(0.3, intake, transfer));
+        operatorController.a().onFalse(CommandSequences.stopIntakeAndTransfer(0.3, intake, transfer));
+
+        // operatorController.rightBumper().onTrue(intake.moveIntakeUp(0.25));
+        // operatorController.rightBumper().onFalse(intake.pivotForceStop());
+        // operatorController.leftBumper().onTrue(intake.moveIntakeDown(0.25));
+        // operatorController.leftBumper().onFalse(intake.pivotForceStop());
+
+        operatorController.rightBumper().onTrue(intake.togglePivot(0.25));
+        operatorController.leftBumper().onTrue(shooter.togglePivot());
 
         // Init teleop command
         driveSubsystem.resetGyro();

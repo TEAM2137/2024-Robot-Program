@@ -38,11 +38,11 @@ public class CanIDs {
         ids.put("shooter-pivot", 38);
 
         // ++++ Intake ++++
-        ids.put("intake-pivot", 32);
+        ids.put("intake-pivot", 36);
         ids.put("intake-rollers", 33);
 
         // ++++ Transfer ++++
-        ids.put("transfer-motor", 36);
+        ids.put("transfer-motor", 42);
 
         // ++++ Trapper ++++
         ids.put("trapper-motor", 39); //TODO

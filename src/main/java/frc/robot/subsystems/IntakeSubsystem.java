@@ -1,10 +1,9 @@
 package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkLowLevel;
 
@@ -19,65 +18,56 @@ public class IntakeSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
 
-    private double currentThreshold = 10.0;
+    private double currentThreshold = 60;
     
     private CANSparkMax pivotMotor;
     private CANSparkMax rollerMotor;
 
-    private SparkPIDController pivotPIDController;
-    private SparkPIDController rollerPIDController;
-
-    private RelativeEncoder pivotEncoder;
-
     private boolean forceStop;
+    private boolean isRaised;
   
     public IntakeSubsystem() {
         super();
 
         pivotMotor = new CANSparkMax(CanIDs.get("intake-pivot"), CANSparkLowLevel.MotorType.kBrushless);
-        pivotEncoder = pivotMotor.getEncoder();
-
-        pivotPIDController = pivotMotor.getPIDController();
-        pivotPIDController.setFeedbackDevice(pivotEncoder);
-        pivotPIDController.setP(Constants.pivotPID.getP());
-        pivotPIDController.setI(Constants.pivotPID.getI());
-        pivotPIDController.setD(Constants.pivotPID.getD());
-        pivotPIDController.setFF(Constants.pivotPID.getFF());
-
         rollerMotor = new CANSparkMax(CanIDs.get("intake-rollers"), CANSparkLowLevel.MotorType.kBrushless);
-
-        rollerPIDController = rollerMotor.getPIDController();
-        rollerPIDController.setP(Constants.rollerPID.getP());
-        rollerPIDController.setI(Constants.rollerPID.getI());
-        rollerPIDController.setD(Constants.rollerPID.getD());
-        rollerPIDController.setFF(Constants.rollerPID.getFF());
     }
 
     
-    public Command startMotors() {
-        return runOnce(() -> rollerMotor.set(1));
+    public Command startRollers() {
+        return runOnce(() -> rollerMotor.set(-1));
     }
 
-    public Command stopIntake() {
+    public Command stopRollers() {
         return runOnce(() -> rollerMotor.set(0));
     }
 
     public Command moveIntakeDown(double speed) {
-        return runOnce(() -> pivotMotor.set(speed)).alongWith(run(() -> {}))
-            .until(() -> pivotMotor.getOutputCurrent() > currentThreshold || forceStop)
-            .andThen(() -> {
+        return removeForceStop().andThen(
+            runEnd(() -> {
+                pivotMotor.set(-speed * 0.6);
+            }, 
+            () -> {
                 pivotMotor.set(0);
-                forceStop = false;
-            });
+            }
+        ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold / 2))
+        .andThen(() -> isRaised = false);
     }
 
     public Command moveIntakeUp(double speed) {
-        return runOnce(() -> pivotMotor.set(-speed)).alongWith(run(() -> {}))
-            .until(() -> pivotMotor.getOutputCurrent() > currentThreshold || forceStop)
-            .andThen(() -> {
+        return removeForceStop().andThen(
+            runEnd(() -> {
+                pivotMotor.set(speed);
+            }, 
+            () -> {
                 pivotMotor.set(0);
-                forceStop = false;
-            });
+            }
+        ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold))
+        .andThen(() -> isRaised = true);
+    }
+
+    public Command removeForceStop() {
+        return runOnce(() -> forceStop = false);
     }
 
     public Command pivotForceStop() {
@@ -89,5 +79,19 @@ public class IntakeSubsystem extends SubsystemBase {
         super.periodic();
         SmartDashboard.putNumber("Intake Output Current", pivotMotor.getOutputCurrent());
         SmartDashboard.updateValues();
+    }
+
+
+    public Command togglePivot(double speed) {
+        return runOnce(() -> {
+            if (isRaised) {
+                CommandScheduler.getInstance().schedule(moveIntakeDown(speed));
+            } else CommandScheduler.getInstance().schedule(moveIntakeUp(speed));
+        });
+    }
+
+
+    public Command deployIntake(double speed) {
+        return startRollers().andThen(moveIntakeDown(speed));
     }
 }

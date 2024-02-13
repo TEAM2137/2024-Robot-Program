@@ -28,7 +28,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
     private final TransferSubsystem transferSubsystem = new TransferSubsystem();
-    private final TrapperSubsystem trapperSubsystem = new TrapperSubsystem();
+    // TODO: private final TrapperSubsystem trapperSubsystem = new TrapperSubsystem();
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
@@ -39,7 +39,7 @@ public class RobotContainer {
     public final Autonomous auto;
 
     // Auton Test stuff
-    private final TestingSubsystem testSubsystem = new TestingSubsystem();
+    //private final TestingSubsystem testSubsystem = new TestingSubsystem();
 
     // Initialize all subsystems and stuff here.
     public RobotContainer() {
@@ -48,13 +48,13 @@ public class RobotContainer {
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController);
 
-        NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
-        NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
-        NamedCommands.registerCommand("aimAndShootAtSpeaker", 
-            CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, trapperSubsystem, shooterSubsystem));
+        //NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
+        //NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
+        //NamedCommands.registerCommand("aimAndShootAtSpeaker", 
+        //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, trapperSubsystem, shooterSubsystem));
         NamedCommands.registerCommand("pointToSpeaker", 
             CommandSequences.pointToSpeakerCommand(driveSubsystem, vision));
-        NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
+        //NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         auto.setAutoChooser(autoChooser);

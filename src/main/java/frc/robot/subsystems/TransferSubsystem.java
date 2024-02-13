@@ -19,9 +19,7 @@ public class TransferSubsystem extends SubsystemBase {
     private CANSparkMax beltMotor;
 
     // inBeamBreak is mounted so it's broken when a NOTE is fully in the transfer
-    // outBeamBreak is mounted so it's brokken when a NOTE enters the shooter
-    private DigitalInput inBeamBreak = new DigitalInput(0); // TODO: get real input channel
-    //private DigitalInput outBeamBreak = new DigitalInput(1); // TODO: get real input channel
+    private DigitalInput inBeamBreak = new DigitalInput(0);
 
     public TransferSubsystem() {
         super();
@@ -34,26 +32,30 @@ public class TransferSubsystem extends SubsystemBase {
      * @param earlyStop Condition to stop early
      * @return The command
      */
-    public Command intakeCommand(BooleanSupplier earlyStop) {
-        return runEnd(
-            () -> beltMotor.set(.5),
+    public Command intakeNoteCommand(BooleanSupplier earlyStop) {
+        return removeForceStop().andThen(runEnd(
             () -> {
-                motorsStopped = false;
+                beltMotor.set(0.5);
+            },
+            () -> {
                 beltMotor.set(0);
                 occupied = inBeamBreak.get();
             }
-        ).until(() -> inBeamBreak.get() || earlyStop.getAsBoolean() || motorsStopped); // Stop when the beam breaks
+        ).until(() -> !inBeamBreak.get() || earlyStop.getAsBoolean() || motorsStopped).andThen(() -> {
+            motorsStopped = false;
+        })); // Stop when the beam breaks
+    }
+
+    public Command removeForceStop() {
+        return runOnce(() -> motorsStopped = false);
     }
 
     /**
      * Command to shut off the motor
      * @return The command
      */
-    public Command forceStopTransfer() {
-        return runOnce(() -> {
-            beltMotor.stopMotor();
-            motorsStopped = true;
-        });
+    public Command transferForceStop() {
+        return runOnce(() -> motorsStopped = true);
     }
 
     /**
@@ -67,7 +69,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> inBeamBreak.get()); // Stop when beam breaks
+        ).until(() -> !inBeamBreak.get()); // Stop when beam breaks
     }
 
     /**
@@ -75,13 +77,19 @@ public class TransferSubsystem extends SubsystemBase {
      * @return The command
      */
     public Command feedShooterCommand() {
-        return runEnd(
-            () -> beltMotor.set(.5),
+        return removeForceStop().andThen(runEnd(
+            () -> {
+                beltMotor.set(.5);
+            },
             () -> {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> !inBeamBreak.get()); // Stop when beam unbreaks
+        ).until(() -> motorsStopped).andThen(() -> motorsStopped = false));
+    }
+
+    public Command unlockTransfer() {
+        return runOnce(() -> motorsStopped = false);
     }
 
     /**
