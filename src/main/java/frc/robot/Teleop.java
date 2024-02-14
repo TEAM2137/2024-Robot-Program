@@ -11,6 +11,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.vision.AprilTagVision;
 
 public class Teleop {
     // Enables and disables field centric modes
@@ -21,6 +22,7 @@ public class Teleop {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
     private SwerveDrivetrain driveSubsystem;
+    private AprilTagVision vision;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
     private double stickDeadzone = 0.3;
@@ -33,10 +35,11 @@ public class Teleop {
 
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
-            CommandXboxController operatorController) {
+            CommandXboxController operatorController, AprilTagVision vision) {
         this.driveSubsystem = driveSubsystem;
         this.driverController = driverController;
         this.operatorController = operatorController;
+        this.vision = vision;
     }
 
     public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer) {
@@ -44,10 +47,12 @@ public class Teleop {
 
         // Driver controller
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
+        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(
+            driveSubsystem, vision, transfer, shooter));
 
         // Shooting phase
-        operatorController.b().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
-        operatorController.b().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
+        operatorController.a().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
+        operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
 
         // Shooter warm-up
         operatorController.y().onTrue(shooter.toggleShooter(0.75));
@@ -59,8 +64,8 @@ public class Teleop {
 
         driverController.rightBumper().onTrue(intake.togglePivot(0.25));
 
-        operatorController.rightBumper().onTrue(shooter.setPivotTarget(55));
-        operatorController.leftBumper().onTrue(shooter.setPivotTarget(34));
+        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.lowAngle));
+        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.highAngle));
 
         // Init teleop command
         CommandScheduler.getInstance().schedule(intake.moveIntakeUp(0.25));

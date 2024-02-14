@@ -50,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
             () -> {
                 pivotMotor.set(0);
             }
-        ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold / 2))
+        ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold * 0.6))
         .andThen(() -> isRaised = false);
     }
 

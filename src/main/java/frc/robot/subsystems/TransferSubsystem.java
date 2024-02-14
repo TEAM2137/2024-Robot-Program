@@ -35,7 +35,7 @@ public class TransferSubsystem extends SubsystemBase {
     public Command intakeNoteCommand(BooleanSupplier earlyStop) {
         return removeForceStop().andThen(runEnd(
             () -> {
-                beltMotor.set(0.5);
+                beltMotor.set(0.3);
             },
             () -> {
                 beltMotor.set(0);
@@ -64,7 +64,7 @@ public class TransferSubsystem extends SubsystemBase {
      */
     public Command feedTrapperCommand() {
         return runEnd(
-            () -> beltMotor.set(.5),
+            () -> beltMotor.set(0.3),
             () -> {
                 beltMotor.set(0);
                 occupied = false;
@@ -79,7 +79,7 @@ public class TransferSubsystem extends SubsystemBase {
     public Command feedShooterCommand() {
         return removeForceStop().andThen(runEnd(
             () -> {
-                beltMotor.set(.5);
+                beltMotor.set(0.8);
             },
             () -> {
                 beltMotor.set(0);

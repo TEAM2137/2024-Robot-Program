@@ -57,7 +57,7 @@ public class RobotContainer {
         transferSubsystem = new TransferSubsystem();
 
         auto = new Autonomous(driveSubsystem);
-        teleop = new Teleop(driveSubsystem, driverController, operatorController);
+        teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
 
         //NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
         //NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());

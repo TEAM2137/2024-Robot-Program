@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -14,12 +12,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
+import frc.robot.util.PID;
  
 public class ShooterSubsystem extends SubsystemBase {
+
+    public static class Constants {
+        public static PID pivotPID = new PID(0.0001, 0.0, 0.001, 0);
+
+        public static int lowAngle = 15;
+        public static int highAngle = 34;
+    }
 
     private CANSparkMax topMotor;
     private CANSparkMax bottomMotor;
     private CANSparkMax pivotMotor;
+
+    //private SparkPIDController pivotPID;
 
     private AbsoluteEncoder absolutePivotEncoder;
     private double pivotTarget;
@@ -41,6 +49,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
         absolutePivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         absolutePivotEncoder.setPositionConversionFactor(360);
+        absolutePivotEncoder.setZeroOffset(259.89978027);
+
+        /* The PID is removed as of now because it's trash and it rips the shooter apart :( */
+
+        //pivotPID = pivotMotor.getPIDController();
+        //pivotPID.setFeedbackDevice(absolutePivotEncoder);
+        //pivotPID.setP(Constants.pivotPID.getP());
+        //pivotPID.setI(Constants.pivotPID.getI());
+        //pivotPID.setD(Constants.pivotPID.getD());
+        //pivotPID.setFF(Constants.pivotPID.getFF());
     }
 
     public Command toggleShooter(double speed) {
@@ -77,17 +95,6 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(() -> pivotTarget = target);
     }
 
-    /**
-     * Stops the pivot by setting the target to its
-     * current position.
-     * @return The command that stops the pivot
-     */
-    public Command homePivot() {
-        return runOnce(() -> {
-            pivotTarget = 22;
-        });
-    }
-
     @Override
     public void periodic() {
         super.periodic();
@@ -97,27 +104,16 @@ public class ShooterSubsystem extends SubsystemBase {
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
         Rotation2d current = Rotation2d.fromDegrees(encoderPos);
 
-        double error = -Math.max(Math.min(target.minus(current).getDegrees() / 200.0,
+        double error = Math.max(Math.min(target.minus(current).getDegrees() / 180.0,
             /* Max motor speed */ 0.12), /* Min motor speed */ -0.12);
         
-        //if (Math.abs(error) < 0.05) error = 0;
         pivotMotor.set(error - 0.005);
 
+        // pivotPID.setReference(pivotTarget, ControlType.kPosition);
+
         // Display values
-        SmartDashboard.putNumber("Shooter Pivot Encoder Position", encoderPos);
+        SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getPosition());
         SmartDashboard.putNumber("Shooter Pivot Encoder Target", pivotTarget);
         SmartDashboard.updateValues();
-    }
-
-    public BooleanSupplier isTargetMax() {
-        return () -> pivotTarget <= 34;
-    }
-
-    public Command togglePivot() {
-        return runOnce(() -> {
-            if (isTargetMax().getAsBoolean()) {
-                CommandScheduler.getInstance().schedule(setPivotTarget(55));
-            } else CommandScheduler.getInstance().schedule(setPivotTarget(34));
-        });
     }
 }

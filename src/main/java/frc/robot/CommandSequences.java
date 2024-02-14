@@ -57,7 +57,7 @@ public class CommandSequences {
                 );
             },
             driveSubsystem
-        ).withTimeout(1.5);
+        ).withTimeout(0.7);
     }
 
     /**
@@ -65,11 +65,15 @@ public class CommandSequences {
      * shoot a stored note once centered. Has a 2 second timeout.
      */
     public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
-        TransferSubsystem transfer, TrapperSubsystem trapper, ShooterSubsystem shooter) {
+        TransferSubsystem transfer, ShooterSubsystem shooter) {
         return pointToSpeakerCommand(driveSubsystem, vision)
-        //.andThen(shooter.runShooter(1.0, .7))
-        .andThen(transferToShooter(transfer, trapper))
-        .withTimeout(2.0);
+            .andThen(spinUpShooter(0.75, 2.0, shooter))
+            .andThen(startShooterAndTransfer(0.75, shooter, transfer).withTimeout(2.5))
+            .andThen(stopShooterAndTransfer(shooter, transfer));
+    }
+
+    public static Command spinUpShooter(double speed, double time, ShooterSubsystem shooter) {
+        return shooter.startShooter(speed).andThen(new RunCommand(() -> {})).withTimeout(time);
     }
 
     /**
