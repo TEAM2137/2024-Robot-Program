@@ -69,7 +69,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> !inBeamBreak.get()); // Stop when beam breaks
+        ).until(() -> !inBeamBreak.get() || motorsStopped).andThen(() -> motorsStopped = false); // Stop when beam breaks
     }
 
     /**
@@ -85,7 +85,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> motorsStopped).andThen(() -> motorsStopped = false));
+        ).until(() -> !inBeamBreak.get() || motorsStopped).andThen(() -> motorsStopped = false));
     }
 
     public Command unlockTransfer() {
