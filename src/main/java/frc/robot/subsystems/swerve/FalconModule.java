@@ -5,6 +5,10 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -65,6 +69,10 @@ public class FalconModule extends SubsystemBase {
 
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private TalonFXConfiguration turningMotorConfig = new TalonFXConfiguration();
+
+    private final PositionDutyCycle turningPositionRequest = new PositionDutyCycle(0);
+    private final DutyCycleOut driveVoltageRequest = new DutyCycleOut(0);
+    private final VelocityDutyCycle driveVelocityRequest = new VelocityDutyCycle(0);
 
     /**
      * Creats a swerve module
@@ -200,27 +208,33 @@ public class FalconModule extends SubsystemBase {
 //        targetDegrees = 0;
 
         // target at wheel -> rotations at wheel -> rotations at motor -> counts at motor
-        turningMotor.set(ControlMode.Position, targetDegrees / 360.0 / Constants.turningRatio * 2048);
+        // turningMotor.set(ControlMode.Position, targetDegrees / 360.0 / Constants.turningRatio * 2048);
+        turningMotor.setControl(turningPositionRequest.withPosition(targetDegrees / 360.0 / Constants.turningRatio * 2048));
 
         switch(driveMode) {
             case RawPower: //for use in teleop
-                driveMotor.set(ControlMode.PercentOutput, driveRawPower * (reverseWheel ? -1 : 1));
+                // driveMotor.set(ControlMode.PercentOutput, driveRawPower * (reverseWheel ? -1 : 1));
+                driveMotor.setControl(driveVoltageRequest.withOutput(driveRawPower * (reverseWheel ? -1 : 1)));
                 break;
             case Velocity: //for use in auto and autonomous trajectories
                 // m/s -> rotations@wheel/second -> rotations@motor/second -> ticks@motor/second -> ticks@motor/100ms
-                driveMotor.set(ControlMode.Velocity, driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI)
-                        / Constants.driveRatio * 2048 / 10 * (reverseWheel ? -1 : 1),
-                        DemandType.ArbitraryFeedForward, driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1));
+                driveMotor.setControl(driveVelocityRequest
+                    .withVelocity(driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI))
+                    .withFeedForward(driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1))
+                );
+                // driveMotor.set(ControlMode.Velocity, driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI)
+                //         / Constants.driveRatio * 2048 / 10 * (reverseWheel ? -1 : 1),
+                //         DemandType.ArbitraryFeedForward, driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1));
                 break;
         }
 
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Position", getModuleRotation().getDegrees());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading RAW", encoder.getAbsolutePosition() + encoderOffset);
+        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Target", targetDegrees);
 //        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Error", turningPID.getPositionError());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Power", turningMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Power", turningMotor.getMotorVoltage().getValueAsDouble()); // Not 1:1 with previous. this is now in percent
 
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Drive Power", driveMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Drive Power", driveMotor.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity Target", Math.abs(driveVelocityTarget));
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity", Math.abs(getDriveVelocity()));
     }
