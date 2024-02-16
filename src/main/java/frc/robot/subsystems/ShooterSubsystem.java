@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -19,8 +20,7 @@ import frc.robot.util.PID;
 public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static PID pivotPID = new PID(0.0001, 0.0, 0.001, 0.0);
-        public static PID shooterPID = new PID(0.1, 0.0, 0.0, 0.0);
+        public static PID shooterPID = new PID(0.0006, 1, 1);
 
         public static double longAngle = 44;
         public static double shortAngle = 15;
@@ -33,11 +33,15 @@ public class ShooterSubsystem extends SubsystemBase {
     private SparkPIDController topPID;
     private SparkPIDController bottomPID;
 
+    private RelativeEncoder topEncoder;
+
     //private SparkPIDController pivotPID;
 
     private AbsoluteEncoder absolutePivotEncoder;
     private double pivotTarget;
     private boolean running;
+
+    private double targetRPM;
 
     public ShooterSubsystem() {
         super();
@@ -50,13 +54,14 @@ public class ShooterSubsystem extends SubsystemBase {
         bottomMotor.stopMotor();
 
         topPID = topMotor.getPIDController();
-        //topPID.setFeedbackDevice(topMotor.getEncoder());
+        topEncoder = topMotor.getEncoder();
+        topPID.setFeedbackDevice(topMotor.getEncoder());
         topPID.setP(Constants.shooterPID.getP());
         topPID.setI(Constants.shooterPID.getI());
         topPID.setD(Constants.shooterPID.getD());
 
         bottomPID = bottomMotor.getPIDController();
-        //bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
+        bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
         bottomPID.setP(Constants.shooterPID.getP());
         bottomPID.setI(Constants.shooterPID.getI());
         bottomPID.setD(Constants.shooterPID.getD());
@@ -88,10 +93,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command startShooter(double speed) {
         return runOnce(() -> {
-            topPID.setReference(speed * 1, ControlType.kVelocity);
-            bottomPID.setReference(speed * 1, ControlType.kVelocity);
-            // topMotor.set(speed);
-            // bottomMotor.set(speed);
+            topPID.setReference(speed, ControlType.kVelocity);
+            bottomPID.setReference(speed, ControlType.kVelocity);
+            targetRPM = speed;
         }).andThen(() -> running = true);
     }
 
@@ -99,8 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(() -> {
             topPID.setReference(0, ControlType.kVelocity);
             bottomPID.setReference(0, ControlType.kVelocity);
-            // topMotor.set(0);
-            // bottomMotor.set(0);
+            targetRPM = 0;
         }).andThen(() -> running = false);
     }
 
@@ -142,6 +145,8 @@ public class ShooterSubsystem extends SubsystemBase {
         // pivotPID.setReference(pivotTarget, ControlType.kPosition);
 
         // Display values
+        SmartDashboard.putNumber("Shooter RPM", topEncoder.getVelocity());
+        SmartDashboard.putNumber("Shooter Target", targetRPM);
         SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getPosition());
         SmartDashboard.putNumber("Shooter Pivot Encoder Target", pivotTarget);
         SmartDashboard.updateValues();

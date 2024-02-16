@@ -55,7 +55,7 @@ public class Teleop {
         operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
 
         // Shooter warm-up
-        operatorController.y().onTrue(shooter.toggleShooter(0.75));
+        operatorController.y().onTrue(shooter.toggleShooter(2000));
         //operatorController.y().onFalse(shooter.stopShooter());
 
         // Intake phase
