@@ -11,9 +11,6 @@ public class AprilTagVision {
     private NetworkTableEntry botpose;
     private double[] pose;
 
-    public final double fieldSizeX = 651.22;
-    public final double fieldSizeY = 319;
-
     private double posX;
     private double posY;
 
@@ -29,7 +26,8 @@ public class AprilTagVision {
      */
     public void updateValues() {
         pose = botpose.getDoubleArray(new double[6]);
-
+        if (pose.length == 0) pose = new double[6];
+        
         posX = pose[0];
         posY = pose[1];
         rotation = pose[5];

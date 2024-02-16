@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -17,15 +19,19 @@ import frc.robot.util.PID;
 public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static PID pivotPID = new PID(0.0001, 0.0, 0.001, 0);
+        public static PID pivotPID = new PID(0.0001, 0.0, 0.001, 0.0);
+        public static PID shooterPID = new PID(0.1, 0.0, 0.0, 0.0);
 
-        public static int lowAngle = 15;
-        public static int highAngle = 34;
+        public static double longAngle = 44;
+        public static double shortAngle = 15;
     }
 
     private CANSparkMax topMotor;
     private CANSparkMax bottomMotor;
     private CANSparkMax pivotMotor;
+
+    private SparkPIDController topPID;
+    private SparkPIDController bottomPID;
 
     //private SparkPIDController pivotPID;
 
@@ -36,12 +42,24 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
         super();
 
-        pivotTarget = 34;
+        pivotTarget = Constants.longAngle;
 
         topMotor = new CANSparkMax(CanIDs.get("shooter-top"), MotorType.kBrushless);
         bottomMotor = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
         topMotor.stopMotor();
         bottomMotor.stopMotor();
+
+        topPID = topMotor.getPIDController();
+        //topPID.setFeedbackDevice(topMotor.getEncoder());
+        topPID.setP(Constants.shooterPID.getP());
+        topPID.setI(Constants.shooterPID.getI());
+        topPID.setD(Constants.shooterPID.getD());
+
+        bottomPID = bottomMotor.getPIDController();
+        //bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
+        bottomPID.setP(Constants.shooterPID.getP());
+        bottomPID.setI(Constants.shooterPID.getI());
+        bottomPID.setD(Constants.shooterPID.getD());
 
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotMotor.stopMotor();
@@ -70,15 +88,19 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command startShooter(double speed) {
         return runOnce(() -> {
-            topMotor.set(speed);
-            bottomMotor.set(speed);
+            topPID.setReference(speed * 1, ControlType.kVelocity);
+            bottomPID.setReference(speed * 1, ControlType.kVelocity);
+            // topMotor.set(speed);
+            // bottomMotor.set(speed);
         }).andThen(() -> running = true);
     }
 
     public Command stopShooter() {
         return runOnce(() -> {
-            topMotor.set(0);
-            bottomMotor.set(0);
+            topPID.setReference(0, ControlType.kVelocity);
+            bottomPID.setReference(0, ControlType.kVelocity);
+            // topMotor.set(0);
+            // bottomMotor.set(0);
         }).andThen(() -> running = false);
     }
 
@@ -93,6 +115,14 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command setPivotTarget(double target) {
         return runOnce(() -> pivotTarget = target);
+    }
+
+    public void setPivotTargetRaw(double pivotTarget) {
+        this.pivotTarget = pivotTarget;
+    }
+
+    public double getPivotTarget() {
+        return pivotTarget;
     }
 
     @Override

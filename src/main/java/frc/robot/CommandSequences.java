@@ -24,40 +24,54 @@ public class CommandSequences {
      * Uses the limelight and AprilTags to just point towards the speaker, from
      * wherever the robot is on the field.
      */
-    public static Command pointToSpeakerCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision) {
+    public static Command pointToSpeakerCommand(SwerveDrivetrain driveSubsystem, ShooterSubsystem shooter, AprilTagVision vision) {
         return new RunCommand(
             () -> {
                 // Sets where it should point (field space coords)
-                double targetX = -8.308467;
+                double targetX = 8.308467;
                 double targetY = 1.442593;
+                // Z is vertical in this case
+                double targetZ = 1.451102;
             
                 if (vision.hasTarget()) vision.updateValues();
 
                 // Gets the position of the robot from the limelight data
                 double robotX = vision.getX();
                 double robotY = vision.getY();
+                // Height of the shooter, this is kind of a guess
+                double robotZ = 0;
 
-                // Calculate necessary angle to point to the speaker
+                // Calculate necessary angles/distances to point to the speaker
+                double distance = Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2));
                 double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX);
+                double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - robotZ, distance));
 
-                SmartDashboard.putNumber("Desired angle", Units.radiansToDegrees(desiredAngle));
-                SmartDashboard.putNumber("Current angle", driveSubsystem.getRobotAngle().getDegrees());
-
-                Rotation2d currentAngle = driveSubsystem.getRobotAngle().plus(Rotation2d.fromDegrees(180));
+                Rotation2d currentAngle = driveSubsystem.getRobotAngle();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
+                
+                SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
+                SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
+                SmartDashboard.putNumber("Distance", distance);
 
-                double kP = 0.03; // The amount of force it turns to the target with
+                double angleOffset = 6; // 6 degrees
+
+                double shootAngle = (-desiredVerticalAngle + 90) - (20 + angleOffset);
+
+                SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
+
+                double kP = 0.03; // The amount  of force it turns to the target with
                 double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error
-                if (error > 10) error = 10;
-                if (error < -10) error = -10;
+                if (error > 20) error = 20;
+                if (error < -20) error = -20;
 
-                // Actually drive the swerve base
+                // Actually drive the swerve base and set the shooter target
+                shooter.setPivotTargetRaw(shootAngle);
                 driveSubsystem.driveTranslationRotationRaw(
                     new ChassisSpeeds(0, 0, error * kP)
                 );
             },
             driveSubsystem
-        ).withTimeout(0.7);
+        ).withTimeout(1.0).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
     }
 
     /**
@@ -66,9 +80,9 @@ public class CommandSequences {
      */
     public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
         TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return pointToSpeakerCommand(driveSubsystem, vision)
-            .andThen(spinUpShooter(0.75, 2.0, shooter))
-            .andThen(startShooterAndTransfer(0.75, shooter, transfer).withTimeout(2.5))
+        return pointToSpeakerCommand(driveSubsystem, shooter, vision)
+            .andThen(spinUpShooter(0.75, 1.0, shooter))
+            .andThen(startShooterAndTransfer(0.75, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
 

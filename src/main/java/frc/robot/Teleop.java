@@ -64,8 +64,8 @@ public class Teleop {
 
         driverController.rightBumper().onTrue(intake.togglePivot(0.25));
 
-        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.lowAngle));
-        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.highAngle));
+        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.longAngle));
+        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.shortAngle));
 
         // Init teleop command
         CommandScheduler.getInstance().schedule(intake.moveIntakeUp(0.25));
