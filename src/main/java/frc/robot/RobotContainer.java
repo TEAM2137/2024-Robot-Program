@@ -64,7 +64,7 @@ public class RobotContainer {
         //NamedCommands.registerCommand("aimAndShootAtSpeaker", 
         //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, trapperSubsystem, shooterSubsystem));
         NamedCommands.registerCommand("pointToSpeaker", 
-            CommandSequences.pointToSpeakerCommand(driveSubsystem, shooterSubsystem, vision));
+            CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
         //NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
 
         autoChooser = AutoBuilder.buildAutoChooser();

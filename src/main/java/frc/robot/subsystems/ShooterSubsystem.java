@@ -62,12 +62,14 @@ public class ShooterSubsystem extends SubsystemBase {
         topPID.setP(Constants.shooterPID.getP());
         topPID.setI(Constants.shooterPID.getI());
         topPID.setD(Constants.shooterPID.getD());
+        topPID.setFF(0);
 
         bottomPID = bottomMotor.getPIDController();
         bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
         bottomPID.setP(Constants.shooterPID.getP());
         bottomPID.setI(Constants.shooterPID.getI());
         bottomPID.setD(Constants.shooterPID.getD());
+        bottomPID.setFF(0);
 
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotMotor.stopMotor();

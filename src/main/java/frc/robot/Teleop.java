@@ -59,8 +59,8 @@ public class Teleop {
         //operatorController.y().onFalse(shooter.stopShooter());
 
         // Intake phase
-        driverController.a().onTrue(CommandSequences.intakeAndTransfer(0.3, intake, transfer));
-        driverController.x().onTrue(CommandSequences.stopIntakeAndTransfer(0.3, intake, transfer));
+        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
+        driverController.x().onTrue(CommandSequences.stopIntakeAndTransfer(intake, transfer));
 
         driverController.rightBumper().onTrue(intake.togglePivot(0.25));
         driverController.leftBumper().onTrue(shooter.stowPivot());
