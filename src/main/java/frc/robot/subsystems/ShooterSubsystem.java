@@ -128,6 +128,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return pivotTarget;
     }
 
+    public Command stowPivot() {
+        return setPivotTarget(2);
+    }
+
     @Override
     public void periodic() {
         super.periodic();
