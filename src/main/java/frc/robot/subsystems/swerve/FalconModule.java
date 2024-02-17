@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -245,7 +246,7 @@ public class FalconModule extends SubsystemBase {
      */
     public Rotation2d getModuleRotation() {
         // ticks @ motor -> rotations @ motor -> rotations @ turret -> degrees @ turret
-        return Rotation2d.fromDegrees((turningMotor.getSelectedSensorPosition() / 2048.0 * Constants.turningRatio * 360) % 360);
+        return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() / 2048.0 * Constants.turningRatio * 360) % 360);
     }
 
     /**
@@ -257,7 +258,7 @@ public class FalconModule extends SubsystemBase {
 
     public void homeTurningMotor() {
         // degrees @ turret -> rotations @ turret -> rotations @ motor -> ticks @ motor
-        turningMotor.setSelectedSensorPosition((((encoder.getAbsolutePosition() + encoderOffset + 180) % 360) - 180) / 360.0 / Constants.turningRatio * 2048);
+        turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset + 180) % 360) - 180) / 360.0 / Constants.turningRatio * 2048);
     }
 
     /**
@@ -282,7 +283,7 @@ public class FalconModule extends SubsystemBase {
      */
     public double getDriveVelocity() {
         // counts/100ms@motor -> counts/s @ motor -> rotations/s @ motor -> rotations/s @ wheel -> meters/s @ wheel
-        return driveMotor.getSensorCollection().getIntegratedSensorVelocity() * 10 / 2048 * Constants.driveRatio *
+        return driveMotor.getVelocity().getValueAsDouble() * 10 / 2048 * Constants.driveRatio *
                 (Math.PI * Constants.measuredWheelDiameter);
     }
 
@@ -291,7 +292,7 @@ public class FalconModule extends SubsystemBase {
      */
     public double getDriveDistance() {
         // counts @ motor -> rotations @ motor -> rotations @ wheel -> distance meters
-        return driveMotor.getSensorCollection().getIntegratedSensorPosition() / 2048.0 * Constants.driveRatio *
+        return driveMotor.getPosition().getValueAsDouble() / 2048.0 * Constants.driveRatio *
                 (Constants.measuredWheelDiameter * Math.PI);
     }
 
@@ -299,7 +300,7 @@ public class FalconModule extends SubsystemBase {
      * Resets drive encoder distance to zero.
      */
     public void resetDriveEncoder() {
-        driveMotor.getSensorCollection().setIntegratedSensorPosition(0, 10);
+        driveMotor.setPosition(0, .01);
     }
 
     public SwerveModuleState getSwerveModuleState() {
@@ -311,38 +312,51 @@ public class FalconModule extends SubsystemBase {
     }
 
     public void setDriveMode(boolean brake) {
-        driveMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+        driveMotor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
 
     public void setTurnBrakeMode(boolean brake) {
-        turningMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+        turningMotor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
 
     public void setupCANFrames() {
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
-        driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
+        // TODO: Figure out equivalents to these commented out CAN frames.
 
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
 
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
-        turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
+        driveMotor.getPosition().setUpdateFrequency(50);
+        driveMotor.getSupplyCurrent().setUpdateFrequency(10);
+        driveMotor.getStatorCurrent().setUpdateFrequency(10);
+        driveMotor.getTorqueCurrent().setUpdateFrequency(10);
+        driveMotor.getControlMode().setUpdateFrequency(4);
+
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
+
+        turningMotor.getPosition().setUpdateFrequency(50);
+        turningMotor.getSupplyCurrent().setUpdateFrequency(10);
+        turningMotor.getStatorCurrent().setUpdateFrequency(10);
+        turningMotor.getTorqueCurrent().setUpdateFrequency(10);
+        turningMotor.getControlMode().setUpdateFrequency(4);
     }
 
     private enum DriveMode {
