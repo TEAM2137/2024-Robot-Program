@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public abstract class SwerveModule extends SubsystemBase {
     public final String moduleName;
     public double encoderOffset;
+    public double currentPosition;
 
     public SwerveModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         this.moduleName = moduleName;

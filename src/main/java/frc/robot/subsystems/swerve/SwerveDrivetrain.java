@@ -94,12 +94,12 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private double[] offsets = new double[4];
 
-    private NeoModule frontLeftModule;
-    private NeoModule frontRightModule;
-    private NeoModule backLeftModule;
-    private NeoModule backRightModule;
+    private SwerveModule frontLeftModule;
+    private SwerveModule frontRightModule;
+    private SwerveModule backLeftModule;
+    private SwerveModule backRightModule;
 
-    private NeoModule[] swerveArray;
+    private SwerveModule[] swerveArray;
     private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
 
     private Timer timer;
@@ -114,7 +114,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * Creates a swerve drivetrain (uses values from constants)
      */
-    public SwerveDrivetrain() {
+    public SwerveDrivetrain(ModuleType moduleType) {
         // locations of all of the modules (for kinematics)
         Translation2d frontLeftLocation = new Translation2d(Constants.length / 2, Constants.width / 2);
         Translation2d frontRightLocation = new Translation2d(Constants.length / 2, -Constants.width / 2);
@@ -125,13 +125,20 @@ public class SwerveDrivetrain extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
         // each of the modules
-        frontLeftModule = new NeoModule(Constants.frontLeft);
-        frontRightModule = new NeoModule(Constants.frontRight);
-        backLeftModule = new NeoModule(Constants.backLeft);
-        backRightModule = new NeoModule(Constants.backRight);
+        if(moduleType == moduleType.Neo) {
+            frontLeftModule = new NeoModule(Constants.frontLeft);
+            frontRightModule = new NeoModule(Constants.frontRight);
+            backLeftModule = new NeoModule(Constants.backLeft);
+            backRightModule = new NeoModule(Constants.backRight);
+        }else{
+            frontLeftModule = new FalconModule(Constants.frontLeft);
+            frontRightModule = new FalconModule(Constants.frontRight);
+            backLeftModule = new FalconModule(Constants.backLeft);
+            backRightModule = new FalconModule(Constants.backRight);
+        }
 
         // an array of the swerve modules, to make life easier
-        swerveArray = new NeoModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
+        swerveArray = new SwerveModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
 
         // the gyro
         pigeonIMU = new Pigeon2(Constants.gyroID, Constants.canBusName);
@@ -285,7 +292,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void resetModuleAngles() {
-        for(NeoModule module : swerveArray) {
+        for(SwerveModule module : swerveArray) {
             module.homeTurningMotor();
         }
     }
@@ -511,5 +518,10 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public ChassisSpeeds getSpeeds() {
         return kinematics.toChassisSpeeds(getSwerveModuleStates());
+    }
+
+    public enum ModuleType {
+        Neo,
+        Falcon
     }
 }

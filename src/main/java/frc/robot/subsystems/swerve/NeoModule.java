@@ -52,7 +52,7 @@ public class NeoModule extends SwerveModule {
     // private PIDController turningPID;
 
     // public double encoderOffset;
-    public double currentPosition;
+    // public double currentPosition;
 
     private Rotation2d turningSetpointRaw = Rotation2d.fromDegrees(0);
     // private Rotation2d turningSetpointCorrected = Rotation2d.fromDegrees(0);
