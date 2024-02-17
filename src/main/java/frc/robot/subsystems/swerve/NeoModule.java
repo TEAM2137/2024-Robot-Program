@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotContainer;
 import frc.robot.util.PID;
 
 public class NeoModule extends SwerveModule {
@@ -76,9 +75,6 @@ public class NeoModule extends SwerveModule {
     public NeoModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         super(driveID, turningID, encoderID, encoderOffset, moduleName);
 
-        // The neos are run on the rio can bus, not the canivore
-        this.canBusName = RobotContainer.getRioCanBusName();
-
         // Drive motor setup
         this.driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         this.driveMotor.setInverted(Constants.invertDriveMotor);
@@ -92,7 +88,7 @@ public class NeoModule extends SwerveModule {
         setTurnBrakeMode(true);
 
         // Encoder setup
-        this.encoder = new CANcoder(encoderID, canBusName);
+        this.encoder = new CANcoder(encoderID, rioCanBus);
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = -encoderOffset;
         encoder.getConfigurator().apply(config);

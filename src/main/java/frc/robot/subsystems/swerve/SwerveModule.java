@@ -7,14 +7,16 @@ import frc.robot.RobotContainer;
 
 public abstract class SwerveModule extends SubsystemBase {
     public final String moduleName;
-    public String canBusName;
+    public final String rioCanBus;
+    public final String drivetrainCanBus;
     public double encoderOffset;
     public double currentPosition;
 
     public SwerveModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         this.moduleName = moduleName;
         this.encoderOffset = encoderOffset;
-        this.canBusName = RobotContainer.getDrivetrainCanBusName();
+        this.drivetrainCanBus = RobotContainer.getDrivetrainCanBusName();
+        this.rioCanBus = RobotContainer.getRioCanBusName();
     }
 
     public SwerveModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
