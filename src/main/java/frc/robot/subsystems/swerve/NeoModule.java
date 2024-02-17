@@ -19,7 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.PID;
 
-public class NeoModule extends SubsystemBase {
+public class NeoModule extends SwerveModule {
     public static class Constants {
         public static final double driveRatio = 1 / 6.75;
         public static final double measuredWheelDiameter = Units.inchesToMeters(4.0);
@@ -51,8 +51,8 @@ public class NeoModule extends SubsystemBase {
 
     // private PIDController turningPID;
 
-    public double encoderOffset;
-    public double currentPosition;
+    // public double encoderOffset;
+    // public double currentPosition;
 
     private Rotation2d turningSetpointRaw = Rotation2d.fromDegrees(0);
     // private Rotation2d turningSetpointCorrected = Rotation2d.fromDegrees(0);
@@ -63,7 +63,7 @@ public class NeoModule extends SubsystemBase {
     private SimpleMotorFeedforward driveFeedForward;
     private DriveMode driveMode = DriveMode.RawPower;
 
-    public final String moduleName;
+    // public final String moduleName;
 
     /**
      * Creats a swerve module
@@ -74,6 +74,7 @@ public class NeoModule extends SubsystemBase {
      * @param moduleName name of the module for debug purposes
      */
     public NeoModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
+        super(driveID, turningID, encoderID, encoderOffset, moduleName);
         // Drive motor setup
         this.driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         this.driveMotor.setInverted(Constants.invertDriveMotor);
@@ -92,9 +93,9 @@ public class NeoModule extends SubsystemBase {
         config.MagnetSensor.MagnetOffset = -encoderOffset;
         encoder.getConfigurator().apply(config);
 
-        this.encoderOffset = encoderOffset;
+        // this.encoderOffset = encoderOffset;
 
-        this.moduleName = moduleName;
+        // this.moduleName = moduleName;
 
         this.driveEncoder = driveMotor.getEncoder();
         this.driveEncoder.setPosition(0);
@@ -137,7 +138,7 @@ public class NeoModule extends SubsystemBase {
      * @param constants the swerve module to create
      */
     public NeoModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
-        this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
+        super(constants);
     }
 
     /**
@@ -185,6 +186,7 @@ public class NeoModule extends SubsystemBase {
      * Do not call this method often, as it negates the entire purpose of reducing CAN frames
      * @return Rotation2d with the rotation of the module direct from encoder (not dealing with optimization)
      */
+    @Override
     public Rotation2d getModuleRotation() {
         return Rotation2d.fromDegrees((turningEncoder.getPosition() % 360));
     }
@@ -192,10 +194,12 @@ public class NeoModule extends SubsystemBase {
     /**
      * @param target Rotation2d with the target angle, unoptimized
      */
+    @Override
     public void setTurningTarget(Rotation2d target) {
         turningSetpointRaw = target;
     }
 
+    @Override
     public void homeTurningMotor() {
         turningEncoder.setPosition(encoder.getAbsolutePosition().getValueAsDouble() * 360);
     }
@@ -203,6 +207,7 @@ public class NeoModule extends SubsystemBase {
     /**
      * @param power from -1 to 1
      */
+    @Override
     public void setDrivePowerRaw(double power) {
         driveRawPower = power;
         driveMode = DriveMode.RawPower;
@@ -212,6 +217,7 @@ public class NeoModule extends SubsystemBase {
     /**
      * @param velocity in meters per second
      */
+    @Override
     public void setDriveVelocity(double velocity) {
         driveVelocityTarget = velocity;
         driveMode = DriveMode.Velocity;
@@ -220,6 +226,7 @@ public class NeoModule extends SubsystemBase {
     /**
      * @return Drive wheel velocity in meters per second
      */
+    @Override
     public double getDriveVelocity() {
         return driveEncoder.getVelocity();
     }
@@ -227,6 +234,7 @@ public class NeoModule extends SubsystemBase {
     /**
      * @return The distance the wheel has driven
      */
+    @Override
     public double getDriveDistance() {
         return driveEncoder.getPosition();
     }
@@ -234,22 +242,27 @@ public class NeoModule extends SubsystemBase {
     /**
      * Resets drive encoder distance to zero.
      */
+    @Override
     public void resetDriveEncoder() {
         driveEncoder.setPosition(0);
     }
 
+    @Override
     public SwerveModuleState getSwerveModuleState() {
         return new SwerveModuleState(getDriveVelocity(), getModuleRotation());
     }
 
+    @Override
     public void selfTargetAngle() {
 //        setTurningTarget(getModuleRotation());
     }
 
+    @Override
     public void setDriveMode(boolean brake) {
         driveMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
+    @Override
     public void setTurnBrakeMode(boolean brake) {
         turningMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
