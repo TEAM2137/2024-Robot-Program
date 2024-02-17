@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.PID;
 
-public class FalconModule extends SubsystemBase {
+public class FalconModule extends SwerveModule {
 
     public static class Constants {
         public static final double driveRatio = 1 / 6.75;
@@ -54,7 +54,7 @@ public class FalconModule extends SubsystemBase {
 
     // private PIDController turningPID;
 
-    private double encoderOffset;
+    // private double encoderOffset;
 
     private Rotation2d turningSetpointRaw = Rotation2d.fromDegrees(0);
     // private Rotation2d turningSetpointCorrected = Rotation2d.fromDegrees(0);
@@ -66,7 +66,7 @@ public class FalconModule extends SubsystemBase {
     private SimpleMotorFeedforward driveFeedForward;
     private DriveMode driveMode = DriveMode.RawPower;
 
-    public final String moduleName;
+    // public final String moduleName;
 
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private TalonFXConfiguration turningMotorConfig = new TalonFXConfiguration();
@@ -84,6 +84,8 @@ public class FalconModule extends SubsystemBase {
      * @param moduleName name of the module for debug purposes
      */
     public FalconModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
+        super(driveID, turningID, encoderID, encoderOffset, moduleName);
+
         // Drive motor setup
         this.driveMotor = new TalonFX(driveID, SwerveDrivetrain.Constants.canBusName);
         this.driveMotor.getConfigurator().apply(new TalonFXConfiguration());
@@ -153,10 +155,6 @@ public class FalconModule extends SubsystemBase {
         // this.encoder.configMagnetOffset(0);
         this.encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-encoderOffset));
 
-        this.encoderOffset = encoderOffset;
-
-        this.moduleName = moduleName;
-
         homeTurningMotor();
 
         this.selfTargetAngle();
@@ -169,7 +167,7 @@ public class FalconModule extends SubsystemBase {
      * @param constants the swerve module to create
      */
     public FalconModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
-        this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
+        super(constants);
     }
 
     /**
@@ -244,6 +242,7 @@ public class FalconModule extends SubsystemBase {
      * Do not call this method often, as it negates the entire purpose of reducing CAN frames
      * @return Rotation2d with the rotation of the module direct from encoder (not dealing with optimization)
      */
+    @Override
     public Rotation2d getModuleRotation() {
         // ticks @ motor -> rotations @ motor -> rotations @ turret -> degrees @ turret
         return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() / 2048.0 * Constants.turningRatio * 360) % 360);
@@ -252,10 +251,12 @@ public class FalconModule extends SubsystemBase {
     /**
      * @param target Rotation2d with the target angle, unoptimized
      */
+    @Override
     public void setTurningTarget(Rotation2d target) {
         turningSetpointRaw = target;
     }
 
+    @Override
     public void homeTurningMotor() {
         // degrees @ turret -> rotations @ turret -> rotations @ motor -> ticks @ motor
         turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset + 180) % 360) - 180) / 360.0 / Constants.turningRatio * 2048);
@@ -264,6 +265,7 @@ public class FalconModule extends SubsystemBase {
     /**
      * @param power from -1 to 1
      */
+    @Override
     public void setDrivePowerRaw(double power) {
         driveRawPower = power;
         driveMode = DriveMode.RawPower;
@@ -273,6 +275,7 @@ public class FalconModule extends SubsystemBase {
     /**
      * @param velocity in meters per second
      */
+    @Override
     public void setDriveVelocity(double velocity) {
         driveVelocityTarget = velocity;
         driveMode = DriveMode.Velocity;
@@ -281,6 +284,7 @@ public class FalconModule extends SubsystemBase {
     /**
      * @return Drive wheel velocity in meters per second
      */
+    @Override
     public double getDriveVelocity() {
         // counts/100ms@motor -> counts/s @ motor -> rotations/s @ motor -> rotations/s @ wheel -> meters/s @ wheel
         return driveMotor.getVelocity().getValueAsDouble() * 10 / 2048 * Constants.driveRatio *
@@ -290,6 +294,7 @@ public class FalconModule extends SubsystemBase {
     /**
      * @return The distance the wheel has driven
      */
+    @Override
     public double getDriveDistance() {
         // counts @ motor -> rotations @ motor -> rotations @ wheel -> distance meters
         return driveMotor.getPosition().getValueAsDouble() / 2048.0 * Constants.driveRatio *
@@ -299,22 +304,27 @@ public class FalconModule extends SubsystemBase {
     /**
      * Resets drive encoder distance to zero.
      */
+    @Override
     public void resetDriveEncoder() {
         driveMotor.setPosition(0, .01);
     }
 
+    @Override
     public SwerveModuleState getSwerveModuleState() {
         return new SwerveModuleState(getDriveVelocity(), getModuleRotation());
     }
 
+    @Override
     public void selfTargetAngle() {
 //        setTurningTarget(getModuleRotation());
     }
 
+    @Override
     public void setDriveMode(boolean brake) {
         driveMotor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
 
+    @Override
     public void setTurnBrakeMode(boolean brake) {
         turningMotor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
