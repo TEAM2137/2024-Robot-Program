@@ -84,7 +84,7 @@ public class FalconModule extends SwerveModule {
         super(driveID, turningID, encoderID, encoderOffset, moduleName);
 
         // Drive motor setup
-        this.driveMotor = new TalonFX(driveID, SwerveDrivetrain.Constants.canBusName);
+        this.driveMotor = new TalonFX(driveID, canBusName);
         this.driveMotor.getConfigurator().apply(new TalonFXConfiguration());
         this.driveMotor.setInverted(Constants.invertDriveMotor);
 
@@ -118,7 +118,7 @@ public class FalconModule extends SwerveModule {
         setDriveMode(true);
 
         // Turning motor setup
-        this.turningMotor = new TalonFX(turningID, SwerveDrivetrain.Constants.canBusName);
+        this.turningMotor = new TalonFX(turningID, canBusName);
         this.turningMotor.getConfigurator().apply(new TalonFXConfiguration());
         this.turningMotor.setInverted(Constants.invertTurningMotor);
         // this.turningMotor.configSupplyCurrentLimit(Constants.turningMotorSupplyCurrentLimit);
@@ -147,7 +147,7 @@ public class FalconModule extends SwerveModule {
         setTurnBrakeMode(true);
 
         // Encoder setup
-        this.encoder = new CANcoder(encoderID, SwerveDrivetrain.Constants.canBusName);
+        this.encoder = new CANcoder(encoderID, canBusName);
         // this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
         // this.encoder.configMagnetOffset(0);
         this.encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-encoderOffset));

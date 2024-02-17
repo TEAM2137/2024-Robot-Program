@@ -3,15 +3,18 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public abstract class SwerveModule extends SubsystemBase {
     public final String moduleName;
+    public final String canBusName;
     public double encoderOffset;
     public double currentPosition;
 
     public SwerveModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         this.moduleName = moduleName;
         this.encoderOffset = encoderOffset;
+        this.canBusName = RobotContainer.getInstance().getCanBusName();
     }
 
     public SwerveModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {

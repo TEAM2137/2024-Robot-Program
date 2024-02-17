@@ -87,7 +87,7 @@ public class NeoModule extends SwerveModule {
         setTurnBrakeMode(true);
 
         // Encoder setup
-        this.encoder = new CANcoder(encoderID, SwerveDrivetrain.Constants.canBusName);
+        this.encoder = new CANcoder(encoderID, canBusName);
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = -encoderOffset;
         encoder.getConfigurator().apply(config);

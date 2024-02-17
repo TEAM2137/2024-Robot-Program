@@ -2,10 +2,6 @@ package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,13 +13,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
 
@@ -33,7 +29,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     public static class Constants {
         public static final int gyroID = 5;
 
-        public static final String canBusName = "rio";
+        // public static final String canBusName = "rio";
 
         public static final double length = Units.inchesToMeters(21.5);
         public static final double width = Units.inchesToMeters(21.5);
@@ -141,7 +137,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         swerveArray = new SwerveModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
 
         // the gyro
-        pigeonIMU = new Pigeon2(Constants.gyroID, Constants.canBusName);
+        pigeonIMU = new Pigeon2(Constants.gyroID, RobotContainer.getInstance().getCanBusName());
         pigeonIMU.getConfigurator().apply(new Pigeon2Configuration());
         pigeonIMU.reset();
 
@@ -160,33 +156,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         timer.start();
         
         resetOdometry();
-
-        // Pathplanner Initialization
-        AutoBuilder.configureHolonomic(
-            this::getPose, // Robot pose supplier
-            this::resetOdometry, // Method to reset odometry
-            this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::driveTranslationRotationRaw, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig(
-                new PIDConstants(2.0, 0.0, 0.01), // Translation PID constants
-                new PIDConstants(6.0, 0.0, 0.01), // Rotation PID constants
-                4.5, // Max module speed, in m/s
-                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
-            () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
-            this // Reference to this subsystem to set requirements
-        );
     }
 
     public void displayCurrentOffsets() {

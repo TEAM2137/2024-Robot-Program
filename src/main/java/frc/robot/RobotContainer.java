@@ -9,6 +9,9 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.vision.AprilTagVision;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -74,10 +77,22 @@ public class RobotContainer {
         drivetrainType.addOption("Falcon", ModuleType.Falcon);
 
         autoChooser = AutoBuilder.buildAutoChooser();
+
         auto.setAutoChooser(autoChooser);
+        auto.configure();
 
         SmartDashboard.putData("Drivetrain Type", drivetrainType);
         SmartDashboard.putData("Auto Chooser", autoChooser);
+        
+        // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5801/stream.mjpg");
+        // CameraServer.addCamera(httpCamera);
+        // Shuffleboard.getTab("SmartDashboard").add(httpCamera);
+    }
+
+    public String getCanBusName() {
+        String value = SmartDashboard.getString("Can Bus Name", "rio");
+        SmartDashboard.putString("Can Bus Name", value);
+        return value;
     }
 
     /**
