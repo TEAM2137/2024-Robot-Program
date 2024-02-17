@@ -137,7 +137,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         swerveArray = new SwerveModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
 
         // the gyro
-        pigeonIMU = new Pigeon2(Constants.gyroID, RobotContainer.getInstance().getDrivetrainCanBusName());
+        pigeonIMU = new Pigeon2(Constants.gyroID, RobotContainer.getRioCanBusName());
         pigeonIMU.getConfigurator().apply(new Pigeon2Configuration());
         pigeonIMU.reset();
 

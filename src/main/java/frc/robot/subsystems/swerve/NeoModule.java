@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
+import frc.robot.RobotContainer;
 import frc.robot.util.PID;
 
 public class NeoModule extends SwerveModule {
@@ -74,6 +75,10 @@ public class NeoModule extends SwerveModule {
      */
     public NeoModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         super(driveID, turningID, encoderID, encoderOffset, moduleName);
+
+        // The neos are run on the rio can bus, not the canivore
+        this.canBusName = RobotContainer.getRioCanBusName();
+
         // Drive motor setup
         this.driveMotor = new CANSparkMax(driveID, MotorType.kBrushless);
         this.driveMotor.setInverted(Constants.invertDriveMotor);
@@ -137,7 +142,7 @@ public class NeoModule extends SwerveModule {
      * @param constants the swerve module to create
      */
     public NeoModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
-        super(constants);
+        this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
     }
 
     /**

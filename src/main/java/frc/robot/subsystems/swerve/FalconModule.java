@@ -164,7 +164,7 @@ public class FalconModule extends SwerveModule {
      * @param constants the swerve module to create
      */
     public FalconModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
-        super(constants);
+        this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
     }
 
     /**

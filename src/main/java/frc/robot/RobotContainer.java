@@ -1,17 +1,10 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.vision.AprilTagVision;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.HttpCamera;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -30,13 +23,13 @@ public class RobotContainer {
     private SwerveDrivetrain driveSubsystem;
     private IntakeSubsystem intakeSubsystem;
     private ShooterSubsystem shooterSubsystem;
-    private ClimberSubsystem climberSubsystem;
+    //private ClimberSubsystem climberSubsystem;
     private TransferSubsystem transferSubsystem;
     // TODO: private TrapperSubsystem trapperSubsystem = new TrapperSubsystem();
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
-    private final SendableChooser<Command> autoChooser;
+    //private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;
 
     // OpModes
@@ -50,16 +43,20 @@ public class RobotContainer {
     public RobotContainer() {
         inst = this;
 
+        drivetrainType = new SendableChooser<>();
+        drivetrainType.setDefaultOption("Falcon", ModuleType.Falcon);
+        drivetrainType.addOption("Neo", ModuleType.Neo);
+
         // Init controllers
         driverController = new CommandXboxController(0);
         operatorController = new CommandXboxController(1);
 
         // Initialize subsystems
-        driveSubsystem = new SwerveDrivetrain(ModuleType.Neo);
-        intakeSubsystem = new IntakeSubsystem();
-        shooterSubsystem = new ShooterSubsystem();
-        climberSubsystem = new ClimberSubsystem();
-        transferSubsystem = new TransferSubsystem();
+        driveSubsystem = new SwerveDrivetrain(ModuleType.Falcon);
+        //intakeSubsystem = new IntakeSubsystem();
+        //shooterSubsystem = new ShooterSubsystem();
+        //climberSubsystem = new ClimberSubsystem();
+        //transferSubsystem = new TransferSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
@@ -68,37 +65,29 @@ public class RobotContainer {
         //NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
         //NamedCommands.registerCommand("aimAndShootAtSpeaker", 
         //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, trapperSubsystem, shooterSubsystem));
-        NamedCommands.registerCommand("pointToSpeaker", 
-            CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
+        //NamedCommands.registerCommand("pointToSpeaker", 
+        //    CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
         //NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
 
-        drivetrainType = new SendableChooser<>();
-        drivetrainType.addOption("Neo", ModuleType.Neo);
-        drivetrainType.addOption("Falcon", ModuleType.Falcon);
+        //autoChooser = AutoBuilder.buildAutoChooser();
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-
-        auto.setAutoChooser(autoChooser);
-        auto.configure();
+        //auto.setAutoChooser(autoChooser);
+        //auto.configure();
 
         SmartDashboard.putData("Drivetrain Type", drivetrainType);
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        //SmartDashboard.putData("Auto Chooser", autoChooser);
         
         // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5801/stream.mjpg");
         // CameraServer.addCamera(httpCamera);
         // Shuffleboard.getTab("SmartDashboard").add(httpCamera);
     }
 
-    public String getDrivetrainCanBusName() {
-        String value = SmartDashboard.getString("Drivetrain CAN Bus", "rio");
-        SmartDashboard.putString("Drivetrain CAN Bus", value);
-        return value;
+    public static String getDrivetrainCanBusName() {
+        return "Drivetrain";
     }
 
-    public String getAltCanBusName() {
-        String value = SmartDashboard.getString("Alternate CAN Bus", "rio");
-        SmartDashboard.putString("Alternate CAN Bus", value);
-        return value;
+    public static String getRioCanBusName() {
+        return "rio";
     }
 
     /**

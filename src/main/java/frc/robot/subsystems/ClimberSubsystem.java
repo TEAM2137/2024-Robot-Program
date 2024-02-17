@@ -23,7 +23,7 @@ public class ClimberSubsystem extends SubsystemBase {
         public static double HardStopThreshold = .5;
     }
 
-    private CANSparkMax climbLeft;
+    //private CANSparkMax climbLeft;
     private CANSparkMax climbRight;
     private RelativeEncoder climbEncoder;
 

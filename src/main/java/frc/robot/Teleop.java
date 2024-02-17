@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,34 +46,34 @@ public class Teleop {
 
         // Driver controller
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
-        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(
-            driveSubsystem, vision, transfer, shooter));
+        // driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(
+        //     driveSubsystem, vision, transfer, shooter));
 
-        // Shooting phase
-        operatorController.a().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
-        operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
+        // // Shooting phase
+        // operatorController.a().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
+        // operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
 
-        // Shooter warm-up
-        operatorController.y().onTrue(shooter.toggleShooter(2000));
-        //operatorController.y().onFalse(shooter.stopShooter());
+        // // Shooter warm-up
+        // operatorController.y().onTrue(shooter.toggleShooter(2000));
+        // //operatorController.y().onFalse(shooter.stopShooter());
 
-        // Intake phase
-        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
-        driverController.x().onTrue(CommandSequences.stopIntakeAndTransfer(intake, transfer));
+        // // Intake phase
+        // driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
+        // driverController.x().onTrue(CommandSequences.stopIntakeAndTransfer(intake, transfer));
 
-        driverController.rightBumper().onTrue(intake.togglePivot(0.25));
-        driverController.leftBumper().onTrue(shooter.stowPivot());
+        // driverController.rightBumper().onTrue(intake.togglePivot(0.25));
+        // driverController.leftBumper().onTrue(shooter.stowPivot());
 
-        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.longAngle));
-        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.shortAngle));
+        // operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.longAngle));
+        // operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.shortAngle));
 
-        // Init teleop command
-        CommandScheduler.getInstance().schedule(intake.moveIntakeUp(0.25));
+        // // Init teleop command
+        // CommandScheduler.getInstance().schedule(intake.moveIntakeUp(0.25));
         driveSubsystem.resetGyro();
         driveSubsystem.setDefaultCommand(getTeleopCommand());
     }
 
-    // Setup the actual teleop command
+    // Setup the teleop drivetrain command
     public Command getTeleopCommand() {
         return new RunCommand(
             () -> {
