@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -25,7 +26,13 @@ public class CommandSequences {
         return new RunCommand(
             () -> {
                 // Sets where it should point (field space coords)
-                double targetX = 8.308467;
+                double targetX = -8.308467;
+
+                var alliance = DriverStation.getAlliance();
+                if(alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+                    targetX *= -1; // Flip the target position based if we're on red alliance
+                }
+
                 double targetY = 1.442593;
                 // Z is vertical in this case
                 double targetZ = 1.451102;
