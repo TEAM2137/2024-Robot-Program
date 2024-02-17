@@ -8,7 +8,9 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +22,8 @@ import frc.robot.util.PID;
 public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static PID shooterPID = new PID(0.0006, 1, 1);
+        public static PID shooterPID = new PID(0.0006, 0, 0);
+        public static SimpleMotorFeedforward shooterFF = new SimpleMotorFeedforward(0.65, 2.2, 0.15);
 
         public static double longAngle = 44;
         public static double shortAngle = 15;
@@ -84,6 +87,12 @@ public class ShooterSubsystem extends SubsystemBase {
         //pivotPID.setFF(Constants.pivotPID.getFF());
     }
 
+    /**
+     * Stops the shooter if it's running and starts it
+     * if it's not, at the specified speed
+     * @param speed the RPM to set the wheels to
+     * @return the command
+     */
     public Command toggleShooter(double speed) {
         return runOnce(() -> {
             if (!running) CommandScheduler.getInstance().schedule(startShooter(speed));
@@ -91,14 +100,25 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
+    /**
+     * Starts the shooter wheels
+     * @param speed the RPM to set the wheels to
+     * @return the command
+     */
     public Command startShooter(double speed) {
         return runOnce(() -> {
-            topPID.setReference(speed, ControlType.kVelocity);
-            bottomPID.setReference(speed, ControlType.kVelocity);
+            topPID.setReference(speed, ControlType.kVelocity, 0,
+                Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
+            bottomPID.setReference(speed, ControlType.kVelocity, 0,
+                Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
             targetRPM = speed;
         }).andThen(() -> running = true);
     }
 
+    /**
+     * Stops the shooter wheel motors
+     * @return the command
+     */
     public Command stopShooter() {
         return runOnce(() -> {
             topPID.setReference(0, ControlType.kVelocity);
@@ -107,6 +127,9 @@ public class ShooterSubsystem extends SubsystemBase {
         }).andThen(() -> running = false);
     }
 
+    /**
+     * @return true if the shooter wheels are running
+     */
     public boolean isRunning() {
         return running;
     }
@@ -120,16 +143,27 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(() -> pivotTarget = target);
     }
 
-    public void setPivotTargetRaw(double pivotTarget) {
-        this.pivotTarget = pivotTarget;
+    /**
+     * Non-command version of setPivotTarget()
+     * @param target The target angle in degrees
+     */
+    public void setPivotTargetRaw(double target) {
+        pivotTarget = target;
     }
 
+    /**
+     * @return the current pivot target
+     */
     public double getPivotTarget() {
         return pivotTarget;
     }
 
+    /**
+     * Sets the pivot to target its home angle of 0 degrees
+     * @return the command
+     */
     public Command stowPivot() {
-        return setPivotTarget(2);
+        return setPivotTarget(0);
     }
 
     @Override
