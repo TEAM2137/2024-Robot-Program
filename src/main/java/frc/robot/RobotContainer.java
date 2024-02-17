@@ -89,9 +89,15 @@ public class RobotContainer {
         // Shuffleboard.getTab("SmartDashboard").add(httpCamera);
     }
 
-    public String getCanBusName() {
-        String value = SmartDashboard.getString("Can Bus Name", "rio");
-        SmartDashboard.putString("Can Bus Name", value);
+    public String getDrivetrainCanBusName() {
+        String value = SmartDashboard.getString("Drivetrain CAN Bus", "rio");
+        SmartDashboard.putString("Drivetrain CAN Bus", value);
+        return value;
+    }
+
+    public String getAltCanBusName() {
+        String value = SmartDashboard.getString("Alternate CAN Bus", "rio");
+        SmartDashboard.putString("Alternate CAN Bus", value);
         return value;
     }
 

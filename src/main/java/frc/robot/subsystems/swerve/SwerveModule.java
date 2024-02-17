@@ -14,7 +14,7 @@ public abstract class SwerveModule extends SubsystemBase {
     public SwerveModule(int driveID, int turningID, int encoderID, double encoderOffset, String moduleName) {
         this.moduleName = moduleName;
         this.encoderOffset = encoderOffset;
-        this.canBusName = RobotContainer.getInstance().getCanBusName();
+        this.canBusName = RobotContainer.getInstance().getDrivetrainCanBusName();
     }
 
     public SwerveModule(SwerveDrivetrain.Constants.SwerveModuleConstants constants) {
