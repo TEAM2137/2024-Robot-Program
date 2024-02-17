@@ -34,6 +34,7 @@ public class RobotContainer {
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
     private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<ModuleType> drivetrainType;
 
     // OpModes
     public final Teleop teleop;
@@ -68,9 +69,14 @@ public class RobotContainer {
             CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
         //NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
 
+        drivetrainType = new SendableChooser<>();
+        drivetrainType.addOption("Neo", ModuleType.Neo);
+        drivetrainType.addOption("Falcon", ModuleType.Falcon);
+
         autoChooser = AutoBuilder.buildAutoChooser();
         auto.setAutoChooser(autoChooser);
 
+        SmartDashboard.putData("Drivetrain Type", drivetrainType);
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 

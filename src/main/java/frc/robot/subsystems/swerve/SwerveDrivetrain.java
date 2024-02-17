@@ -125,7 +125,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
         // each of the modules
-        if(moduleType == moduleType.Neo) {
+        if(moduleType == ModuleType.Neo) {
             frontLeftModule = new NeoModule(Constants.frontLeft);
             frontRightModule = new NeoModule(Constants.frontRight);
             backLeftModule = new NeoModule(Constants.backLeft);
