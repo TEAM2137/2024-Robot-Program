@@ -147,7 +147,7 @@ public class FalconModule extends SwerveModule {
         setTurnBrakeMode(true);
 
         // Encoder setup
-        this.encoder = new CANcoder(encoderID, rioCanBus);
+        this.encoder = new CANcoder(encoderID, drivetrainCanBus);
         // this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
         // this.encoder.configMagnetOffset(0);
         this.encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-encoderOffset));
