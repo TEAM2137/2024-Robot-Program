@@ -157,8 +157,8 @@ public class CommandSequences {
      * @return the command
      */
     public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake(0.3))
-            .andThen(intake.stopRollers()).andThen(intake.moveIntakeUp(0.3));
+        return transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake(0.4))
+            .andThen(intake.stopRollers()).andThen(intake.moveIntakeUp(0.4));
     }
 
     /**
@@ -167,6 +167,6 @@ public class CommandSequences {
      */
     public static Command stopIntakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
         return transfer.transferForceStop().andThen(intake.stopRollers())
-            .andThen(intake.moveIntakeUp(0.3));
+            .andThen(intake.moveIntakeUp(0.4));
     }
 }

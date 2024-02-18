@@ -18,7 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
 
-    private double currentThreshold = 65;
+    private double currentThreshold = 75;
     
     private CANSparkMax pivotMotor;
     private CANSparkMax rollerMotor;
@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
             () -> {
                 pivotMotor.set(0);
             }
-        ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold * 0.6))
+        ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold))
         .andThen(() -> isRaised = false);
     }
 
