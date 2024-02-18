@@ -24,8 +24,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // private double currentThreshold = 75;
 
-    private double minPos;
-    private double maxPos;
+    private double minPos = 176;
+    private double maxPos = 320;
 
     private double pivotTarget = maxPos;
     
@@ -43,14 +43,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
         pivotMotor = new CANSparkMax(CanIDs.get("intake-pivot"), CANSparkLowLevel.MotorType.kBrushless);
         pivotMotor.setIdleMode(IdleMode.kBrake);
+        pivotMotor.setInverted(false);
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(0.0); //TODO
+        pivotEncoder.setZeroOffset(0);
     }
 
-    public void start() {
-        rollerMotor.set(-1);
+    public void init() {
+        rollerMotor.stopMotor();
+        pivotMotor.stopMotor();
+        pivotTarget = maxPos;
     }
 
     public Command startRollers() {
@@ -74,42 +77,6 @@ public class IntakeSubsystem extends SubsystemBase {
             isRaised = true;
         });
     }
-    
-    // +++ Old current limit code +++
-
-    // public Command moveIntakeDown(double speed) {
-    //     return removeForceStop().andThen(
-    //         runEnd(() -> {
-    //             pivotMotor.set(-speed * 0.6);
-    //         }, 
-    //         () -> {
-    //             pivotMotor.set(0);
-    //         }
-    //     ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold))
-    //     .andThen(() -> isRaised = false);
-    // }
-
-    // public Command moveIntakeUp(double speed) {
-    //     return removeForceStop().andThen(
-    //         runEnd(() -> {
-    //             pivotMotor.set(speed);
-    //         }, 
-    //         () -> {
-    //             pivotMotor.set(0);
-    //         }
-    //     ).until(() -> forceStop || pivotMotor.getOutputCurrent() >= currentThreshold))
-    //     .andThen(() -> isRaised = true);
-    // }
-
-    // public Command removeForceStop() {
-    //     return runOnce(() -> forceStop = false);
-    // }
-
-    // public Command pivotForceStop() {
-    //     return runOnce(() -> forceStop = true);
-    // }
-
-    // +++++++++++++++++++++++++++++++
 
     @Override
     public void periodic() {
@@ -119,8 +86,8 @@ public class IntakeSubsystem extends SubsystemBase {
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
         Rotation2d current = Rotation2d.fromDegrees(encoderPos);
 
-        double error = Math.max(Math.min(target.minus(current).getDegrees() / 140.0,
-            /* Max motor speed */ 0.3), /* Min motor speed */ -0.3);
+        double error = Math.max(Math.min(target.minus(current).getDegrees() / 300.0,
+            /* Max motor speed */ 0.7), /* Min motor speed */ -0.7);
         
         pivotMotor.set(error);
 

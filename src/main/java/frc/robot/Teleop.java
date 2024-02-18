@@ -21,8 +21,7 @@ public class Teleop {
 
     // Set speeds
     private final double slowSpeed = 0.5;
-    private final double normalSpeed = 0.6;
-    private final double fullSpeed = 0.9;
+    private final double normalSpeed = 1.0;
 
     // Declare controllers and necessary subsystems
     private CommandXboxController driverController;
@@ -49,6 +48,10 @@ public class Teleop {
     }
 
     public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer) {
+        // +++ Init Subsystems +++
+
+        intake.init();
+
         // +++ Configure controller bindings here +++
 
         // Driver controller
@@ -58,17 +61,9 @@ public class Teleop {
         // Slow buttons
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
             driveSpeed = slowSpeed;
-            rotationSpeed = 1;
+            rotationSpeed = 0.75;
         }));
         driverController.leftTrigger().onFalse(new InstantCommand(() -> {
-            driveSpeed = normalSpeed;
-            rotationSpeed = 1.3;
-        }));
-        driverController.rightTrigger().onTrue(new InstantCommand(() -> {
-            driveSpeed = fullSpeed;
-            rotationSpeed = 1.6;
-        }));
-        driverController.rightTrigger().onFalse(new InstantCommand(() ->  {
             driveSpeed = normalSpeed;
             rotationSpeed = 1.3;
         }));
@@ -84,7 +79,7 @@ public class Teleop {
 
         // Intake phase
         driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
-        driverController.x().onTrue(CommandSequences.stopIntakeAndTransfer(intake, transfer));
+        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
 
         driverController.rightBumper().onTrue(intake.togglePivot());
         driverController.leftBumper().onTrue(shooter.stowPivot());

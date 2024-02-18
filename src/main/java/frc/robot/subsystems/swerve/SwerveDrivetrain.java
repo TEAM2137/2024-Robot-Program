@@ -325,6 +325,8 @@ public class SwerveDrivetrain extends SubsystemBase {
             setAllModuleDriveRawPower(0);
             selfTargetAllModuleAngles();
         } else {
+            //setDriveBrakeMode(speeds.omegaRadiansPerSecond > 0);
+
             // if power, drive it
             SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds); //convert speeds to individual modules
 

@@ -3,6 +3,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -17,6 +19,9 @@ import frc.robot.vision.AprilTagVision;
  * Static class containing all of the necessary command sequences for auton/teleop
  */
 public class CommandSequences {
+
+    public static boolean shouldFlip;
+
     /**
      * Uses the limelight and AprilTags to just point towards the speaker, from
      * wherever the robot is on the field. The shooter will also aim for a shot.
@@ -24,11 +29,16 @@ public class CommandSequences {
     public static Command pointAndAimCommand(SwerveDrivetrain driveSubsystem, ShooterSubsystem shooter, AprilTagVision vision) {
         return new RunCommand(
             () -> {
+
+                DriverStation.getAlliance().ifPresent((alliance) -> {
+                    shouldFlip = (alliance == Alliance.Red);
+                });
+
                 // Sets where it should point (field space coords)
-                double targetX = -8.308467;
-                double targetY = 1.442593;
+                double targetX = 8.308467 * (shouldFlip ? -1 : 1);
+                double targetY = 1.42593; // 1.42593
                 // Z is vertical in this case
-                double targetZ = 1.451102;
+                double targetZ = 1.451102 - 0.2;
             
                 if (vision.hasTarget()) vision.updateValues();
 
@@ -39,16 +49,16 @@ public class CommandSequences {
 
                 // Calculate necessary angles and distances
                 double distance = Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2));
-                double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX) + Math.PI;
+                double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX) + (shouldFlip ? Math.PI : 0);
                 double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - robotZ, distance));
 
                 Rotation2d currentAngle = driveSubsystem.getRobotAngle();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 6; // 6 degrees
+                double angleOffset = 6.25;
                 double shootAngle = (-desiredVerticalAngle + 90) - (20 + angleOffset);
 
-                double kP = 0.03; // The amount  of force it turns to the target with
+                double kP = 0.025; // The amount  of force it turns to the target with
                 double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error
                 if (error > 20) error = 20;
                 if (error < -20) error = -20;
@@ -66,7 +76,7 @@ public class CommandSequences {
                 SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
             },
             driveSubsystem
-        ).withTimeout(1.0).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
+        ).withTimeout(0.9).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
     }
 
     /**
@@ -76,9 +86,9 @@ public class CommandSequences {
      */
     public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
         TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return pointAndAimCommand(driveSubsystem, shooter, vision)
-            .andThen(spinUpShooter(0.75, 0.9, shooter))
-            .andThen(startShooterAndTransfer(0.75, shooter, transfer).withTimeout(0.6))
+        return shooter.startShooter(0.85)
+            .andThen(pointAndAimCommand(driveSubsystem, shooter, vision))
+            .andThen(startShooterAndTransfer(1.0, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
 
@@ -157,16 +167,16 @@ public class CommandSequences {
      * @return the command
      */
     public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake())
-            .andThen(intake.stopRollers()).andThen(intake.moveIntakeUp());
+        return (transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake()))
+            .andThen(intake.stopRollers().andThen(intake.moveIntakeUp()));
     }
 
     /**
      * Stops the motors of both the intake and the transfer, and stows the intake.
      * @return the command
      */
-    public static Command stopIntakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
+    public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter) {
         return transfer.transferForceStop().andThen(intake.stopRollers())
-            .andThen(intake.moveIntakeUp());
+            .andThen(intake.moveIntakeUp()).andThen(shooter.stopShooter());
     }
 }
