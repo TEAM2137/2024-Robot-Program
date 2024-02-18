@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
@@ -106,6 +108,9 @@ public class SwerveDrivetrain extends SubsystemBase {
     private SwerveDrivePoseEstimator poseEstimator;
 
     private Field2d field2d = new Field2d();
+
+    private StructArrayPublisher<SwerveModuleState> swervePublisher = NetworkTableInstance.getDefault()
+        .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
 
     /**
      * Creates a swerve drivetrain (uses values from constants)
@@ -210,6 +215,8 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         //SmartDashboard.putNumber("FusedHeading", getRobotAngle().getDegrees());
         SmartDashboard.putData("Field", field2d);
+
+        swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
     }
 
     private void updateOdometry() {
