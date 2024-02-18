@@ -79,13 +79,13 @@ public class TransferSubsystem extends SubsystemBase {
     public Command feedShooterCommand() {
         return removeForceStop().andThen(runEnd(
             () -> {
-                beltMotor.set(0.8);
+                beltMotor.set(1);
             },
             () -> {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> !inBeamBreak.get() || motorsStopped).andThen(() -> motorsStopped = false));
+        ).until(() -> motorsStopped).andThen(() -> motorsStopped = false));
     }
 
     public Command unlockTransfer() {

@@ -1,10 +1,14 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.vision.AprilTagVision;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -29,7 +33,7 @@ public class RobotContainer {
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
-    //private final SendableChooser<Command> autoChooser;
+    // private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;
 
     // OpModes
@@ -37,7 +41,7 @@ public class RobotContainer {
     public final Autonomous auto;
 
     // Auton Test stuff
-    //private final TestingSubsystem testSubsystem = new TestingSubsystem();
+    // private final TestingSubsystem testSubsystem = new TestingSubsystem();
 
     // Initialize all subsystems and stuff here.
     public RobotContainer() {
@@ -52,11 +56,11 @@ public class RobotContainer {
         operatorController = new CommandXboxController(1);
 
         // Initialize subsystems
-        driveSubsystem = new SwerveDrivetrain(ModuleType.Falcon);
-        //intakeSubsystem = new IntakeSubsystem();
-        //shooterSubsystem = new ShooterSubsystem();
-        //climberSubsystem = new ClimberSubsystem();
-        //transferSubsystem = new TransferSubsystem();
+        driveSubsystem = new SwerveDrivetrain(ModuleType.Neo);
+        intakeSubsystem = new IntakeSubsystem();
+        shooterSubsystem = new ShooterSubsystem();
+        // climberSubsystem = new ClimberSubsystem();
+        transferSubsystem = new TransferSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
@@ -69,13 +73,13 @@ public class RobotContainer {
         //    CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
         //NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
 
-        //autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser = AutoBuilder.buildAutoChooser();
 
-        //auto.setAutoChooser(autoChooser);
-        //auto.configure();
+        // auto.setAutoChooser(autoChooser);
+        // auto.configure();
 
         SmartDashboard.putData("Drivetrain Type", drivetrainType);
-        //SmartDashboard.putData("Auto Chooser", autoChooser);
+        // SmartDashboard.putData("Auto Chooser", autoChooser);
         
         // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5801/stream.mjpg");
         // CameraServer.addCamera(httpCamera);

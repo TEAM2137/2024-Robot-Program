@@ -18,7 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
 
-    private double currentThreshold = 60;
+    private double currentThreshold = 65;
     
     private CANSparkMax pivotMotor;
     private CANSparkMax rollerMotor;
@@ -33,7 +33,10 @@ public class IntakeSubsystem extends SubsystemBase {
         rollerMotor = new CANSparkMax(CanIDs.get("intake-rollers"), CANSparkLowLevel.MotorType.kBrushless);
     }
 
-    
+    public void start() {
+        rollerMotor.set(-1);
+    }
+
     public Command startRollers() {
         return runOnce(() -> rollerMotor.set(-1));
     }
@@ -81,7 +84,6 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.updateValues();
     }
 
-
     public Command togglePivot(double speed) {
         return runOnce(() -> {
             if (isRaised) {
@@ -89,7 +91,6 @@ public class IntakeSubsystem extends SubsystemBase {
             } else CommandScheduler.getInstance().schedule(moveIntakeUp(speed));
         });
     }
-
 
     public Command deployIntake(double speed) {
         return startRollers().andThen(moveIntakeDown(speed));

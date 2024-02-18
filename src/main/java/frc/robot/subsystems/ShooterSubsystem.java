@@ -56,20 +56,20 @@ public class ShooterSubsystem extends SubsystemBase {
         topMotor.stopMotor();
         bottomMotor.stopMotor();
 
-        topPID = topMotor.getPIDController();
+        // topPID = topMotor.getPIDController();
         topEncoder = topMotor.getEncoder();
-        topPID.setFeedbackDevice(topMotor.getEncoder());
-        topPID.setP(Constants.shooterPID.getP());
-        topPID.setI(Constants.shooterPID.getI());
-        topPID.setD(Constants.shooterPID.getD());
-        topPID.setFF(0);
+        // topPID.setFeedbackDevice(topMotor.getEncoder());
+        // topPID.setP(Constants.shooterPID.getP());
+        // topPID.setI(Constants.shooterPID.getI());
+        // topPID.setD(Constants.shooterPID.getD());
+        // topPID.setFF(0);
 
-        bottomPID = bottomMotor.getPIDController();
-        bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
-        bottomPID.setP(Constants.shooterPID.getP());
-        bottomPID.setI(Constants.shooterPID.getI());
-        bottomPID.setD(Constants.shooterPID.getD());
-        bottomPID.setFF(0);
+        // bottomPID = bottomMotor.getPIDController();
+        // bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
+        // bottomPID.setP(Constants.shooterPID.getP());
+        // bottomPID.setI(Constants.shooterPID.getI());
+        // bottomPID.setD(Constants.shooterPID.getD());
+        // bottomPID.setFF(0);
 
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotMotor.stopMotor();
@@ -109,11 +109,12 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command startShooter(double speed) {
         return runOnce(() -> {
-            topPID.setReference(speed, ControlType.kVelocity, 0,
-                Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
-            bottomPID.setReference(speed, ControlType.kVelocity, 0,
-                Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
-            targetRPM = speed;
+            // topPID.setReference(speed, ControlType.kVelocity, 0,
+            //     Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
+            // bottomPID.setReference(speed, ControlType.kVelocity, 0,
+            //     Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
+            bottomMotor.set(speed);
+            topMotor.set(speed);
         }).andThen(() -> running = true);
     }
 
@@ -123,9 +124,8 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public Command stopShooter() {
         return runOnce(() -> {
-            topPID.setReference(0, ControlType.kVelocity);
-            bottomPID.setReference(0, ControlType.kVelocity);
-            targetRPM = 0;
+            bottomMotor.set(0);
+            topMotor.set(0);
         }).andThen(() -> running = false);
     }
 

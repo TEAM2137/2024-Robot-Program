@@ -25,7 +25,7 @@ public class CommandSequences {
         return new RunCommand(
             () -> {
                 // Sets where it should point (field space coords)
-                double targetX = 8.308467;
+                double targetX = -8.308467;
                 double targetY = 1.442593;
                 // Z is vertical in this case
                 double targetZ = 1.451102;
@@ -39,7 +39,7 @@ public class CommandSequences {
 
                 // Calculate necessary angles and distances
                 double distance = Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2));
-                double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX);
+                double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX) + Math.PI;
                 double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - robotZ, distance));
 
                 Rotation2d currentAngle = driveSubsystem.getRobotAngle();
