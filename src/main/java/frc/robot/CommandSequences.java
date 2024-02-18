@@ -100,7 +100,7 @@ public class CommandSequences {
      */
     public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
-            intake.moveIntakeDown(0.3)
+            intake.moveIntakeDown()
             .andThen(intake.startRollers())
             .alongWith(transfer.intakeNoteCommand(() -> false));
     }
@@ -114,7 +114,7 @@ public class CommandSequences {
         return
             intake.stopRollers()
             .andThen(transfer.transferForceStop())
-            .andThen(intake.moveIntakeUp(0.3));
+            .andThen(intake.moveIntakeUp());
     }
     
     /**
@@ -122,7 +122,7 @@ public class CommandSequences {
      * @return the command
      */
     public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
-        return intake.moveIntakeDown(0.3).andThen(climb.climberUpCommand());
+        return intake.moveIntakeDown().andThen(climb.climberUpCommand());
     }
 
     /**
@@ -130,7 +130,7 @@ public class CommandSequences {
      * @return the command
      */
     public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
-        return intake.moveIntakeDown(0.3).andThen(climb.climberDownCommand());
+        return intake.moveIntakeDown().andThen(climb.climberDownCommand());
     }
 
     /**
@@ -157,8 +157,8 @@ public class CommandSequences {
      * @return the command
      */
     public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake(0.4))
-            .andThen(intake.stopRollers()).andThen(intake.moveIntakeUp(0.4));
+        return transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake())
+            .andThen(intake.stopRollers()).andThen(intake.moveIntakeUp());
     }
 
     /**
@@ -167,6 +167,6 @@ public class CommandSequences {
      */
     public static Command stopIntakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
         return transfer.transferForceStop().andThen(intake.stopRollers())
-            .andThen(intake.moveIntakeUp(0.4));
+            .andThen(intake.moveIntakeUp());
     }
 }

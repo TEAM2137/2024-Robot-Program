@@ -86,14 +86,14 @@ public class Teleop {
         driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
         driverController.x().onTrue(CommandSequences.stopIntakeAndTransfer(intake, transfer));
 
-        driverController.rightBumper().onTrue(intake.togglePivot(0.4));
+        driverController.rightBumper().onTrue(intake.togglePivot());
         driverController.leftBumper().onTrue(shooter.stowPivot());
 
         operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.longAngle));
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.shortAngle));
 
         // Init teleop command
-        CommandScheduler.getInstance().schedule(intake.moveIntakeUp(0.4));
+        CommandScheduler.getInstance().schedule(intake.moveIntakeUp());
         // Don't reset on start: driveSubsystem.resetGyro();
         driveSubsystem.setDefaultCommand(getTeleopCommand());
     }
