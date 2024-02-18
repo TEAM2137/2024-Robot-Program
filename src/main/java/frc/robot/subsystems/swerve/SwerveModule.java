@@ -23,10 +23,10 @@ public abstract class SwerveModule extends SubsystemBase {
         this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
     }
 
-    @Override
-    public void periodic() {
-        super.periodic();
-    }
+    // @Override
+    // public void periodic() {
+    //     super.periodic();
+    // }
 
     public abstract Rotation2d getModuleRotation();
     public abstract void setTurningTarget(Rotation2d target);

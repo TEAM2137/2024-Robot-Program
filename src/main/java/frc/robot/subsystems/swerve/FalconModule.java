@@ -39,9 +39,9 @@ public class FalconModule extends SwerveModule {
         public static double turningFeedForward = 0.75; //0.8
         //        public static PID turningPIDConstants = new PID(0.21, 0, 0.0015); // in the air
 //        public staticPID turningPIDConstants = new PID(0.1, 0, -0.0000000000000000000000001); // carpet
-        public static PID turningPIDConstants = new PID(0.2, 0, 0.1); // carpet
+        public static PID turningPIDConstants = new PID(100, 0, 0.7); // carpet
 
-        public static PID drivePIDConstants = new PID(0.10237, 0, 0);// 0.1
+        public static PID drivePIDConstants = new PID(3, 0, 0);// 0.1
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911); //0.7, 2.15
     }
 
@@ -205,7 +205,7 @@ public class FalconModule extends SwerveModule {
 
         // target at wheel -> rotations at wheel -> rotations at motor -> counts at motor
         // turningMotor.set(ControlMode.Position, targetDegrees / 360.0 / Constants.turningRatio * 2048);
-        turningMotor.setControl(turningPositionRequest.withPosition(targetDegrees / 360.0 / Constants.turningRatio * 2048));
+        turningMotor.setControl(turningPositionRequest.withPosition(targetDegrees / 360.0 / Constants.turningRatio));
 
         switch(driveMode) {
             case RawPower: //for use in teleop
@@ -235,6 +235,8 @@ public class FalconModule extends SwerveModule {
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Drive Power", driveMotor.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity Target", Math.abs(driveVelocityTarget));
         SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity", Math.abs(getDriveVelocity()));
+
+        SmartDashboard.updateValues();
     }
 
     /**
@@ -243,8 +245,8 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public Rotation2d getModuleRotation() {
-        // ticks @ motor -> rotations @ motor -> rotations @ turret -> degrees @ turret
-        return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() / 2048.0 * Constants.turningRatio * 360) % 360);
+        // rotations @ motor -> rotations @ turret -> degrees @ turret
+        return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio * 360) % 360);
     }
 
     /**
@@ -257,8 +259,8 @@ public class FalconModule extends SwerveModule {
 
     @Override
     public void homeTurningMotor() {
-        // degrees @ turret -> rotations @ turret -> rotations @ motor -> ticks @ motor
-        turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset + 180) % 360) - 180) / 360.0 / Constants.turningRatio * 2048);
+        // degrees @ turret -> rotations @ turret -> rotations @ motor
+        turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset + 180) % 360) - 180) / 360.0 / Constants.turningRatio);
     }
 
     /**
