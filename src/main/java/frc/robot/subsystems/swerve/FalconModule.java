@@ -5,7 +5,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -28,18 +28,12 @@ public class FalconModule extends SwerveModule {
         public static final double turningRatio = 1 / 12.8;
 
         public static final boolean invertDriveMotor = true;
-        public static final boolean invertTurningMotor = false;
-        // public static final SupplyCurrentLimitConfiguration driveMotorSupplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 40, 60 ,1);
-        // public static final StatorCurrentLimitConfiguration driveMotorStatorCurrentLimit = new StatorCurrentLimitConfiguration(true, 40, 60, 1);
-        // public static final SupplyCurrentLimitConfiguration turningMotorSupplyCurrentLimit = new SupplyCurrentLimitConfiguration(true, 20, 30, 1);
-        // public static final StatorCurrentLimitConfiguration turningMotorStatorCurrentLimit = new StatorCurrentLimitConfiguration(true, 20, 30, 1);
+        public static final boolean invertTurningMotor = true;
 
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75; //0.8
-        //        public static PID turningPIDConstants = new PID(0.21, 0, 0.0015); // in the air
-//        public staticPID turningPIDConstants = new PID(0.1, 0, -0.0000000000000000000000001); // carpet
-        public static PID turningPIDConstants = new PID(100, 0, 0.7); // carpet
+        public static PID turningPIDConstants = new PID(0.21, 0, 0.7); // carpet
 
         public static PID drivePIDConstants = new PID(3, 0, 0);// 0.1
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911); //0.7, 2.15
@@ -49,26 +43,19 @@ public class FalconModule extends SwerveModule {
     private TalonFX turningMotor;
     private CANcoder encoder;
 
-    // private PIDController turningPID;
-
-    // private double encoderOffset;
-
     private Rotation2d turningSetpointRaw = Rotation2d.fromDegrees(0);
-    // private Rotation2d turningSetpointCorrected = Rotation2d.fromDegrees(0);
     private boolean reverseWheel;
 
     private double driveRawPower;
     private double driveVelocityTarget;
-    // private PIDController drivePID;
     private SimpleMotorFeedforward driveFeedForward;
     private DriveMode driveMode = DriveMode.RawPower;
-
-    // public final String moduleName;
 
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private TalonFXConfiguration turningMotorConfig = new TalonFXConfiguration();
 
-    private final PositionDutyCycle turningPositionRequest = new PositionDutyCycle(0);
+    // private final PositionDutyCycle turningAngleRequest = new PositionDutyCycle(0);
+    private final PositionVoltage turningAngleRequest = new PositionVoltage(0);
     private final DutyCycleOut driveVoltageRequest = new DutyCycleOut(0);
     private final VelocityDutyCycle driveVelocityRequest = new VelocityDutyCycle(0);
 
@@ -99,12 +86,6 @@ public class FalconModule extends SwerveModule {
         driveMotorConfig.Feedback = new FeedbackConfigs()
             .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor); // Again, params are missing. should have 10 second timeout. maybe it'll be fine?
 
-        // this.driveMotor.configSupplyCurrentLimit(Constants.driveMotorSupplyCurrentLimit);
-        // this.driveMotor.configStatorCurrentLimit(Constants.driveMotorStatorCurrentLimit);
-//        this.driveMotor.configClosedloopRamp(Constants.driveMotorRamp);
-//        this.driveMotor.configOpenloopRamp(Constants.driveMotorRamp);
-        // this.driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 10);
-
         // Setup drive pid
         PID drivePIDConstants = Constants.drivePIDConstants;
         this.driveFeedForward = Constants.driveFeedforward;
@@ -121,8 +102,6 @@ public class FalconModule extends SwerveModule {
         this.turningMotor = new TalonFX(turningID, drivetrainCanBus);
         this.turningMotor.getConfigurator().apply(new TalonFXConfiguration());
         this.turningMotor.setInverted(Constants.invertTurningMotor);
-        // this.turningMotor.configSupplyCurrentLimit(Constants.turningMotorSupplyCurrentLimit);
-        // this.turningMotor.configStatorCurrentLimit(Constants.turningMotorStatorCurrentLimit);
 
         turningMotorConfig.CurrentLimits = new CurrentLimitsConfigs()
             .withStatorCurrentLimitEnable(true)
@@ -133,7 +112,9 @@ public class FalconModule extends SwerveModule {
             .withSupplyTimeThreshold(1);
 
         turningMotorConfig.Feedback = new FeedbackConfigs()
-            .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
+            .withRotorToSensorRatio(Constants.turningRatio)
+            .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+            .withFeedbackRemoteSensorID(encoderID);
 
         // Setup turning pid
         PID turningPIDConstants = Constants.turningPIDConstants;
@@ -148,15 +129,13 @@ public class FalconModule extends SwerveModule {
 
         // Encoder setup
         this.encoder = new CANcoder(encoderID, drivetrainCanBus);
-        // this.encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180); // -180 to 180
-        // this.encoder.configMagnetOffset(0);
         this.encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-encoderOffset));
 
         homeTurningMotor();
 
         this.selfTargetAngle();
 
-        setupCANFrames();
+        // setupCANFrames();
     }
 
     /**
@@ -172,40 +151,11 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public void periodic() {
-        // if robot is disabled, target modules to their current angle
-        // if you're doing some types of debugging, disable this
         if(DriverStation.isDisabled()) {
             selfTargetAngle();
         }
 
-        // optimize the wheel angle to avoid >360 turns (by adding/subtracting 180)
-        double targetDegrees = turningSetpointRaw.getDegrees();
-//        double delta = (getModuleRotation().getDegrees() % 360) - targetDegrees;
-//        if (delta > 180) {
-//            targetDegrees += 360;
-//
-//        } else if (delta < 180) {
-//            targetDegrees -= 360;
-//        }
-//
-//        delta = (getModuleRotation().getDegrees() % 360) - targetDegrees;
-//        if (delta > 90 || delta < -90) {
-//            if(delta > 90){
-//                targetDegrees += 180;
-//            }
-//            else if(delta < -90){
-//                targetDegrees -= 180;
-//            }
-//            reverseWheel = true;
-//        } else{
-//            reverseWheel = false;
-//        }
-
-//        targetDegrees = 0;
-
-        // target at wheel -> rotations at wheel -> rotations at motor -> counts at motor
-        // turningMotor.set(ControlMode.Position, targetDegrees / 360.0 / Constants.turningRatio * 2048);
-        turningMotor.setControl(turningPositionRequest.withPosition(targetDegrees / 360.0 / Constants.turningRatio));
+        turningMotor.setControl(turningAngleRequest.withPosition(turningSetpointRaw.getRotations()));
 
         switch(driveMode) {
             case RawPower: //for use in teleop
@@ -218,24 +168,14 @@ public class FalconModule extends SwerveModule {
                     .withVelocity(driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI))
                     .withFeedForward(driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1))
                 );
-                // driveMotor.set(ControlMode.Velocity, driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI)
-                //         / Constants.driveRatio * 2048 / 10 * (reverseWheel ? -1 : 1),
-                //         DemandType.ArbitraryFeedForward, driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1));
                 break;
         }
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Position", getModuleRotation().getDegrees());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Target", targetDegrees);
-//        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Error", turningPID.getPositionError());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Heading Power", turningMotor.getMotorVoltage().getValueAsDouble()); // Not 1:1 with previous. this is now in percent
-
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Drive Power", driveMotor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity Target", Math.abs(driveVelocityTarget));
-        SmartDashboard.putNumber("drivetrain/" + moduleName + "/Velocity", Math.abs(getDriveVelocity()));
-
+        SmartDashboard.putNumber(moduleName + "/Heading Position", getModuleRotation().getDegrees());
+        SmartDashboard.putNumber(moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
+        SmartDashboard.putNumber(moduleName + "/Heading Target", turningSetpointRaw.getDegrees());
         SmartDashboard.updateValues();
     }
 
@@ -260,7 +200,7 @@ public class FalconModule extends SwerveModule {
     @Override
     public void homeTurningMotor() {
         // degrees @ turret -> rotations @ turret -> rotations @ motor
-        turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset + 180) % 360) - 180) / 360.0 / Constants.turningRatio);
+        turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() * 360 + 180) % 360) - 180) / 360.0 / Constants.turningRatio);
     }
 
     /**
