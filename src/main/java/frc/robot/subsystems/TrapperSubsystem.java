@@ -7,6 +7,9 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,6 +27,12 @@ public class TrapperSubsystem extends SubsystemBase {
     private RelativeEncoder armEncoder;
     private DutyCycleEncoder armAbsoluteEncoder;
     private SparkPIDController armPID;
+
+    // TODO: All of this needs redone with real values
+    private Mechanism2d trapperMech = new Mechanism2d(3, 3);
+    private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 1.5, 0);
+    private MechanismLigament2d trapperArmMech;
+    private MechanismLigament2d trapperWristMech;
 
     public TrapperSubsystem() {
         super();
@@ -46,6 +55,11 @@ public class TrapperSubsystem extends SubsystemBase {
         armEncoder = armMotor.getEncoder();
         armPID = armMotor.getPIDController();
         armPID.setFeedbackDevice(armEncoder);
+
+        trapperArmMech = trapperRoot.append(new MechanismLigament2d("arm", 3, 0));
+        trapperWristMech = trapperArmMech.append(new MechanismLigament2d("wrist", 1, 0));
+
+        SmartDashboard.putData("Trapper Mechanism", trapperMech);
     }
 
     public Command runMotor() {
@@ -73,6 +87,9 @@ public class TrapperSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+        trapperArmMech.setAngle(armAbsoluteEncoder.getAbsolutePosition() * 360);
+        trapperWristMech.setAngle(pivotAbsoluteEncoder.getAbsolutePosition() * 360);
+
         SmartDashboard.putNumber("Trapper Pivot Encoder Position", pivotEncoder.getPosition());
         SmartDashboard.putNumber("Trapper Arm Encoder Position", armEncoder.getPosition());
         SmartDashboard.updateValues();
