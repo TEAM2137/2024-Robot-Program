@@ -5,7 +5,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -32,10 +32,10 @@ public class FalconModule extends SwerveModule {
 
         public static final double driveMotorRamp = 0.0;
 
-        public static double turningFeedForward = 0.75; //0.8
-        public static PID turningPIDConstants = new PID(0.21, 0, 0.7); // carpet
+        public static double turningFeedForward = 0.75;
+        public static PID turningPIDConstants = new PID(0.21, 0, 0.7);
 
-        public static PID drivePIDConstants = new PID(3, 0, 0);// 0.1
+        public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911); //0.7, 2.15
     }
 
@@ -54,8 +54,7 @@ public class FalconModule extends SwerveModule {
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private TalonFXConfiguration turningMotorConfig = new TalonFXConfiguration();
 
-    // private final PositionDutyCycle turningAngleRequest = new PositionDutyCycle(0);
-    private final PositionVoltage turningAngleRequest = new PositionVoltage(0);
+    private final PositionDutyCycle turningAngleRequest = new PositionDutyCycle(0);
     private final DutyCycleOut driveVoltageRequest = new DutyCycleOut(0);
     private final VelocityDutyCycle driveVelocityRequest = new VelocityDutyCycle(0);
 
@@ -113,8 +112,9 @@ public class FalconModule extends SwerveModule {
 
         turningMotorConfig.Feedback = new FeedbackConfigs()
             .withRotorToSensorRatio(Constants.turningRatio)
-            .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
-            .withFeedbackRemoteSensorID(encoderID);
+            .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
+            // .withFeedbackRemoteSensorID(encoderID);
+        turningMotorConfig.serialize();
 
         // Setup turning pid
         PID turningPIDConstants = Constants.turningPIDConstants;
@@ -134,8 +134,6 @@ public class FalconModule extends SwerveModule {
         homeTurningMotor();
 
         this.selfTargetAngle();
-
-        // setupCANFrames();
     }
 
     /**
@@ -159,11 +157,9 @@ public class FalconModule extends SwerveModule {
 
         switch(driveMode) {
             case RawPower: //for use in teleop
-                // driveMotor.set(ControlMode.PercentOutput, driveRawPower * (reverseWheel ? -1 : 1));
                 driveMotor.setControl(driveVoltageRequest.withOutput(driveRawPower * (reverseWheel ? -1 : 1)));
                 break;
             case Velocity: //for use in auto and autonomous trajectories
-                // m/s -> rotations@wheel/second -> rotations@motor/second -> ticks@motor/second -> ticks@motor/100ms
                 driveMotor.setControl(driveVelocityRequest
                     .withVelocity(driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI))
                     .withFeedForward(driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1))
@@ -173,7 +169,7 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber(moduleName + "/Heading Position", getModuleRotation().getDegrees());
+        SmartDashboard.putNumber(moduleName + "/Heading Position", currentPosition);
         SmartDashboard.putNumber(moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
         SmartDashboard.putNumber(moduleName + "/Heading Target", turningSetpointRaw.getDegrees());
         SmartDashboard.updateValues();
@@ -185,7 +181,6 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public Rotation2d getModuleRotation() {
-        // rotations @ motor -> rotations @ turret -> degrees @ turret
         return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio * 360) % 360);
     }
 
@@ -199,8 +194,7 @@ public class FalconModule extends SwerveModule {
 
     @Override
     public void homeTurningMotor() {
-        // degrees @ turret -> rotations @ turret -> rotations @ motor
-        turningMotor.setPosition((((encoder.getAbsolutePosition().getValueAsDouble() * 360 + 180) % 360) - 180) / 360.0 / Constants.turningRatio);
+        turningMotor.setPosition(encoder.getAbsolutePosition().getValueAsDouble() % 1);
     }
 
     /**
@@ -227,8 +221,7 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public double getDriveVelocity() {
-        // counts/100ms@motor -> counts/s @ motor -> rotations/s @ motor -> rotations/s @ wheel -> meters/s @ wheel
-        return driveMotor.getVelocity().getValueAsDouble() * 10 / 2048 * Constants.driveRatio *
+        return driveMotor.getVelocity().getValueAsDouble() * Constants.driveRatio *
                 (Math.PI * Constants.measuredWheelDiameter);
     }
 
@@ -237,8 +230,7 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public double getDriveDistance() {
-        // counts @ motor -> rotations @ motor -> rotations @ wheel -> distance meters
-        return driveMotor.getPosition().getValueAsDouble() / 2048.0 * Constants.driveRatio *
+        return driveMotor.getPosition().getValueAsDouble() * Constants.driveRatio *
                 (Constants.measuredWheelDiameter * Math.PI);
     }
 
