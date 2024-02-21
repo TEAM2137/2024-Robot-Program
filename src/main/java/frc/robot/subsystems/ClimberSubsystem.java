@@ -6,6 +6,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,7 +23,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
         public static PID climbPID = new PID(.1, 0.0, .01, .1);
 
-        public static double HardStopThreshold = .5;
+        public static double HardStopThreshold = 70;
     }
 
     //private CANSparkMax climbLeft;
