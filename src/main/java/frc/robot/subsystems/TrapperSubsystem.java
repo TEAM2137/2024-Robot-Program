@@ -1,12 +1,11 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -19,13 +18,13 @@ public class TrapperSubsystem extends SubsystemBase {
     private CANSparkMax trapperMotor;
 
     private CANSparkMax pivotMotor;
-    private RelativeEncoder pivotEncoder;
-    private DutyCycleEncoder pivotAbsoluteEncoder;
+    private AbsoluteEncoder pivotEncoder;
+    // private DutyCycleEncoder pivotAbsoluteEncoder;
     private SparkPIDController pivotPID;
 
     private CANSparkMax armMotor;
-    private RelativeEncoder armEncoder;
-    private DutyCycleEncoder armAbsoluteEncoder;
+    private AbsoluteEncoder armEncoder;
+    // private DutyCycleEncoder armAbsoluteEncoder;
     private SparkPIDController armPID;
 
     // TODO: All of this needs redone with real values
@@ -38,21 +37,17 @@ public class TrapperSubsystem extends SubsystemBase {
         super();
         trapperMotor = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
 
-        // TODO: Get actual channels for absolute encoders
-        pivotAbsoluteEncoder = new DutyCycleEncoder(4);
-        armAbsoluteEncoder = new DutyCycleEncoder(5);
-
-        // TODO: Set absolute encoder offsets
-        pivotAbsoluteEncoder.setPositionOffset(0);
-        armAbsoluteEncoder.setPositionOffset(0);
-
         pivotMotor = new CANSparkMax(CanIDs.get("trapper-pivot"), MotorType.kBrushless);
-        pivotEncoder = pivotMotor.getEncoder();
+        pivotEncoder = pivotMotor.getAbsoluteEncoder();
+        pivotEncoder.setZeroOffset(0); // TODO: set actual offset
+
         pivotPID = pivotMotor.getPIDController();
         pivotPID.setFeedbackDevice(pivotEncoder);
 
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
-        armEncoder = armMotor.getEncoder();
+        armEncoder = armMotor.getAbsoluteEncoder();
+        armEncoder.setZeroOffset(0); // TODO: set actual offset
+
         armPID = armMotor.getPIDController();
         armPID.setFeedbackDevice(armEncoder);
 
@@ -72,14 +67,12 @@ public class TrapperSubsystem extends SubsystemBase {
 
     public Command setPivotTarget(double target) {
         return runOnce(() -> {
-            pivotEncoder.setPosition(pivotAbsoluteEncoder.getDistance()); // Definitely a hack. No idea what else to do
             pivotPID.setReference(target / 360, CANSparkBase.ControlType.kPosition);
         });
     }
 
     public Command setArmTarget(double target) {
         return runOnce(() -> {
-            armEncoder.setPosition(armAbsoluteEncoder.getDistance());
             armPID.setReference(target / 360, CANSparkBase.ControlType.kPosition);
         });
     }
@@ -87,8 +80,8 @@ public class TrapperSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
-        trapperArmMech.setAngle(armAbsoluteEncoder.getAbsolutePosition() * 360);
-        trapperWristMech.setAngle(pivotAbsoluteEncoder.getAbsolutePosition() * 360);
+        trapperArmMech.setAngle(armEncoder.getPosition() * 360);
+        trapperWristMech.setAngle(pivotEncoder.getPosition() * 360);
 
         SmartDashboard.putNumber("Trapper Pivot Encoder Position", pivotEncoder.getPosition());
         SmartDashboard.putNumber("Trapper Arm Encoder Position", armEncoder.getPosition());
