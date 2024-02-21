@@ -112,6 +112,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
     private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Pose", Pose2d.struct).publish();
+    private StructPublisher<Rotation2d> rotationPublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Robot Rotation", Rotation2d.struct).publish();
 
     /**
      * Creates a swerve drivetrain (uses values from constants)
@@ -183,6 +185,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         SmartDashboard.putData("Field", field2d);
 
         swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
+        rotationPublisher.set(getRobotAngle());
         posePublisher.set(getPose()); // AdvantageScope pose
     }
 
