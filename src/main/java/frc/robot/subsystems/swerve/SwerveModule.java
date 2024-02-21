@@ -23,25 +23,16 @@ public abstract class SwerveModule extends SubsystemBase {
         this(constants.driveID, constants.turningID, constants.encoderID, constants.offset, constants.moduleName);
     }
 
-    // @Override
-    // public void periodic() {
-    //     super.periodic();
-    // }
-
     public abstract Rotation2d getModuleRotation();
     public abstract void setTurningTarget(Rotation2d target);
     public abstract void homeTurningMotor();
-
     public abstract void setDrivePowerRaw(double power);
     public abstract void setDriveVelocity(double velocity);
     public abstract double getDriveVelocity();
     public abstract double getDriveDistance();
     public abstract void resetDriveEncoder();
-
     public abstract SwerveModuleState getSwerveModuleState();
     public abstract void selfTargetAngle();
-
     public abstract void setDriveMode(boolean brake);
-
     public abstract void setTurnBrakeMode(boolean brake);
 }

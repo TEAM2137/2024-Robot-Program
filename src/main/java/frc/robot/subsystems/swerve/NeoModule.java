@@ -48,21 +48,12 @@ public class NeoModule extends SwerveModule {
     private SparkPIDController drivePID;
     private SparkPIDController turningPID;
 
-    // private PIDController turningPID;
-
-    // public double encoderOffset;
-    // public double currentPosition;
-
     private Rotation2d turningSetpointRaw = Rotation2d.fromDegrees(0);
-    // private Rotation2d turningSetpointCorrected = Rotation2d.fromDegrees(0);
 
     private double driveRawPower;
     private double driveVelocityTarget;
-    // private PIDController drivePID;
     private SimpleMotorFeedforward driveFeedForward;
     private DriveMode driveMode = DriveMode.RawPower;
-
-    // public final String moduleName;
 
     /**
      * Creats a swerve module
@@ -92,10 +83,6 @@ public class NeoModule extends SwerveModule {
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = -encoderOffset;
         encoder.getConfigurator().apply(config);
-
-        // this.encoderOffset = encoderOffset;
-
-        // this.moduleName = moduleName;
 
         this.driveEncoder = driveMotor.getEncoder();
         this.driveEncoder.setPosition(0);
