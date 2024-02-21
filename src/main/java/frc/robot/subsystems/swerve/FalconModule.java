@@ -278,10 +278,12 @@ public class FalconModule extends SwerveModule {
         // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
 
         driveMotor.getPosition().setUpdateFrequency(50);
-        driveMotor.getSupplyCurrent().setUpdateFrequency(10);
-        driveMotor.getStatorCurrent().setUpdateFrequency(10);
+        driveMotor.getSupplyCurrent().setUpdateFrequency(4);
+        driveMotor.getStatorCurrent().setUpdateFrequency(4);
         driveMotor.getTorqueCurrent().setUpdateFrequency(10);
         driveMotor.getControlMode().setUpdateFrequency(4);
+        driveMotor.getAcceleration().setUpdateFrequency(10);
+        driveMotor.getAppliedRotorPolarity().setUpdateFrequency(10);
 
         // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
         // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
@@ -296,10 +298,12 @@ public class FalconModule extends SwerveModule {
         // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
 
         turningMotor.getPosition().setUpdateFrequency(50);
-        turningMotor.getSupplyCurrent().setUpdateFrequency(10);
-        turningMotor.getStatorCurrent().setUpdateFrequency(10);
+        turningMotor.getSupplyCurrent().setUpdateFrequency(4);
+        turningMotor.getStatorCurrent().setUpdateFrequency(4);
         turningMotor.getTorqueCurrent().setUpdateFrequency(10);
         turningMotor.getControlMode().setUpdateFrequency(4);
+        turningMotor.getAcceleration().setUpdateFrequency(10);
+        turningMotor.getAppliedRotorPolarity().setUpdateFrequency(10);
     }
 
     private enum DriveMode {
