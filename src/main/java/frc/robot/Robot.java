@@ -9,29 +9,17 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   public RobotContainer robotContainer;
-
-  @Override
-  public void robotInit() { robotContainer = new RobotContainer(); }
-  @Override
-  public void robotPeriodic() { CommandScheduler.getInstance().run(); }
-  @Override
-  public void autonomousInit() { robotContainer.runAutonomous(); }
-  @Override
-  public void autonomousPeriodic() {}
-  @Override
-  public void teleopInit() { robotContainer.runTeleop(); }
-  @Override
-  public void teleopPeriodic() {}
-  @Override
-  public void disabledInit() {}
-  @Override
-  public void disabledPeriodic() {}
-  @Override
-  public void testInit() {}
-  @Override
-  public void testPeriodic() {}
-  @Override
-  public void simulationInit() {}
-  @Override
-  public void simulationPeriodic() {}
+  
+  @Override public void robotInit() { robotContainer = new RobotContainer(); }
+  @Override public void robotPeriodic() { CommandScheduler.getInstance().run(); }
+  @Override public void autonomousInit() { robotContainer.runAutonomous(); }
+  @Override public void autonomousPeriodic() {}
+  @Override public void teleopInit() { robotContainer.runTeleop(); }
+  @Override public void teleopPeriodic() {}
+  @Override public void disabledInit() {}
+  @Override public void disabledPeriodic() {}
+  @Override public void testInit() {}
+  @Override public void testPeriodic() {}
+  @Override public void simulationInit() {}
+  @Override public void simulationPeriodic() {}
 }

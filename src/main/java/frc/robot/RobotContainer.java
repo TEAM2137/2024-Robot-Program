@@ -32,7 +32,7 @@ public class RobotContainer {
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
-    //private final SendableChooser<Command> autoChooser;
+    // private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;
 
     // OpModes

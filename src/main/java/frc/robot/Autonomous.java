@@ -12,20 +12,21 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class Autonomous {
-
-    private SwerveDrivetrain swerve;
+    private SwerveDrivetrain drivetrain;
     private SendableChooser<Command> autoChooser;
 
     private Command autonomousCommand;
 
-    public Autonomous(SwerveDrivetrain driveSubsystem) {
-        this.swerve = driveSubsystem;
+    public Autonomous(SwerveDrivetrain drivetrain) {
+        this.drivetrain = drivetrain;
     }
 
     public void init() {
         // Init autonomous stuff
-        swerve.resetGyro();
-        swerve.resetDriveDistances();
+        drivetrain.resetGyro();
+        drivetrain.resetDriveDistances();
+        
+        // Run auton command
         autonomousCommand = autoChooser.getSelected();
         CommandScheduler.getInstance().schedule(autonomousCommand);
     }
@@ -33,23 +34,21 @@ public class Autonomous {
     public void setAutoChooser(SendableChooser<Command> autoChooser) { this.autoChooser = autoChooser; }
 
     public void cancelAutonomous() {
-        if (autonomousCommand != null && !autonomousCommand.isFinished())
-            autonomousCommand.cancel();
+        if (autonomousCommand != null && !autonomousCommand.isFinished()) autonomousCommand.cancel();
     }
 
     public void configure() {
-        // Pathplanner Initialization
         AutoBuilder.configureHolonomic(
-            swerve::getPose, // Robot pose supplier
-            swerve::resetOdometry, // Method to reset odometry
-            swerve::getSpeeds, // ChassisSpeeds supplier, ROBOT RELATIVE
-            swerve::driveTranslationRotationRaw, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            drivetrain::getPose, // Robot pose supplier
+            drivetrain::resetOdometry, // Method to reset odometry
+            drivetrain::getSpeeds, // ChassisSpeeds supplier, ROBOT RELATIVE
+            drivetrain::driveTranslationRotationRaw, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig(
-                new PIDConstants(2.0, 0.0, 0.01), // Translation PID constants
-                new PIDConstants(6.0, 0.0, 0.01), // Rotation PID constants
-                4.5, // Max module speed, in m/s
-                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config.
+                new PIDConstants(2.0, 0.0, 0.01), // Translation
+                new PIDConstants(6.0, 0.0, 0.01), // Rotation
+                4.5, // Max module speed (m/s)
+                0.4, // Distance from robot center to furthest module (meters)
+                new ReplanningConfig()
             ),
             () -> {
                 // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -62,7 +61,7 @@ public class Autonomous {
                 }
                 return false;
             },
-            swerve // Reference to the drivetrain to set requirements
+            drivetrain // Reference to the drivetrain to set requirements
         );
     }
 }
