@@ -31,7 +31,7 @@ public class CommandSequences {
             () -> {
 
                 DriverStation.getAlliance().ifPresent((alliance) -> {
-                    shouldFlip = (alliance == Alliance.Red);
+                    shouldFlip = (alliance == Alliance.Blue);
                 });
 
                 // Sets where it should point (field space coords)

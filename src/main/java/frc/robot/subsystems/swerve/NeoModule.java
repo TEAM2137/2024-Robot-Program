@@ -31,7 +31,8 @@ public class NeoModule extends SwerveModule {
 
         public static final double driveMotorRamp = 0.0;
 
-        public static PID turningPIDConstants = new PID(75, 0, 1.25, 0.75);
+        public static double turningFeedForward = 0.75;
+        public static PID turningPIDConstants = new PID(80, 0, 0.8, 0.1);
 
         public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);
@@ -108,7 +109,7 @@ public class NeoModule extends SwerveModule {
         this.turningPID.setFeedbackDevice(turningEncoder);
 
         PID turningPIDConstants = Constants.turningPIDConstants;
-        this.turningPID.setFF(turningPIDConstants.getFF());
+        //this.turningPID.setFF(turningPIDConstants.getFF());
         this.turningPID.setP(turningPIDConstants.getP());
         this.turningPID.setI(turningPIDConstants.getI());
         this.turningPID.setD(turningPIDConstants.getD());
@@ -160,7 +161,8 @@ public class NeoModule extends SwerveModule {
         if (stopTurn) {
             turningMotor.set(0);
         } else {
-            turningPID.setReference(targetDegrees, ControlType.kPosition);
+            turningPID.setReference(targetDegrees, ControlType.kPosition, 0, 
+                    Constants.turningFeedForward * ((targetDegrees - currentDegrees > 0) ? 1 : -1), ArbFFUnits.kPercentOut);
         }
 
         switch(driveMode) {
