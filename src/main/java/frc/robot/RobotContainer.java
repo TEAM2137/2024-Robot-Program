@@ -8,6 +8,9 @@ import frc.robot.vision.AprilTagVision;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+
 
 /**
  * Main class that contains all the robot subsystems, controllers, opModes, etc.
@@ -81,6 +84,12 @@ public class RobotContainer {
         // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5801/stream.mjpg");
         // CameraServer.addCamera(httpCamera);
         // Shuffleboard.getTab("SmartDashboard").add(httpCamera);
+        
+        // Starts recording to data log
+        DataLogManager.start();
+
+        // Record both DS control and joystick data
+        DriverStation.startDataLog(DataLogManager.getLog());
     }
 
     public static String getDrivetrainCanBusName() {

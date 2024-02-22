@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
@@ -41,22 +44,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            0.391845703125, "Front Left");
+            0, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            -0.32763671875, "Front Right");
+            0, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            -0.097900390625, "Back Left");
+            0, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            0.257568359275, "Back Right");
+            0, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -87,9 +90,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     SwerveDriveKinematics kinematics;
-
-    private double[] offsets = new double[4];
-
+    
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
     private SwerveModule backLeftModule;
@@ -106,6 +107,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     private SwerveDrivePoseEstimator poseEstimator;
 
     private Field2d field2d = new Field2d();
+
+    private StructArrayPublisher<SwerveModuleState> swervePublisher = NetworkTableInstance.getDefault()
+        .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
+    private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Robot Pose", Pose2d.struct).publish();
+    private StructPublisher<Rotation2d> rotationPublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Robot Rotation", Rotation2d.struct).publish();
 
     /**
      * Creates a swerve drivetrain (uses values from constants)
@@ -144,12 +152,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         // create pose estimator
         updateModulePositions();
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(), modulePositions, new Pose2d());
-        
-        // new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.05, 0.05, Units.degreesToRadians(5)), // State measurement standard deviations. X, Y, theta.
-        // new MatBuilder<>(Nat.N1(), Nat.N1()).fill(Units.degreesToRadians(0.01)), // Local measurement standard deviations. Gyro.
-        // new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.5, 0.5, Units.degreesToRadians(30))); // Vision measurement standard deviations. X, Y, and theta.
-
-//        SmartDashboard.putBoolean("Reset Position", false);
 
         timer = new Timer();
         timer.reset();
@@ -163,25 +165,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Offset FR", swerveArray[1].encoderOffset);
         SmartDashboard.putNumber("Offset BL", swerveArray[2].encoderOffset);
         SmartDashboard.putNumber("Offset BR", swerveArray[3].encoderOffset);
-    }
-
-    public void saveOffsets() {
-        SmartDashboard.putNumber("Offset FL", swerveArray[0].currentPosition);
-        SmartDashboard.putNumber("Offset FR", swerveArray[1].currentPosition);
-        SmartDashboard.putNumber("Offset BL", swerveArray[2].currentPosition);
-        SmartDashboard.putNumber("Offset BR", swerveArray[3].currentPosition);
-        loadOffsets();
-    }
-
-    public void loadOffsets() {
-        offsets[0] = SmartDashboard.getNumber("Offset FL", 0);
-        offsets[1] = SmartDashboard.getNumber("Offset FR", 0);
-        offsets[2] = SmartDashboard.getNumber("Offset BL", 0);
-        offsets[3] = SmartDashboard.getNumber("Offset BR", 0);
-        swerveArray[0].encoderOffset = offsets[0];
-        swerveArray[1].encoderOffset = offsets[1];
-        swerveArray[2].encoderOffset = offsets[2];
-        swerveArray[3].encoderOffset = offsets[3];
     }
 
     /**
@@ -199,17 +182,11 @@ public class SwerveDrivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Drivetrain X", getPose().getX());
         SmartDashboard.putNumber("Drivetrain Y", getPose().getY());
 
-//        if(SmartDashboard.getBoolean("Reset Position", false)) {
-//            resetOdometry();
-//            SmartDashboard.putBoolean("Reset Position", false);
-//        }
-
-//        for(SwerveDriveModule module : swerveArray) {
-//            module.periodic();
-//        }
-
-        //SmartDashboard.putNumber("FusedHeading", getRobotAngle().getDegrees());
         SmartDashboard.putData("Field", field2d);
+
+        swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
+        rotationPublisher.set(getRobotAngle());
+        posePublisher.set(getPose()); // AdvantageScope pose
     }
 
     private void updateOdometry() {
@@ -232,12 +209,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
         SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
         SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
-
-        // modulePositions[0] = new SwerveModulePosition(-(distances[0] - lastDistances[0]) / dt, frontLeftModule.getModuleRotation());
-        // modulePositions[1] = new SwerveModulePosition(-(distances[1] - lastDistances[1]) / dt, frontRightModule.getModuleRotation());
-        // modulePositions[2] = new SwerveModulePosition(-(distances[2] - lastDistances[2]) / dt, backLeftModule.getModuleRotation());
-        // modulePositions[3] = new SwerveModulePosition(-(distances[3] - lastDistances[3]) / dt, backRightModule.getModuleRotation());
-
+        
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
         modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());
         modulePositions[2] = new SwerveModulePosition(distances[2], backLeftModule.getModuleRotation());
@@ -271,33 +243,10 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     public Rotation2d getRobotAngle() {
         double raw = pigeonIMU.getYaw().getValueAsDouble(); // % 360;
-//        while (raw <= -180) raw += 360;
-//        while (raw > 180) raw -= 360;
         return Rotation2d.fromDegrees(raw);
-
-//        if (raw < 0 && raw > -180) {
-//            return Rotation2d.fromDegrees()
-//        }
-//        if( raw > 180) {
-//            raw = raw - 360;
-//            pigeonIMU.setFusedHeading(raw);
-//        }else if( raw < -180) {
-//            raw = raw + 360;
-//            pigeonIMU.setFusedHeading(raw);
-//        }
-//        return Rotation2d.fromDegrees(raw);
-//        if (value > 180)
-//            return Rotation2d.fromDegrees(value - 360);
-//        else
-//            return Rotation2d.fromDegrees(value);
-//        return Rotation2d.fromDegrees(Math.abs(pigeonIMU.getFusedHeading()) % 360);
     }
 
     public double getThetaVelocity() {
-        //double[] tmp = new double[3];
-        //pigeonIMU.getRawGyro(tmp);
-        
-        //return tmp[2];
         return pigeonIMU.getAngularVelocityZDevice().getValueAsDouble();
     }
 
@@ -463,10 +412,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     public TrajectoryConfig getDefaultConstraint() {
         return new TrajectoryConfig(Constants.driveMaxSpeed, Constants.driveMaxAccel).setKinematics(kinematics);
-//        return new TrajectoryConfig(Units.feetToMeters(13), Constants.driveMaxAccel).s
-//        etKinematics(kinematics);
-//        return new TrajectoryConfig(Units.feetToMeters(13), Constants.driveMaxAccel);
-//        return new TrajectoryConfig(Constants.driveMaxSpeed, Constants.driveMaxAccel);
     }
 
     public void setDriveBrakeMode(boolean brake) {
