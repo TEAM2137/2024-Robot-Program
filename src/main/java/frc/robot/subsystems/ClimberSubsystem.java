@@ -1,14 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,7 +14,6 @@ import frc.robot.util.PID;
 public class ClimberSubsystem extends SubsystemBase {
     public static class Constants {
         public static final double ClimbMax = 100;
-
         public static final double ClimbGearRatio = .4;
 
         public static PID climbPID = new PID(.1, 0.0, .01, .1);
@@ -26,27 +21,37 @@ public class ClimberSubsystem extends SubsystemBase {
         public static double HardStopThreshold = 70;
     }
 
-    //private CANSparkMax climbLeft;
+    private CANSparkMax climbLeft;
     private CANSparkMax climbRight;
-    private RelativeEncoder climbEncoder;
 
-    private SparkPIDController climbPID;
+    private RelativeEncoder leftEncoder;
+    private RelativeEncoder rightEncoder;
+
+    private SparkPIDController leftPID;
+    private SparkPIDController rightPID;
 
     public ClimberSubsystem() {
         super();
 
-        // TODO: This class have to be changed so that the left motor actually does stuff
-        //climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
-
+        climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
         climbRight = new CANSparkMax(CanIDs.get("climber-right"), CANSparkLowLevel.MotorType.kBrushless);
-        climbEncoder = climbRight.getEncoder();
 
-        climbPID = climbRight.getPIDController();
-        climbPID.setFeedbackDevice(climbEncoder);
-        climbPID.setP(Constants.climbPID.getP());
-        climbPID.setI(Constants.climbPID.getI());
-        climbPID.setD(Constants.climbPID.getD());
-        climbPID.setFF(Constants.climbPID.getFF());
+        leftEncoder = climbLeft.getEncoder();
+        rightEncoder = climbRight.getEncoder();
+
+        leftPID = climbRight.getPIDController();
+        leftPID.setFeedbackDevice(leftEncoder);
+        leftPID.setP(Constants.climbPID.getP());
+        leftPID.setI(Constants.climbPID.getI());
+        leftPID.setD(Constants.climbPID.getD());
+        leftPID.setFF(Constants.climbPID.getFF());
+
+        rightPID = climbRight.getPIDController();
+        rightPID.setFeedbackDevice(rightEncoder);
+        rightPID.setP(Constants.climbPID.getP());
+        rightPID.setI(Constants.climbPID.getI());
+        rightPID.setD(Constants.climbPID.getD());
+        rightPID.setFF(Constants.climbPID.getFF());
     }
 
     /**
@@ -55,25 +60,21 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return Command that sets the speed
      */
     public Command setSpeedCommand(double speed) {
-        return runOnce(() -> climbRight.set(speed));
+        return runOnce(() -> {
+            climbLeft.set(speed);
+            climbRight.set(speed);
+        });
     }
 
     /**
      * Command to immediately stop the climb motor
      * @return Command that stops the motor
      */
-    public Command youShallNotPass() {
-        return runOnce(() -> climbRight.stopMotor());
-    }
-
-    /**
-     * Command to set the climber position.
-     * DO NOT USE
-     * @param percentage percent of the max height to move the climber to, from 0.0 to 1.0
-     * @return Command that moves the climber
-     */
-    public Command setClimberPositionCommand(double percentage) {
-        return runOnce(() -> climbPID.setReference((percentage * Constants.ClimbMax), CANSparkBase.ControlType.kPosition));
+    public Command stopClimber() {
+        return runOnce(() -> {
+            climbLeft.stopMotor();
+            climbRight.stopMotor();
+        });
     }
 
     /**
@@ -82,10 +83,10 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public Command climberUpCommand() {
         return 
-            setSpeedCommand(.5)
+            setSpeedCommand(0.5)
             .alongWith(run(() -> {}))
             .until(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold)
-            .andThen(setSpeedCommand(0));
+            .andThen(stopClimber());
     }
 
     /**
@@ -97,15 +98,15 @@ public class ClimberSubsystem extends SubsystemBase {
             setSpeedCommand(-0.5)
             .alongWith(run(() -> {}))
             .until(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold)
-            .andThen(setSpeedCommand(0));
+            .andThen(stopClimber());
     }
 
     @Override
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putNumber("Climb Position Raw", climbEncoder.getPosition());
-        SmartDashboard.putNumber("Climb Position %", climbEncoder.getPosition() / Constants.ClimbMax);
+        SmartDashboard.putNumber("Climb Position Raw", rightEncoder.getPosition());
+        SmartDashboard.putNumber("Climb Position %", rightEncoder.getPosition() / Constants.ClimbMax * 100.0);
         SmartDashboard.updateValues();
     }
 }

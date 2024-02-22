@@ -19,12 +19,10 @@ public class TrapperSubsystem extends SubsystemBase {
 
     private CANSparkMax pivotMotor;
     private AbsoluteEncoder pivotEncoder;
-    // private DutyCycleEncoder pivotAbsoluteEncoder;
     private SparkPIDController pivotPID;
 
     private CANSparkMax armMotor;
     private AbsoluteEncoder armEncoder;
-    // private DutyCycleEncoder armAbsoluteEncoder;
     private SparkPIDController armPID;
 
     // TODO: All of this needs redone with real values
