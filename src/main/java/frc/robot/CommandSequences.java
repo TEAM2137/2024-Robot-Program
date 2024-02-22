@@ -12,6 +12,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
+import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 
@@ -171,6 +172,18 @@ public class CommandSequences {
             .andThen(intake.stopRollers().andThen(intake.moveIntakeUp()));
     }
 
+    public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return trapper.moveToFeedPosition()
+            .andThen(
+                transfer.feedTrapperCommand()
+                .alongWith(shooter.startShooter(60))
+                .alongWith(trapper.runMotor())
+            )
+            .andThen(timingCommand(2))
+            .andThen(shooter.stopShooter())
+            .andThen(trapper.stopMotor());
+    }
+
     /**
      * Stops the motors of both the intake and the transfer, and stows the intake.
      * @return the command
@@ -178,5 +191,9 @@ public class CommandSequences {
     public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter) {
         return transfer.transferForceStop().andThen(intake.stopRollers())
             .andThen(intake.moveIntakeUp()).andThen(shooter.stopShooter());
+    }
+
+    public static Command timingCommand(double seconds) {
+        return new RunCommand(() -> {}).withTimeout(seconds);
     }
 }

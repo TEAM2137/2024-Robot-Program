@@ -15,6 +15,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
 
 public class TrapperSubsystem extends SubsystemBase {
+    public static class Constants {
+        public static double ARM_FEED_ANGLE = 0; //TODO: add real angle based on measurement
+        public static double PIVOT_FEED_ANGLE = 0; //TODO: add real angle based on measurement
+    }
+
     private CANSparkMax trapperMotor;
 
     private CANSparkMax pivotMotor;
@@ -56,7 +61,7 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command runMotor() {
-        return runOnce(() -> trapperMotor.set(.5));
+        return runOnce(() -> trapperMotor.set(.2));
     }
 
     public Command stopMotor() {
@@ -73,6 +78,10 @@ public class TrapperSubsystem extends SubsystemBase {
         return runOnce(() -> {
             armPID.setReference(target / 360, CANSparkBase.ControlType.kPosition);
         });
+    }
+
+    public Command moveToFeedPosition() {
+        return setPivotTarget(Constants.PIVOT_FEED_ANGLE).alongWith(setArmTarget(Constants.ARM_FEED_ANGLE));
     }
 
     @Override
