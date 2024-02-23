@@ -20,7 +20,7 @@ public class TrapperSubsystem extends SubsystemBase {
         public static double PIVOT_FEED_ANGLE = 0; //TODO: add real angle based on measurement
     }
 
-    private CANSparkMax trapperMotor;
+    private CANSparkMax rollers;
 
     private CANSparkMax pivotMotor;
     private AbsoluteEncoder pivotEncoder;
@@ -38,7 +38,7 @@ public class TrapperSubsystem extends SubsystemBase {
 
     public TrapperSubsystem() {
         super();
-        trapperMotor = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
+        rollers = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
 
         pivotMotor = new CANSparkMax(CanIDs.get("trapper-pivot"), MotorType.kBrushless);
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
@@ -61,11 +61,11 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command runMotor() {
-        return runOnce(() -> trapperMotor.set(.2));
+        return runOnce(() -> rollers.set(.2));
     }
 
     public Command stopMotor() {
-        return runOnce(() -> trapperMotor.stopMotor());
+        return runOnce(() -> rollers.stopMotor());
     }
 
     public Command setPivotTarget(double target) {
