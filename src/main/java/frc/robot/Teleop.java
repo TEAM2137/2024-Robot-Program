@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
+import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 
@@ -47,7 +48,7 @@ public class Teleop {
         this.vision = vision;
     }
 
-    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer) {
+    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper) {
         // +++ Init Subsystems +++
 
         intake.init();
@@ -75,6 +76,9 @@ public class Teleop {
         // Shooter warm-up
         operatorController.y().onTrue(shooter.toggleShooter(0.75));
         operatorController.x().onTrue(intake.startRollers());
+
+        operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
+        operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
         //operatorController.y().onFalse(shooter.stopShooter());
 
         // Intake phase

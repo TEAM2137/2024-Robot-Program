@@ -39,7 +39,7 @@ public class ClimberSubsystem extends SubsystemBase {
         leftEncoder = climbLeft.getEncoder();
         rightEncoder = climbRight.getEncoder();
 
-        leftPID = climbRight.getPIDController();
+        leftPID = climbLeft.getPIDController();
         leftPID.setFeedbackDevice(leftEncoder);
         leftPID.setP(Constants.climbPID.getP());
         leftPID.setI(Constants.climbPID.getI());

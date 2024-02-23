@@ -46,13 +46,17 @@ public class TransferSubsystem extends SubsystemBase {
         })); // Stop when the beam breaks
     }
 
+    /**
+     * Re-enables the transfer motors. This should be run before most commands.
+     * @return the command
+     */
     public Command removeForceStop() {
         return runOnce(() -> motorsStopped = false);
     }
 
     /**
-     * Command to shut off the motor
-     * @return The command
+     * Shuts off the transfer belt motors
+     * @return the command
      */
     public Command transferForceStop() {
         return runOnce(() -> motorsStopped = true);
@@ -60,16 +64,16 @@ public class TransferSubsystem extends SubsystemBase {
 
     /**
      * Command to feed the NOTE into the trapper
-     * @return The command
+     * @return the command
      */
     public Command feedTrapperCommand() {
-        return runEnd(
+        return removeForceStop().andThen(runEnd(
             () -> beltMotor.set(0.3),
             () -> {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> !inBeamBreak.get() || motorsStopped).andThen(() -> motorsStopped = false); // Stop when beam breaks
+        ).until(() -> !inBeamBreak.get() || motorsStopped)); // Stop when beam breaks
     }
 
     /**
@@ -85,11 +89,7 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
                 occupied = false;
             }
-        ).until(() -> motorsStopped).andThen(() -> motorsStopped = false));
-    }
-
-    public Command unlockTransfer() {
-        return runOnce(() -> motorsStopped = false);
+        ).until(() -> motorsStopped));
     }
 
     /**

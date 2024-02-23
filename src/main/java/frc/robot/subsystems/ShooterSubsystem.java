@@ -37,11 +37,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     //private SparkPIDController pivotPID;
 
-    private AbsoluteEncoder absolutePivotEncoder;
+    private AbsoluteEncoder pivotEncoder;
     private double pivotTarget;
     private boolean running;
-
-    private double targetRPM;
 
     public ShooterSubsystem() {
         super();
@@ -72,9 +70,9 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotMotor.stopMotor();
         pivotMotor.setIdleMode(IdleMode.kBrake);
 
-        absolutePivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
-        absolutePivotEncoder.setPositionConversionFactor(360);
-        absolutePivotEncoder.setZeroOffset(259.89978027);
+        pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
+        pivotEncoder.setPositionConversionFactor(360);
+        pivotEncoder.setZeroOffset(259.89978027);
 
         /* The PID is removed as of now because it's trash and it rips the shooter apart :( */
 
@@ -170,7 +168,7 @@ public class ShooterSubsystem extends SubsystemBase {
         super.periodic();
 
         // Calculate the target and current rotations
-        double encoderPos = absolutePivotEncoder.getPosition();
+        double encoderPos = pivotEncoder.getPosition();
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
         Rotation2d current = Rotation2d.fromDegrees(encoderPos);
 
@@ -183,9 +181,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // Display values
         SmartDashboard.putNumber("Shooter RPM", topEncoder.getVelocity());
-        SmartDashboard.putNumber("Shooter Target", targetRPM);
-        SmartDashboard.putNumber("Shooter Pivot Encoder Position", absolutePivotEncoder.getPosition());
-        SmartDashboard.putNumber("Shooter Pivot Encoder Target", pivotTarget);
+        // SmartDashboard.putNumber("Shooter Target", targetRPM);
+        SmartDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition());
+        // SmartDashboard.putNumber("Shooter Pivot Target", pivotTarget);
         SmartDashboard.updateValues();
     }
 }

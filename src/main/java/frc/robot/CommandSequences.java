@@ -5,7 +5,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -71,10 +70,10 @@ public class CommandSequences {
                 );
 
                 // Post debug values
-                SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
-                SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
-                SmartDashboard.putNumber("Distance", distance);
-                SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
+                // SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
+                // SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
+                // SmartDashboard.putNumber("Distance", distance);
+                // SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
             },
             driveSubsystem
         ).withTimeout(0.9).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
@@ -151,7 +150,7 @@ public class CommandSequences {
      */
     public static Command startShooterAndTransfer(double speed, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return shooter.startShooter(speed)
-            .alongWith(transfer.unlockTransfer().andThen(transfer.feedShooterCommand()));
+            .alongWith(transfer.removeForceStop().andThen(transfer.feedShooterCommand()));
     }
 
     /**

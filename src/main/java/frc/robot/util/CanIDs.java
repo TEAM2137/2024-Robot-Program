@@ -45,9 +45,9 @@ public class CanIDs {
         ids.put("transfer-motor", 42);
 
         // ++++ Trapper ++++
-        ids.put("trapper-motor", 39); //TODO
-        ids.put("trapper-pivot", 40); //TODO
-        ids.put("trapper-arm", 42); //TODO
+        ids.put("trapper-motor", 44);
+        ids.put("trapper-pivot", 43);
+        ids.put("trapper-arm", 32);
 
         // ++++ Random Test Thing ++++
         ids.put("testing-motor", 62);

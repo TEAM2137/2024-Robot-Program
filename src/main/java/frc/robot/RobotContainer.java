@@ -27,9 +27,9 @@ public class RobotContainer {
     private SwerveDrivetrain driveSubsystem;
     private IntakeSubsystem intakeSubsystem;
     private ShooterSubsystem shooterSubsystem;
-    //private ClimberSubsystem climberSubsystem;
+    // private ClimberSubsystem climberSubsystem;
     private TransferSubsystem transferSubsystem;
-    // TODO: private TrapperSubsystem trapperSubsystem = new TrapperSubsystem();
+    private TrapperSubsystem trapperSubsystem;
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
@@ -61,6 +61,7 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem();
         // climberSubsystem = new ClimberSubsystem();
         transferSubsystem = new TransferSubsystem();
+        trapperSubsystem = new TrapperSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
@@ -106,7 +107,7 @@ public class RobotContainer {
     public void runTeleop() {
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
-        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem);
+        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem);
     }
 
     /**
