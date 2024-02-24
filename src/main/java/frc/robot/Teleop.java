@@ -60,6 +60,13 @@ public class Teleop {
         driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter));
         // FOR DEMO: driverController.b().onTrue(CommandSequences.rawShootCommand(driveSubsystem, transfer, shooter));
 
+        driverController.leftStick().onTrue(new RunCommand(() -> {
+            // double rot = driveSubsystem.getRobotAngle().rotateBy(Rotation2d.fromDegrees(180)).getDegrees();
+            driveSubsystem.driveTranslationRotationRaw(
+                new ChassisSpeeds(0, 0, 180 * 0.01 * rotationSpeed)
+            );
+        }, driveSubsystem)); // Hoping this will turn the robot 180 degrees
+
         // Slow buttons
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
             driveSpeed = slowSpeed;
