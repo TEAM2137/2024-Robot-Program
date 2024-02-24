@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.3634190185266983,
+        "y": 3.1114762729683823
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.983898289824662,
+        "y": 3.4922577197526303
+      },
+      "isLocked": false,
+      "linkedName": "Red Auto Shooting Point"
+    },
+    {
+      "anchor": {
+        "x": 7.974180589364487,
+        "y": 4.08908501331572
+      },
+      "prevControl": {
+        "x": 5.641624726995935,
+        "y": 3.7864044936458403
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Red Auto Ring 3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Red Path",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
