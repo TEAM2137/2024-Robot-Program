@@ -1,11 +1,12 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.54,
+  "robotLength": 0.54,
   "holonomicMode": true,
   "pathFolders": [
     "Auto 1",
     "Auto 1 (5 notes)",
     "Auto 3",
+    "Green Auto",
     "Testing"
   ],
   "autoFolders": [
