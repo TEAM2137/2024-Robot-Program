@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.8733199209650455,
+        "y": 6.029238378837646
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.764246873387468,
+        "y": 4.2089665368185605
+      },
+      "isLocked": false,
+      "linkedName": "Evil Auto Shooting Point"
+    },
+    {
+      "anchor": {
+        "x": 7.981764134936983,
+        "y": 4.106625347963534
+      },
+      "prevControl": {
+        "x": 6.185359866276812,
+        "y": 4.446676553276214
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Evil Path",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

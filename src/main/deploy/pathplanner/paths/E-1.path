@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.8869390315684929,
+        "y": 6.743256421388331
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2740356438861844,
+        "y": 5.783988828456271
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.97628412045521,
+        "y": 7.4279749750843385
+      },
+      "prevControl": {
+        "x": 6.5886527069691985,
+        "y": 7.197526598488683
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Evil Path",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

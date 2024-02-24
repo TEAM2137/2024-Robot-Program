@@ -1,0 +1,146 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8869390315684929,
+      "y": 6.743256421388331
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "E-1"
+                      }
+                    },
+                    {
+                      "type": "sequential",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 1.0
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "startIntake"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "E-2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "aimAndShootAtSpeaker"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "E-3"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "startIntake"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "E-4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "aimAndShootAtSpeaker"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "E-5"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "startIntake"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "E-6"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "aimAndShootAtSpeaker"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
