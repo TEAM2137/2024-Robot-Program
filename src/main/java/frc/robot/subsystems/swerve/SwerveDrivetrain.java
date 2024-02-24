@@ -44,22 +44,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            0, "Front Left");
+            -0.110839384375, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            0, "Front Right");
+            0.169677734375, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            0, "Back Left");
+            0.404052734375, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            0, "Back Right");
+            -0.246337890625, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -178,9 +178,9 @@ public class SwerveDrivetrain extends SubsystemBase {
         field2d.setRobotPose(getPose());
 
         // SmartDashboard.putNumber("Pigeon Angle", getRobotAngle().getDegrees());
-        SmartDashboard.putNumber("Drivetrain Angle", getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("Drivetrain X", getPose().getX());
-        SmartDashboard.putNumber("Drivetrain Y", getPose().getY());
+        // SmartDashboard.putNumber("Drivetrain Angle", getPose().getRotation().getDegrees());
+        // SmartDashboard.putNumber("Drivetrain X", getPose().getX());
+        // SmartDashboard.putNumber("Drivetrain Y", getPose().getY());
 
         SmartDashboard.putData("Field", field2d);
 
@@ -205,10 +205,10 @@ public class SwerveDrivetrain extends SubsystemBase {
             backRightModule.getDriveDistance()
         };
 
-        SmartDashboard.putNumber("FrontLeft-DriveDistance", distances[0]);
-        SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
-        SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
-        SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
+        // SmartDashboard.putNumber("FrontLeft-DriveDistance", distances[0]);
+        // SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
+        // SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
+        // SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
         
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
         modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());

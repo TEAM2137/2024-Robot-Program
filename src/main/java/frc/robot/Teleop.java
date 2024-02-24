@@ -76,10 +76,11 @@ public class Teleop {
 
         // Shooter warm-up
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
-        operatorController.x().onTrue(intake.startRollers());
 
-        // operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
-        // operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
+        operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer));
+
+        operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
+        operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
         //operatorController.y().onFalse(shooter.stopShooter());
 
         // Intake phase

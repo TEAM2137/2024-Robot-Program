@@ -169,9 +169,9 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber(moduleName + "/Heading Position", currentPosition);
-        SmartDashboard.putNumber(moduleName + "/Heading RAW", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
-        SmartDashboard.putNumber(moduleName + "/Heading Target", turningSetpointRaw.getDegrees());
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentPosition);
+        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", turningSetpointRaw.getDegrees());
+        SmartDashboard.putNumber("Module-" + moduleName + "-CANCoder Position", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
         SmartDashboard.updateValues();
     }
 

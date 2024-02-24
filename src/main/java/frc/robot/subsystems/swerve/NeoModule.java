@@ -25,14 +25,14 @@ public class NeoModule extends SwerveModule {
 
         public static final double turningRatio = 1 / 12.8;
 
-        public static final boolean invertDriveMotor = true;
+        public static final boolean invertDriveMotor = false;
         public static final boolean invertTurningMotor = false;
         //current limits
 
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(80, 0, 0.8, 0.1);
+        public static PID turningPIDConstants = new PID(40, 0, 100, 0.2);
 
         public static PID drivePIDConstants = new PID(3, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911);

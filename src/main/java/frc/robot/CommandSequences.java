@@ -93,10 +93,9 @@ public class CommandSequences {
     }
 
     
-    public static Command rawShootCommand(SwerveDrivetrain driveSubsystem,
-        TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startShooter(0.8)
-            .andThen(startShooterAndTransfer(0.8, shooter, transfer).withTimeout(0.8))
+    public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
+        return shooter.startShooter(speed)
+            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.7))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     } 
 
@@ -181,12 +180,10 @@ public class CommandSequences {
 
     public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return trapper.moveToFeedPosition()
-            .andThen(
-                transfer.feedTrapperCommand()
-                .alongWith(shooter.startShooter(60))
-                .alongWith(trapper.runMotor())
-            )
-            .andThen(timingCommand(2))
+            .andThen(timingCommand(0.5))
+            .andThen(trapper.runMotor())
+            .andThen(rawShootCommand(0.1, transfer, shooter))
+            // .andThen(timingCommand(0.2))
             .andThen(shooter.stopShooter())
             .andThen(trapper.stopMotor());
     }

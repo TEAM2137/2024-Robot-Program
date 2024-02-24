@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TransferSubsystem extends SubsystemBase {
-    private boolean occupied = false;
     private boolean motorsStopped = false;
 
     private CANSparkMax beltMotor;
@@ -39,7 +38,6 @@ public class TransferSubsystem extends SubsystemBase {
             },
             () -> {
                 beltMotor.set(0);
-                occupied = inBeamBreak.get();
             }
         ).until(() -> !inBeamBreak.get() || earlyStop.getAsBoolean() || motorsStopped).andThen(() -> {
             motorsStopped = false;
@@ -71,7 +69,6 @@ public class TransferSubsystem extends SubsystemBase {
             () -> beltMotor.set(0.3),
             () -> {
                 beltMotor.set(0);
-                occupied = false;
             }
         ).until(() -> !inBeamBreak.get() || motorsStopped)); // Stop when beam breaks
     }
@@ -87,34 +84,19 @@ public class TransferSubsystem extends SubsystemBase {
             },
             () -> {
                 beltMotor.set(0);
-                occupied = false;
             }
         ).until(() -> motorsStopped));
     }
 
-    /**
-     * Get whether the transfer has a NOTE in it
-     * @return whether the transfer is occupied
-     */
     public boolean getOccupied() {
-        return occupied;
-    }
-
-    public boolean getInBeamBreak() {
         return inBeamBreak.get();
     }
-
-    //public boolean getOutBeamBreak() {
-    //    return outBeamBreak.get();
-    //}
 
     @Override
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putBoolean("Transfer Occupied", occupied);
-        SmartDashboard.putBoolean("Intaking Beam Break Output", inBeamBreak.get());
-        //SmartDashboard.putBoolean("Outtaking Beam Break", outBeamBreak.get());
+        SmartDashboard.putBoolean("Is Transfer Occupied", !inBeamBreak.get());
         SmartDashboard.updateValues();
     }
 }

@@ -4,6 +4,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -17,11 +18,11 @@ import frc.robot.util.PID;
 
 public class TrapperSubsystem extends SubsystemBase {
     public static class Constants {
-        public static double ARM_HOME_ANGLE = 0.05928;
-        public static double WRIST_HOME_ANGLE = 0.87801;
+        public static double ARM_HOME_ANGLE = 149.05;
+        public static double WRIST_HOME_ANGLE = 10.32;
 
-        public static double ARM_FEED_ANGLE = 0.75305;
-        public static double WRIST_FEED_ANGLE = 0.3492;
+        public static double ARM_FEED_ANGLE = 50.40;
+        public static double WRIST_FEED_ANGLE = 185.35;
 
         public static double ARM_TRAP_ANGLE = 0.08189;
         public static double WRIST_TRAP_ANGLE = 0.83944;
@@ -54,13 +55,15 @@ public class TrapperSubsystem extends SubsystemBase {
         wristMotor.setInverted(true);
 
         wristEncoder = wristMotor.getAbsoluteEncoder();
-        wristEncoder.setZeroOffset(0);
+        wristEncoder.setPositionConversionFactor(360);
+        wristEncoder.setZeroOffset(300);
 
         // Arm (the bottom part)
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
-        armMotor.setInverted(false);
+        armMotor.setInverted(true);
 
         armEncoder = armMotor.getAbsoluteEncoder();
+        armEncoder.setPositionConversionFactor(360);
         armEncoder.setZeroOffset(0);
 
         // Rollers (self-explanatory)
@@ -110,24 +113,29 @@ public class TrapperSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
-        trapperArmMech.setAngle(armEncoder.getPosition() * 360);
-        trapperWristMech.setAngle(wristEncoder.getPosition() * 360);
+        trapperArmMech.setAngle(armEncoder.getPosition());
+        trapperWristMech.setAngle(wristEncoder.getPosition());
 
         // Target the proper angles
 
         double wristEncoderPos = wristEncoder.getPosition();
-        double wristError = Math.max(Math.min(((wristTarget - wristEncoderPos) * 360) / 240.0,
-            /* Max motor speed */ 0.1), /* Min motor speed */ -0.1);
-        if (Math.abs(wristError) < 0.01) wristError = 0;
+        Rotation2d wristTargetRotation = Rotation2d.fromDegrees(wristTarget);
+        Rotation2d wristCurrentRotation = Rotation2d.fromDegrees(wristEncoderPos);
+        double wristError = Math.max(Math.min((wristTargetRotation.minus(wristCurrentRotation).getDegrees()) / 400.0,
+            /* Max motor speed */ 0.15), /* Min motor speed */ -0.15);
         wristMotor.set(wristError);
 
         double armEncoderPos = armEncoder.getPosition();
-        double armError = Math.max(Math.min(((armTarget - armEncoderPos) * 360) / 240.0,
-            /* Max motor speed */ 0.2), /* Min motor speed */ -0.2);
-        if (Math.abs(armError) < 0.01) armError = 0;
+        Rotation2d armTargetRotation = Rotation2d.fromDegrees(armTarget);
+        Rotation2d armCurrentRotation = Rotation2d.fromDegrees(armEncoderPos);
+        double armError = Math.max(Math.min(armTargetRotation.minus(armCurrentRotation).getDegrees() / 300.0,
+            /* Max motor speed */ 0.25), /* Min motor speed */ -0.25);
+        // if (Math.abs(armError) < 0.01) armError = 0;
         armMotor.set(armError);
 
-        SmartDashboard.putNumber("Trapper Pivot Encoder Position", wristEncoder.getPosition());
+        SmartDashboard.putNumber("Trapper Wrist Encoder Target", wristTarget);
+        SmartDashboard.putNumber("Trapper Arm Encoder Target", armTarget);
+        SmartDashboard.putNumber("Trapper Wrist Encoder Position", wristEncoder.getPosition());
         SmartDashboard.putNumber("Trapper Arm Encoder Position", armEncoder.getPosition());
         SmartDashboard.updateValues();
     }
