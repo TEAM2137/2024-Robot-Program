@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
@@ -36,8 +38,8 @@ public class TrapperSubsystem extends SubsystemBase {
     private AbsoluteEncoder armEncoder;
 
     // TODO: All of this needs redone with real values
-    private Mechanism2d trapperMech = new Mechanism2d(3, 3);
-    private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 1.5, 0);
+    private Mechanism2d trapperMech = new Mechanism2d(5, 5);
+    private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 26, 26);
     private MechanismLigament2d trapperArmMech;
     private MechanismLigament2d trapperWristMech;
 
@@ -65,8 +67,8 @@ public class TrapperSubsystem extends SubsystemBase {
         rollers = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
 
         // Mechanism2d stuff
-        trapperArmMech = trapperRoot.append(new MechanismLigament2d("arm", 3, 0));
-        trapperWristMech = trapperArmMech.append(new MechanismLigament2d("wrist", 1, 0));
+        trapperArmMech = trapperRoot.append(new MechanismLigament2d("arm", 10, 0, 1, new Color8Bit(Color.kCoral)));
+        trapperWristMech = trapperArmMech.append(new MechanismLigament2d("wrist", 16, 0));
 
         SmartDashboard.putData("Trapper Mechanism", trapperMech);
     }
