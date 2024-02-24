@@ -38,7 +38,6 @@ public class TrapperSubsystem extends SubsystemBase {
     private CANSparkMax armMotor;
     private AbsoluteEncoder armEncoder;
 
-    // TODO: All of this needs redone with real values
     private Mechanism2d trapperMech = new Mechanism2d(38, 40);
     private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 12, 20);
     private MechanismLigament2d trapperArmMech;
@@ -108,6 +107,10 @@ public class TrapperSubsystem extends SubsystemBase {
 
     public Command moveToHomePosition() {
         return setWristTarget(Constants.WRIST_HOME_ANGLE).andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
+    }
+
+    public Command moveToTrapPosition() {
+        return setWristTarget(Constants.WRIST_TRAP_ANGLE).andThen(setArmTarget(Constants.ARM_TRAP_ANGLE));
     }
 
     @Override
