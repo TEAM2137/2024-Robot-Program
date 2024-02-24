@@ -46,7 +46,7 @@ public class CanIDs {
 
         // ++++ Trapper ++++
         ids.put("trapper-motor", 44);
-        ids.put("trapper-pivot", 43);
+        ids.put("trapper-wrist", 43);
         ids.put("trapper-arm", 32);
 
         // ++++ Random Test Thing ++++

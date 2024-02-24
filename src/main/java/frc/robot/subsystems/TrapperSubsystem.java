@@ -16,21 +16,21 @@ import frc.robot.util.PID;
 public class TrapperSubsystem extends SubsystemBase {
     public static class Constants {
         public static double ARM_HOME_ANGLE = 0.05928;
-        public static double PIVOT_HOME_ANGLE = 0.87801;
+        public static double WRIST_HOME_ANGLE = 0.87801;
 
         public static double ARM_FEED_ANGLE = 0.75305;
-        public static double PIVOT_FEED_ANGLE = 0.3492;
+        public static double WRIST_FEED_ANGLE = 0.3492;
 
         public static double ARM_TRAP_ANGLE = 0.08189;
-        public static double PIVOT_TRAP_ANGLE = 0.83944;
+        public static double WRIST_TRAP_ANGLE = 0.83944;
 
         public static PID TRAPPER_PID = new PID(0.1, 0, 0.01, 0);
     }
 
     private CANSparkMax rollers;
 
-    private CANSparkMax pivotMotor;
-    private AbsoluteEncoder pivotEncoder;
+    private CANSparkMax wristMotor;
+    private AbsoluteEncoder wristEncoder;
 
     private CANSparkMax armMotor;
     private AbsoluteEncoder armEncoder;
@@ -42,19 +42,19 @@ public class TrapperSubsystem extends SubsystemBase {
     private MechanismLigament2d trapperWristMech;
 
     private double armTarget = Constants.ARM_HOME_ANGLE;
-    private double pivotTarget = Constants.PIVOT_HOME_ANGLE;
+    private double wristTarget = Constants.WRIST_HOME_ANGLE;
 
     public TrapperSubsystem() {
         super();
 
-        // Pivot (elbow)
-        pivotMotor = new CANSparkMax(CanIDs.get("trapper-pivot"), MotorType.kBrushless);
-        pivotMotor.setInverted(true);
+        // Wrist (the end part)
+        wristMotor = new CANSparkMax(CanIDs.get("trapper-wrist"), MotorType.kBrushless);
+        wristMotor.setInverted(true);
 
-        pivotEncoder = pivotMotor.getAbsoluteEncoder();
-        pivotEncoder.setZeroOffset(0);
+        wristEncoder = wristMotor.getAbsoluteEncoder();
+        wristEncoder.setZeroOffset(0);
 
-        // Arm (shoulder)
+        // Arm (the bottom part)
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
         armMotor.setInverted(false);
 
@@ -79,9 +79,9 @@ public class TrapperSubsystem extends SubsystemBase {
         return runOnce(() -> rollers.stopMotor());
     }
 
-    public Command setPivotTarget(double target) {
+    public Command setWristTarget(double target) {
         return runOnce(() -> {
-            pivotTarget = target;
+            wristTarget = target;
             //pivotPID.setReference(target, CANSparkBase.ControlType.kPosition);
         });
     }
@@ -94,28 +94,30 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command setTargets(double armTarget, double pivotTarget) {
-        return setPivotTarget(pivotTarget).alongWith(setArmTarget(armTarget));
+        return setWristTarget(pivotTarget).alongWith(setArmTarget(armTarget));
     }
 
     public Command moveToFeedPosition() {
-        return setPivotTarget(Constants.PIVOT_FEED_ANGLE).andThen(setArmTarget(Constants.ARM_FEED_ANGLE));
+        return setWristTarget(Constants.WRIST_FEED_ANGLE).andThen(setArmTarget(Constants.ARM_FEED_ANGLE));
     }
 
     public Command moveToHomePosition() {
-        return setPivotTarget(Constants.PIVOT_HOME_ANGLE).andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
+        return setWristTarget(Constants.WRIST_HOME_ANGLE).andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
     }
 
     @Override
     public void periodic() {
         super.periodic();
         trapperArmMech.setAngle(armEncoder.getPosition() * 360);
-        trapperWristMech.setAngle(pivotEncoder.getPosition() * 360);
+        trapperWristMech.setAngle(wristEncoder.getPosition() * 360);
 
-        double pivotEncoderPos = pivotEncoder.getPosition();
-        double pivotError = Math.max(Math.min(((pivotTarget - pivotEncoderPos) * 360) / 240.0,
+        // Target the proper angles
+
+        double wristEncoderPos = wristEncoder.getPosition();
+        double wristError = Math.max(Math.min(((wristTarget - wristEncoderPos) * 360) / 240.0,
             /* Max motor speed */ 0.1), /* Min motor speed */ -0.1);
-        if (Math.abs(pivotError) < 0.01) pivotError = 0;
-        pivotMotor.set(pivotError);
+        if (Math.abs(wristError) < 0.01) wristError = 0;
+        wristMotor.set(wristError);
 
         double armEncoderPos = armEncoder.getPosition();
         double armError = Math.max(Math.min(((armTarget - armEncoderPos) * 360) / 240.0,
@@ -123,7 +125,7 @@ public class TrapperSubsystem extends SubsystemBase {
         if (Math.abs(armError) < 0.01) armError = 0;
         armMotor.set(armError);
 
-        SmartDashboard.putNumber("Trapper Pivot Encoder Position", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Trapper Pivot Encoder Position", wristEncoder.getPosition());
         SmartDashboard.putNumber("Trapper Arm Encoder Position", armEncoder.getPosition());
         SmartDashboard.updateValues();
     }
