@@ -38,8 +38,8 @@ public class TrapperSubsystem extends SubsystemBase {
     private AbsoluteEncoder armEncoder;
 
     // TODO: All of this needs redone with real values
-    private Mechanism2d trapperMech = new Mechanism2d(5, 5);
-    private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 26, 26);
+    private Mechanism2d trapperMech = new Mechanism2d(38, 40);
+    private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 12, 20);
     private MechanismLigament2d trapperArmMech;
     private MechanismLigament2d trapperWristMech;
 
