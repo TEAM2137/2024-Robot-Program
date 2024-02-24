@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.Random;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -58,7 +60,8 @@ public class Teleop {
         // Driver controller
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
         driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter));
-        
+        // FOR DEMO: driverController.b().onTrue(CommandSequences.rawShootCommand(driveSubsystem, transfer, shooter));
+
         // Slow buttons
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
             driveSpeed = slowSpeed;
@@ -74,11 +77,11 @@ public class Teleop {
         operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
 
         // Shooter warm-up
-        operatorController.y().onTrue(shooter.toggleShooter(0.75));
+        operatorController.y().onTrue(shooter.toggleShooter(0.5));
         operatorController.x().onTrue(intake.startRollers());
 
-        operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
-        operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
+        // operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
+        // operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
         //operatorController.y().onFalse(shooter.stopShooter());
 
         // Intake phase

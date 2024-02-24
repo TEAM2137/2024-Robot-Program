@@ -4,7 +4,6 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -50,14 +49,14 @@ public class TrapperSubsystem extends SubsystemBase {
 
         // Pivot (elbow)
         pivotMotor = new CANSparkMax(CanIDs.get("trapper-pivot"), MotorType.kBrushless);
-        pivotMotor.setInverted(false);
+        pivotMotor.setInverted(true);
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
         pivotEncoder.setZeroOffset(0);
 
         // Arm (shoulder)
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
-        armMotor.setInverted(true);
+        armMotor.setInverted(false);
 
         armEncoder = armMotor.getAbsoluteEncoder();
         armEncoder.setZeroOffset(0);
@@ -113,18 +112,14 @@ public class TrapperSubsystem extends SubsystemBase {
         trapperWristMech.setAngle(pivotEncoder.getPosition() * 360);
 
         double pivotEncoderPos = pivotEncoder.getPosition();
-        Rotation2d pivotTargetRotation = Rotation2d.fromRotations(pivotTarget);
-        Rotation2d pivotCurrentRotation = Rotation2d.fromRotations(pivotEncoderPos);
-        double pivotError = Math.max(Math.min(pivotTargetRotation.minus(pivotCurrentRotation).getDegrees() / 160.0,
-            /* Max motor speed */ 0.3), /* Min motor speed */ -0.3);
+        double pivotError = Math.max(Math.min(((pivotTarget - pivotEncoderPos) * 360) / 240.0,
+            /* Max motor speed */ 0.1), /* Min motor speed */ -0.1);
         if (Math.abs(pivotError) < 0.01) pivotError = 0;
         pivotMotor.set(pivotError);
 
         double armEncoderPos = armEncoder.getPosition();
-        Rotation2d armTargetRotation = Rotation2d.fromRotations(armTarget);
-        Rotation2d armCurrentRotation = Rotation2d.fromRotations(armEncoderPos);
-        double armError = Math.max(Math.min(armTargetRotation.minus(armCurrentRotation).getDegrees() / 200.0,
-            /* Max motor speed */ 0.23), /* Min motor speed */ -0.23);
+        double armError = Math.max(Math.min(((armTarget - armEncoderPos) * 360) / 240.0,
+            /* Max motor speed */ 0.2), /* Min motor speed */ -0.2);
         if (Math.abs(armError) < 0.01) armError = 0;
         armMotor.set(armError);
 

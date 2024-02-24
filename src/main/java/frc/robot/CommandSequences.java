@@ -6,6 +6,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -91,6 +92,14 @@ public class CommandSequences {
             .andThen(startShooterAndTransfer(1.0, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
+
+    
+    public static Command rawShootCommand(SwerveDrivetrain driveSubsystem,
+        TransferSubsystem transfer, ShooterSubsystem shooter) {
+        return shooter.startShooter(0.8)
+            .andThen(startShooterAndTransfer(0.8, shooter, transfer).withTimeout(0.8))
+            .andThen(stopShooterAndTransfer(shooter, transfer));
+    } 
 
     /**
      * Starts the shooter motors for a specified amount of time. The 

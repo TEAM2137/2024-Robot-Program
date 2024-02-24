@@ -61,7 +61,7 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem();
         // climberSubsystem = new ClimberSubsystem();
         transferSubsystem = new TransferSubsystem();
-        trapperSubsystem = new TrapperSubsystem();
+        // trapperSubsystem = new TrapperSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);

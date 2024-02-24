@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Random;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -103,14 +105,14 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return the command
      */
     public Command startShooter(double speed) {
-        return runOnce(() -> {
+        return run(() -> {
             // topPID.setReference(speed, ControlType.kVelocity, 0,
             //     Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
             // bottomPID.setReference(speed, ControlType.kVelocity, 0,
             //     Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
             bottomMotor.set(speed);
             topMotor.set(speed);
-        }).andThen(() -> running = true);
+        }).withTimeout(1.0).andThen(() -> running = true);
     }
 
     /**
@@ -185,5 +187,9 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition());
         // SmartDashboard.putNumber("Shooter Pivot Target", pivotTarget);
         SmartDashboard.updateValues();
+    }
+
+    public Command setRandomPivotTarget() {
+        return runOnce(() -> setPivotTargetRaw(new Random().nextInt(32, 50)));
     }
 }
