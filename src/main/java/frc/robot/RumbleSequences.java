@@ -24,6 +24,18 @@ public class RumbleSequences {
             .andThen(rumble(controller, RumbleType.kBothRumble, 0));
     }
 
+    public static Command alternatingRumbles(XboxController controller) {
+        return
+            rumble(controller, RumbleType.kLeftRumble, 1)
+            .andThen(CommandSequences.timingCommand(.1))
+            .andThen(rumble(controller, RumbleType.kRightRumble, 1).alongWith(rumble(controller, RumbleType.kLeftRumble, 0)))
+            .andThen(CommandSequences.timingCommand(.1))
+            .andThen(rumble(controller, RumbleType.kRightRumble, 0).alongWith(rumble(controller, RumbleType.kLeftRumble, 1)))
+            .andThen(CommandSequences.timingCommand(.1))
+            .andThen(rumble(controller, RumbleType.kRightRumble, 1).alongWith(rumble(controller, RumbleType.kLeftRumble, 0)))
+            .andThen(rumble(controller, RumbleType.kBothRumble, 0));
+    }
+
     public static Command rumble(XboxController controller, RumbleType rumble, double value) {
         return new InstantCommand(() -> controller.setRumble(rumble, value));
     }
