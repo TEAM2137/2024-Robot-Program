@@ -39,6 +39,9 @@ public class Teleop {
 
     private double prevStickAngle = 0;
 
+    // Value of robot rotation before 180 degree command
+    private Rotation2d prevRobotRot;
+
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
             CommandXboxController operatorController, AprilTagVision vision) {
@@ -60,12 +63,17 @@ public class Teleop {
         driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter));
         // FOR DEMO: driverController.b().onTrue(CommandSequences.rawShootCommand(driveSubsystem, transfer, shooter));
 
-        driverController.leftStick().onTrue(new RunCommand(() -> {
-            // double rot = driveSubsystem.getRobotAngle().rotateBy(Rotation2d.fromDegrees(180)).getDegrees();
-            driveSubsystem.driveTranslationRotationRaw(
-                new ChassisSpeeds(0, 0, 180 * 0.01 * rotationSpeed)
-            );
-        }, driveSubsystem)); // Hoping this will turn the robot 180 degrees
+        // Spin robot 180 degrees
+        driverController.leftStick().onTrue(
+            new InstantCommand(() -> prevRobotRot = driveSubsystem.getRobotAngle())
+            .andThen(new RunCommand(() -> {
+                Rotation2d target = prevRobotRot.plus(Rotation2d.fromDegrees(180));
+
+                double error = target.minus(driveSubsystem.getRobotAngle()).getDegrees();
+                driveSubsystem.driveTranslationRotationRaw(
+                    new ChassisSpeeds(0, 0, error * 0.01 * rotationSpeed)
+                );
+        }, driveSubsystem)).until(() -> Math.abs(prevRobotRot.plus(Rotation2d.fromDegrees(180)).minus(driveSubsystem.getRobotAngle()).getDegrees()) < 1)); // Hoping this will turn the robot 180 degrees
 
         // Slow buttons
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
