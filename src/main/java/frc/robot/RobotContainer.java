@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -8,6 +9,10 @@ import frc.robot.vision.AprilTagVision;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -33,7 +38,7 @@ public class RobotContainer {
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
-    // private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;
 
     // OpModes
@@ -68,19 +73,24 @@ public class RobotContainer {
 
         //NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
         //NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
-        //NamedCommands.registerCommand("aimAndShootAtSpeaker", 
-        //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, trapperSubsystem, shooterSubsystem));
+        NamedCommands.registerCommand("speaker-aim", 
+           CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
+        NamedCommands.registerCommand("speaker-shoot", 
+           CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, shooterSubsystem));
+        NamedCommands.registerCommand("intake-down", 
+            CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
+
         //NamedCommands.registerCommand("pointToSpeaker", 
         //    CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
-        //NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
+        // NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
 
-        // autoChooser = AutoBuilder.buildAutoChooser();
+        auto.configure();
 
-        // auto.setAutoChooser(autoChooser);
-        // auto.configure();
+        autoChooser = AutoBuilder.buildAutoChooser();
+        auto.setAutoChooser(autoChooser);
 
         SmartDashboard.putData("Drivetrain Type", drivetrainType);
-        // SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putData("Auto Chooser", autoChooser);
         
         // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5801/stream.mjpg");
         // CameraServer.addCamera(httpCamera);

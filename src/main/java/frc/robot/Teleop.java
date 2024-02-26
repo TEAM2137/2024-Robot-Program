@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -92,7 +93,8 @@ public class Teleop {
         // Shooter warm-up
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
 
-        operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer));
+        operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
+            .andThen(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1)));
 
         operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
         operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
@@ -100,6 +102,10 @@ public class Teleop {
 
         // Intake phase
         driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
+            // Rumble controller to alert the driver of a note pickup
+            // .andThen(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1))
+            // .withTimeout(0.5).andThen(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0)));
+
         driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
 
         driverController.rightBumper().onTrue(intake.togglePivot());

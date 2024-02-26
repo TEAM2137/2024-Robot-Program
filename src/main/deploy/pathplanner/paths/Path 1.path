@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6123666007711623,
-        "y": 6.982284142504229
+        "x": 0.37670229186133763,
+        "y": 7.042007184254047
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7535320081316337,
-        "y": 6.380276724966262
+        "x": 1.2646907809843349,
+        "y": 7.042007184254047
       },
       "isLocked": false,
-      "linkedName": "Auto 3 End 1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6318429861059016,
-        "y": 5.531293435066112
+        "x": 1.6492389161934495,
+        "y": 7.042007184254047
       },
       "prevControl": {
-        "x": 1.804096609379459,
-        "y": 5.6968427104114
+        "x": 1.5492389161934499,
+        "y": 7.042007184254047
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 3 End 2"
+      "linkedName": "Test - End 1"
     }
   ],
   "rotationTargets": [],
@@ -33,17 +33,20 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 45.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 3",
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": "Testing",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }

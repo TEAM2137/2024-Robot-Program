@@ -384,8 +384,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        updateOdometry();
         poseEstimator.resetPosition(getRobotAngle(), modulePositions, new Pose2d(pose.getX(), pose.getY(), pose.getRotation()));
+        updateOdometry();
     }
 
     public void resetOdometry(Translation2d translation) {

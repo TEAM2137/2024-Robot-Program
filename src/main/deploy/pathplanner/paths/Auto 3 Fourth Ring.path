@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4,
-        "y": 4.1
+        "x": 2.6318429861059016,
+        "y": 4.080302727627994
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1196458847247475,
-        "y": 6.232443307116744
+        "x": 2.351488870830649,
+        "y": 6.212746034744739
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 3 End 3"
     },
     {
       "anchor": {

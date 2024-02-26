@@ -5,6 +5,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,8 +24,7 @@ public class Autonomous {
 
     public void init() {
         // Init autonomous stuff
-        drivetrain.resetGyro();
-        drivetrain.resetDriveDistances();
+        drivetrain.resetOdometry(new Pose2d());
         
         // Run auton command
         autonomousCommand = autoChooser.getSelected();
@@ -44,9 +44,9 @@ public class Autonomous {
             drivetrain::getSpeeds, // ChassisSpeeds supplier, ROBOT RELATIVE
             drivetrain::driveTranslationRotationRaw, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig(
-                new PIDConstants(2.0, 0.0, 0.01), // Translation
-                new PIDConstants(6.0, 0.0, 0.01), // Rotation
-                4.5, // Max module speed (m/s)
+                new PIDConstants(5.0, 0.0, 0.1), // Translation
+                new PIDConstants(6.0, 0.0, 0.6), // Rotation
+                3.0, // Max module speed (m/s)
                 0.4, // Distance from robot center to furthest module (meters)
                 new ReplanningConfig()
             ),

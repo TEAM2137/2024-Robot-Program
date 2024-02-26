@@ -5,7 +5,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -21,6 +23,7 @@ import frc.robot.vision.AprilTagVision;
 public class CommandSequences {
 
     public static boolean shouldFlip;
+    public static double calculatedShooterSpeed = 0.9;
 
     /**
      * Uses the limelight and AprilTags to just point towards the speaker, from
@@ -38,14 +41,14 @@ public class CommandSequences {
                 double targetX = 8.308467 * (shouldFlip ? -1 : 1);
                 double targetY = 1.42593; // 1.42593
                 // Z is vertical in this case
-                double targetZ = 1.451102 - 0.2;
+                double targetZ = 1.451102;
             
                 if (vision.hasTarget()) vision.updateValues();
 
                 // Gets the position of the robot from the limelight data
                 double robotX = vision.getX();
                 double robotY = vision.getY();
-                double robotZ = 0;
+                double robotZ = 0.13;
 
                 // Calculate necessary angles and distances
                 double distance = Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2));
@@ -55,13 +58,16 @@ public class CommandSequences {
                 Rotation2d currentAngle = driveSubsystem.getRobotAngle();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 6.25;
+                double angleOffset = 6; // as this value increases, the angle gets higher
                 double shootAngle = (-desiredVerticalAngle + 90) - (20 + angleOffset);
 
-                double kP = 0.025; // The amount  of force it turns to the target with
+                double kP = 0.025; // The amount of force it turns to the target with
                 double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error
                 if (error > 20) error = 20;
                 if (error < -20) error = -20;
+
+                if (shootAngle < 27) calculatedShooterSpeed = 0.6;
+                else calculatedShooterSpeed = 0.9;
 
                 // Actually drive the swerve base and set the shooter target
                 shooter.setPivotTargetRaw(shootAngle);
@@ -73,7 +79,7 @@ public class CommandSequences {
                 // SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
                 // SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
                 // SmartDashboard.putNumber("Distance", distance);
-                // SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
+                SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
             },
             driveSubsystem
         ).withTimeout(0.9).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
@@ -86,9 +92,9 @@ public class CommandSequences {
      */
     public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
         TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startShooter(0.85)
-            .andThen(pointAndAimCommand(driveSubsystem, shooter, vision))
-            .andThen(startShooterAndTransfer(1.0, shooter, transfer).withTimeout(0.5))
+        return pointAndAimCommand(driveSubsystem, shooter, vision)
+            .alongWith(Commands.run(() -> shooter.setPowerRaw(calculatedShooterSpeed), shooter).withTimeout(0.5))
+            .andThen(startShooterAndTransfer(calculatedShooterSpeed, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
 
@@ -174,8 +180,10 @@ public class CommandSequences {
      * @return the command
      */
     public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return (transfer.intakeNoteCommand(() -> false).alongWith(intake.deployIntake()))
-            .andThen(intake.stopRollers().andThen(intake.moveIntakeUp()));
+        return (transfer.intakeNoteCommand(() -> false)
+            .alongWith(intake.deployIntake()))
+            .andThen(intake.stopRollers()
+            .andThen(intake.moveIntakeUp()));
     }
 
     public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {

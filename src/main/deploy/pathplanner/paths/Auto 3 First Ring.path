@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.4,
-        "y": 7.0
+        "x": 2.6123666007711623,
+        "y": 6.982284142504229
       },
       "prevControl": {
-        "x": 2.125456967402666,
-        "y": 6.7680439038220905
+        "x": 2.261791664745845,
+        "y": 6.9433313718347485
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 3 End 1"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

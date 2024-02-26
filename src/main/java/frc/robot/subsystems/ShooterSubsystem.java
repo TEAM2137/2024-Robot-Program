@@ -105,14 +105,10 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return the command
      */
     public Command startShooter(double speed) {
-        return run(() -> {
-            // topPID.setReference(speed, ControlType.kVelocity, 0,
-            //     Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
-            // bottomPID.setReference(speed, ControlType.kVelocity, 0,
-            //     Constants.shooterFF.calculate(speed), ArbFFUnits.kPercentOut);
+        return runOnce(() -> {
             bottomMotor.set(speed);
             topMotor.set(speed);
-        }).withTimeout(1.0).andThen(() -> running = true);
+        }).andThen(() -> running = true);
     }
 
     /**
@@ -191,5 +187,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command setRandomPivotTarget() {
         return runOnce(() -> setPivotTargetRaw(new Random().nextInt(32, 50)));
+    }
+
+    public void setPowerRaw(double speed) {
+        bottomMotor.set(speed);
+        topMotor.set(speed);
     }
 }
