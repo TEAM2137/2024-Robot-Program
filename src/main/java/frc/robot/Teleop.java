@@ -61,7 +61,7 @@ public class Teleop {
 
         // Driver controller
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
-        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter));
+        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
         // FOR DEMO: driverController.b().onTrue(CommandSequences.rawShootCommand(driveSubsystem, transfer, shooter));
 
         // Spin robot 180 degrees
@@ -101,15 +101,15 @@ public class Teleop {
         //operatorController.y().onFalse(shooter.stopShooter());
 
         // Intake phase
-        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));
+        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
             // Rumble controller to alert the driver of a note pickup
             // .andThen(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1))
             // .withTimeout(0.5).andThen(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0)));
 
-        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
+        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter).andThen(RumbleSequences.alternatingRumbles(driverController.getHID())));
 
         driverController.rightBumper().onTrue(intake.togglePivot());
-        driverController.leftBumper().onTrue(shooter.stowPivot());
+        driverController.leftBumper().onTrue(shooter.stowPivot().andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
 
         operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.longAngle));
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.shortAngle));
