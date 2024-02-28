@@ -10,33 +10,41 @@ public class RumbleSequences {
         return 
             rumble(controller, RumbleType.kBothRumble, 1)
             .andThen(CommandSequences.timingCommand(.1))
-            .andThen(rumble(controller, RumbleType.kBothRumble, 0))
+            .andThen(shutOffRumble(controller))
             .andThen(CommandSequences.timingCommand(.1))
             .andThen(rumble(controller, RumbleType.kBothRumble, 1))
             .andThen(CommandSequences.timingCommand(.1))
-            .andThen(rumble(controller, RumbleType.kBothRumble, 0));
+            .andThen(shutOffRumble(controller));
     }
 
     public static Command rumbleOnce(XboxController controller) {
         return
             rumble(controller, RumbleType.kBothRumble, 1)
             .andThen(CommandSequences.timingCommand(.2))
-            .andThen(rumble(controller, RumbleType.kBothRumble, 0));
+            .andThen(shutOffRumble(controller));
     }
 
     public static Command alternatingRumbles(XboxController controller) {
+        Command leftRumble = rumble(controller, RumbleType.kLeftRumble, 1)
+                            .alongWith(rumble(controller, RumbleType.kRightRumble, 0))
+                            .andThen(CommandSequences.timingCommand(.1));
+        Command rightRumble = rumble(controller, RumbleType.kRightRumble, 1)
+                            .alongWith(rumble(controller, RumbleType.kLeftRumble, 0))
+                            .andThen(CommandSequences.timingCommand(.1));
+
         return
-            rumble(controller, RumbleType.kLeftRumble, 1)
-            .andThen(CommandSequences.timingCommand(.1))
-            .andThen(rumble(controller, RumbleType.kRightRumble, 1).alongWith(rumble(controller, RumbleType.kLeftRumble, 0)))
-            .andThen(CommandSequences.timingCommand(.1))
-            .andThen(rumble(controller, RumbleType.kRightRumble, 0).alongWith(rumble(controller, RumbleType.kLeftRumble, 1)))
-            .andThen(CommandSequences.timingCommand(.1))
-            .andThen(rumble(controller, RumbleType.kRightRumble, 1).alongWith(rumble(controller, RumbleType.kLeftRumble, 0)))
-            .andThen(rumble(controller, RumbleType.kBothRumble, 0));
+            leftRumble
+            .andThen(rightRumble)
+            .andThen(leftRumble)
+            .andThen(rightRumble)
+            .andThen(shutOffRumble(controller));
     }
 
     public static Command rumble(XboxController controller, RumbleType rumble, double value) {
         return new InstantCommand(() -> controller.setRumble(rumble, value));
+    }
+
+    public static Command shutOffRumble(XboxController controller) {
+        return new InstantCommand(() -> controller.setRumble(RumbleType.kBothRumble, 0));
     }
 }
