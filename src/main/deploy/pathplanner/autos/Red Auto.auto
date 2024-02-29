@@ -56,12 +56,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "speaker-aim"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "speaker-shoot"
                 }
               }
@@ -100,12 +94,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "speaker-aim"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "speaker-shoot"
                 }
               }
@@ -139,12 +127,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "R-6"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker-aim"
                 }
               },
               {
