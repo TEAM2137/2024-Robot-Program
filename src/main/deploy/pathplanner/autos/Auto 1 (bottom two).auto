@@ -20,7 +20,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aimAndShootAtSpeaker"
+            "name": "speaker-shoot"
           }
         },
         {
@@ -46,7 +46,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "startIntake"
+                        "name": "intake-down"
                       }
                     }
                   ]
@@ -76,7 +76,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aimAndShootAtSpeaker"
+            "name": "speaker-shoot"
           }
         },
         {
@@ -98,7 +98,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "startIntake"
+                  "name": "intake-down"
                 }
               }
             ]
@@ -125,7 +125,7 @@
         {
           "type": "named",
           "data": {
-            "name": "aimAndShootAtSpeaker"
+            "name": "speaker-shoot"
           }
         }
       ]
