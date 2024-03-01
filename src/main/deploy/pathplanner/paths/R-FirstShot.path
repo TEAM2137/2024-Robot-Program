@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2233652073758257,
-        "y": 2.998162641613149
+        "x": 0.6974571455037475,
+        "y": 4.18169624236032
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.249208175248944,
-        "y": 2.0856832413886535
+        "x": 1.3897000000679336,
+        "y": 3.8910653220729308
       },
       "isLocked": false,
-      "linkedName": "Red Auto Shooting Point"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.946775438701496,
-        "y": 2.421887095102668
+        "x": 3.2233652073758257,
+        "y": 2.998162641613149
       },
       "prevControl": {
-        "x": 5.939828472069669,
-        "y": 1.8386458588531625
+        "x": 2.630580778695693,
+        "y": 3.3332882099410743
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Red Auto Ring 2"
+      "linkedName": "Red Auto Shooting Point"
     }
   ],
   "rotationTargets": [],

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.822298161105507,
-      "y": 4.252521141189172
+      "x": 0.6974571455037475,
+      "y": 4.18169624236032
     },
     "rotation": 0
   },
@@ -11,6 +11,18 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R-FirstShot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker-shoot"
+          }
+        },
         {
           "type": "sequential",
           "data": {

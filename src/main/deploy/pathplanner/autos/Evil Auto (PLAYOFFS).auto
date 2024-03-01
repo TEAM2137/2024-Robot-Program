@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8869390315684929,
-      "y": 6.743256421388331
+      "x": 0.8515168173838247,
+      "y": 6.7504468227017815
     },
     "rotation": 0
   },
@@ -11,6 +11,18 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "E-FirstShot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker-shoot"
+          }
+        },
         {
           "type": "sequential",
           "data": {
@@ -56,12 +68,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "speaker-aim"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "speaker-shoot"
                 }
               }
@@ -100,12 +106,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "speaker-aim"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "speaker-shoot"
                 }
               }
@@ -139,12 +139,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "E-6"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker-aim"
                 }
               },
               {

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2233652073758257,
-        "y": 2.998162641613149
+        "x": 0.8515168173838247,
+        "y": 6.7504468227017815
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.249208175248944,
-        "y": 2.0856832413886535
+        "x": 2.0638537850089143,
+        "y": 6.465554908516912
       },
       "isLocked": false,
-      "linkedName": "Red Auto Shooting Point"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.946775438701496,
-        "y": 2.421887095102668
+        "x": 3.8733199209650455,
+        "y": 6.029238378837646
       },
       "prevControl": {
-        "x": 5.939828472069669,
-        "y": 1.8386458588531625
+        "x": 2.928794398177725,
+        "y": 6.2271565047379465
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Red Auto Ring 2"
+      "linkedName": "Evil Auto Shooting Point"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Red Path",
+  "folder": "Evil Path",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }
