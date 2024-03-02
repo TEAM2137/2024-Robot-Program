@@ -163,9 +163,9 @@ public class NeoModule extends SwerveModule {
 
         currentPosition = currentDegrees;
 
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", currentDegrees);
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetDegrees);
-        SmartDashboard.putNumber("Module-" + moduleName + "-CANCoder Position", encoder.getAbsolutePosition().getValueAsDouble());
+        SmartDashboard.putNumber(moduleName + "-Position", currentDegrees);
+        SmartDashboard.putNumber(moduleName + "-Target", targetDegrees);
+        SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble());
         //SmartDashboard.putNumber("Module-" + moduleName + "-Drive Power", driveMotor.getAppliedOutput());
     }
 

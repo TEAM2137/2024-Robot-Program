@@ -55,7 +55,7 @@ public class FalconModule extends SwerveModule {
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private TalonFXConfiguration turningMotorConfig = new TalonFXConfiguration();
 
-    private final PositionDutyCycle turningAngleRequest = new PositionDutyCycle(0);
+    private final PositionDutyCycle turnPositionRequest = new PositionDutyCycle(0);
     private final DutyCycleOut driveVoltageRequest = new DutyCycleOut(0);
     private final VelocityDutyCycle driveVelocityRequest = new VelocityDutyCycle(0);
 
@@ -148,11 +148,9 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public void periodic() {
-        if(DriverStation.isDisabled()) {
-            selfTargetAngle();
-        }
+        if(DriverStation.isDisabled()) selfTargetAngle();
 
-        turningMotor.setControl(turningAngleRequest.withPosition(targetAngle.getRotations()
+        turningMotor.setControl(turnPositionRequest.withPosition(targetAngle.getRotations()
             / Constants.turningRatio * (Constants.flipTurnDirection ? -1 : 1)));
         // turningMotor.set(0);
 
@@ -170,9 +168,9 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Position", turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio);
-        SmartDashboard.putNumber("Module-" + moduleName + "-Heading Target", targetAngle.getDegrees());
-        SmartDashboard.putNumber("Module-" + moduleName + "-CANCoder Position", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
+        SmartDashboard.putNumber(moduleName + "-Position", turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio);
+        SmartDashboard.putNumber(moduleName + "-Target", targetAngle.getDegrees());
+        SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
         SmartDashboard.updateValues();
     }
 
