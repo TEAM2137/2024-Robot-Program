@@ -25,18 +25,14 @@ public class RumbleSequences {
     }
 
     public static Command alternatingRumbles(XboxController controller) {
-        Command leftRumble = rumble(controller, RumbleType.kLeftRumble, 1)
-                            .alongWith(rumble(controller, RumbleType.kRightRumble, 0))
-                            .andThen(CommandSequences.timingCommand(.1));
-        Command rightRumble = rumble(controller, RumbleType.kRightRumble, 1)
-                            .alongWith(rumble(controller, RumbleType.kLeftRumble, 0))
-                            .andThen(CommandSequences.timingCommand(.1));
-
-        return
-            leftRumble
-            .andThen(rightRumble)
-            .andThen(leftRumble)
-            .andThen(rightRumble)
+        return // This is incredibly ugly but when i tried making it pretty it crashed the robot
+            rumble(controller, RumbleType.kLeftRumble, 1)
+            .andThen(CommandSequences.timingCommand(.1))
+            .andThen(rumble(controller, RumbleType.kRightRumble, 1).alongWith(rumble(controller, RumbleType.kLeftRumble, 0)))
+            .andThen(CommandSequences.timingCommand(.1))
+            .andThen(rumble(controller, RumbleType.kRightRumble, 0).alongWith(rumble(controller, RumbleType.kLeftRumble, 1)))
+            .andThen(CommandSequences.timingCommand(.1))
+            .andThen(rumble(controller, RumbleType.kRightRumble, 1).alongWith(rumble(controller, RumbleType.kLeftRumble, 0)))
             .andThen(shutOffRumble(controller));
     }
 
