@@ -24,8 +24,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // private double currentThreshold = 75;
 
-    private double minPos = 176;
-    private double maxPos = 320;
+    private double minPos = 175.0;
+    private double maxPos = 306.8;
 
     private double pivotTarget = maxPos;
     
@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(0);
+        pivotEncoder.setZeroOffset(180);
     }
 
     public void init() {
@@ -82,16 +82,18 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        double encoderPos = pivotEncoder.getPosition();
-        Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
-        Rotation2d current = Rotation2d.fromDegrees(encoderPos);
+        // double encoderPos = pivotEncoder.getPosition();
+        // Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
+        // Rotation2d current = Rotation2d.fromDegrees(encoderPos);
 
-        double error = Math.max(Math.min(target.minus(current).getDegrees() / 300.0,
-            /* Max motor speed */ 0.7), /* Min motor speed */ -0.7);
+        // double error = Math.max(Math.min(target.minus(current).getDegrees() / 320.0,
+        //     /* Max motor speed */ 0.5), /* Min motor speed */ -0.5);
+
+        // if (error < 0) error /= 3; // Reduce power going down
         
-        pivotMotor.set(error);
+        // pivotMotor.set(error);
 
-        SmartDashboard.putNumber("Intake Encoder Position", encoderPos);
+        SmartDashboard.putNumber("Intake Encoder Position", pivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }
 

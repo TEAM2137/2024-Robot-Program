@@ -45,22 +45,22 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            -0.5698007, "Front Left");
+            0.430664, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
             CanIDs.get("fr-encoder"), 
-            0.071289062, "Front Right");
+            0.072998, "Front Right");
         public static SwerveModuleConstants backLeft = new SwerveModuleConstants(
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            0.83178710925, "Back Left");
+            0.327393, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
             CanIDs.get("br-encoder"), 
-            0.281738281, "Back Right");
+            0.291016, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
 
@@ -121,6 +121,8 @@ public class SwerveDrivetrain extends SubsystemBase {
      * Creates a swerve drivetrain (uses values from constants)
      */
     public SwerveDrivetrain(ModuleType moduleType, AprilTagVision vision) {
+        this.vision = vision;
+
         // locations of all of the modules (for kinematics)
         Translation2d frontLeftLocation = new Translation2d(Constants.length / 2, Constants.width / 2);
         Translation2d frontRightLocation = new Translation2d(Constants.length / 2, -Constants.width / 2);
@@ -131,12 +133,12 @@ public class SwerveDrivetrain extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
         // each of the modules
-        if(moduleType == ModuleType.Neo) {
+        if (moduleType == ModuleType.Neo) {
             frontLeftModule = new NeoModule(Constants.frontLeft);
             frontRightModule = new NeoModule(Constants.frontRight);
             backLeftModule = new NeoModule(Constants.backLeft);
             backRightModule = new NeoModule(Constants.backRight);
-        }else{
+        } else {
             frontLeftModule = new FalconModule(Constants.frontLeft);
             frontRightModule = new FalconModule(Constants.frontRight);
             backLeftModule = new FalconModule(Constants.backLeft);

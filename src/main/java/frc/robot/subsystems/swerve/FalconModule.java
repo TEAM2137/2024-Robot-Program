@@ -128,7 +128,7 @@ public class FalconModule extends SwerveModule {
         setTurnBrakeMode(true);
 
         // Encoder setup
-        this.encoder = new CANcoder(encoderID, rioCanBus);
+        this.encoder = new CANcoder(encoderID, drivetrainCanBus);
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = -encoderOffset;
         encoder.getConfigurator().apply(config);
@@ -171,8 +171,7 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber(moduleName + "-Position", MathUtil.inputModulus(turningMotor.getPosition()
-            .getValueAsDouble() * 360, -180, 180) * Constants.turningRatio);
+        SmartDashboard.putNumber(moduleName + "-Position", getModuleRotation().getDegrees());
         SmartDashboard.putNumber(moduleName + "-Target", MathUtil.inputModulus(targetAngle.getDegrees(), -180, 180));
         SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.updateValues();
@@ -197,7 +196,7 @@ public class FalconModule extends SwerveModule {
 
     @Override
     public void homeTurningMotor() {
-        turningMotor.setPosition(encoder.getAbsolutePosition().getValueAsDouble() % 1 / Constants.turningRatio);
+        turningMotor.setPosition(-encoder.getAbsolutePosition().getValueAsDouble() % 1 / Constants.turningRatio);
     }
 
     /**

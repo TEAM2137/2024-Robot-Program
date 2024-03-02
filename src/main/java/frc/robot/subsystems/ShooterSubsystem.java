@@ -24,8 +24,8 @@ public class ShooterSubsystem extends SubsystemBase {
         public static PID shooterPID = new PID(0.0006, 0, 0);
         public static SimpleMotorFeedforward shooterFF = new SimpleMotorFeedforward(0.65, 2.2, 0.15);
 
-        public static double longAngle = 44;
-        public static double shortAngle = 15;
+        public static double maxAngle = 178.5;
+        public static double minAngle = 126.5;
     }
 
     private CANSparkMax topMotor;
@@ -46,7 +46,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem() {
         super();
 
-        pivotTarget = Constants.longAngle;
+        pivotTarget = Constants.minAngle;
 
         topMotor = new CANSparkMax(CanIDs.get("shooter-top"), MotorType.kBrushless);
         bottomMotor = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
@@ -74,7 +74,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(259.89978027);
+        pivotEncoder.setZeroOffset(100);
 
         /* The PID is removed as of now because it's trash and it rips the shooter apart :( */
 
@@ -175,13 +175,9 @@ public class ShooterSubsystem extends SubsystemBase {
         
         pivotMotor.set(error - 0.005);
 
-        // pivotPID.setReference(pivotTarget, ControlType.kPosition);
-
         // Display values
         SmartDashboard.putNumber("Shooter RPM", topEncoder.getVelocity());
-        // SmartDashboard.putNumber("Shooter Target", targetRPM);
         SmartDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition());
-        // SmartDashboard.putNumber("Shooter Pivot Target", pivotTarget);
         SmartDashboard.updateValues();
     }
 

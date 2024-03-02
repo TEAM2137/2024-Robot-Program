@@ -2,6 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.vision.AprilTagVision;
@@ -28,10 +31,10 @@ public class RobotContainer {
 
     // Subsystems
     private SwerveDrivetrain driveSubsystem;
-    // private IntakeSubsystem intakeSubsystem;
-    // private ShooterSubsystem shooterSubsystem;
+    private IntakeSubsystem intakeSubsystem;
+    private ShooterSubsystem shooterSubsystem;
     // private ClimberSubsystem climberSubsystem;
-    // private TransferSubsystem transferSubsystem;
+    private TransferSubsystem transferSubsystem;
     // private TrapperSubsystem trapperSubsystem;
 
     // Misc stuff
@@ -60,10 +63,10 @@ public class RobotContainer {
 
         // Initialize subsystems
         driveSubsystem = new SwerveDrivetrain(ModuleType.Falcon, vision);
-        // intakeSubsystem = new IntakeSubsystem();
-        // shooterSubsystem = new ShooterSubsystem();
+        intakeSubsystem = new IntakeSubsystem();
+        shooterSubsystem = new ShooterSubsystem();
         // climberSubsystem = new ClimberSubsystem();
-        // transferSubsystem = new TransferSubsystem();
+        transferSubsystem = new TransferSubsystem();
         // trapperSubsystem = new TrapperSubsystem();
 
         auto = new Autonomous(driveSubsystem);
@@ -110,7 +113,7 @@ public class RobotContainer {
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
         // teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem);
-        teleop.init();
+        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem);
     }
 
     /**
