@@ -199,6 +199,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             return;
         }
         
+        vision.updateValues();
         updateModulePositions();
         
         poseEstimator.addVisionMeasurement(vision.getPose(), Timer.getFPGATimestamp());
