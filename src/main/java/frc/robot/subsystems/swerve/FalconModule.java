@@ -29,6 +29,7 @@ public class FalconModule extends SwerveModule {
 
         public static final boolean invertDriveMotor = true;
         public static final boolean invertTurningMotor = true;
+        public static final boolean flipTurnDirection = true;
 
         public static final double driveMotorRamp = 0.0;
 
@@ -151,7 +152,8 @@ public class FalconModule extends SwerveModule {
             selfTargetAngle();
         }
 
-        turningMotor.setControl(turningAngleRequest.withPosition(-targetAngle.getRotations() / Constants.turningRatio));
+        turningMotor.setControl(turningAngleRequest.withPosition(targetAngle.getRotations()
+            / Constants.turningRatio * (Constants.flipTurnDirection ? -1 : 1)));
         // turningMotor.set(0);
 
         switch(driveMode) {
@@ -175,12 +177,12 @@ public class FalconModule extends SwerveModule {
     }
 
     /**
-     * Do not call this method often, as it negates the entire purpose of reducing CAN frames
      * @return Rotation2d with the rotation of the module direct from encoder (not dealing with optimization)
      */
     @Override
     public Rotation2d getModuleRotation() {
-        return Rotation2d.fromDegrees((-turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio * 360) % 360);
+        return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio * 360)
+            % 360 * (Constants.flipTurnDirection ? -1 : 1));
     }
 
     /**
