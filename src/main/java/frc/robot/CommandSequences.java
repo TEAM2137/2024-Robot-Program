@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -46,20 +47,19 @@ public class CommandSequences {
                 if (vision.hasTarget()) vision.updateValues();
 
                 // Gets the position of the robot from the limelight data
-                double robotX = vision.getX();
-                double robotY = vision.getY();
-                double robotZ = 0.13;
+                Pose2d pose = driveSubsystem.getPose();
+                double shooterZ = 0.2;
 
                 // Calculate necessary angles and distances
-                double distance = Math.sqrt(Math.pow(targetX - robotX, 2) + Math.pow(targetY - robotY, 2));
-                double desiredAngle = Math.atan2(targetY - robotY, targetX - robotX) + (shouldFlip ? Math.PI : 0);
-                double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - robotZ, distance));
+                double distance = Math.sqrt(Math.pow(targetX - pose.getX(), 2) + Math.pow(targetY - pose.getY(), 2));
+                double desiredAngle = Math.atan2(targetY - pose.getY(), targetX - pose.getX()) + (shouldFlip ? Math.PI : 0);
+                double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - shooterZ, distance));
 
-                Rotation2d currentAngle = driveSubsystem.getRobotAngle();
+                Rotation2d currentAngle = pose.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 6; // as this value increases, the angle gets higher
-                double shootAngle = (-desiredVerticalAngle + 90) - (20 + angleOffset);
+                double angleOffset = 26; // as this value increases, the angle gets higher
+                double shootAngle = (-desiredVerticalAngle + 90) - angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
                 double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error

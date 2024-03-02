@@ -1,5 +1,7 @@
 package frc.robot.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,7 +16,7 @@ public class AprilTagVision {
     private double posX;
     private double posY;
 
-    private double rotation;
+    private Rotation2d rotation;
 
     public AprilTagVision() {
         table = NetworkTableInstance.getDefault().getTable("limelight-a");
@@ -30,12 +32,12 @@ public class AprilTagVision {
         
         posX = pose[0];
         posY = pose[1];
-        rotation = pose[5];
+        rotation = Rotation2d.fromDegrees(pose[5]);
     
         // Post botpose to smart dashboard
-        SmartDashboard.putNumber("Field Position X", posX);
-        SmartDashboard.putNumber("Field Position Y", posY);
-        SmartDashboard.putNumber("Robot Rotation", rotation);
+        SmartDashboard.putNumber("LL-PositionX", posX);
+        SmartDashboard.putNumber("LL-PositionY", posY);
+        SmartDashboard.putNumber("LL-Rotation", rotation.getDegrees());
     }
 
     /**
@@ -55,7 +57,7 @@ public class AprilTagVision {
     /**
      * @return the z rotation of the robot (degrees)
      */
-    public double getRotation() {
+    public Rotation2d getRotation() {
         return rotation;
     }
 
@@ -66,5 +68,9 @@ public class AprilTagVision {
         pose = botpose.getDoubleArray(new double[6]);
         if (pose.length == 0 || pose[0] == 0) return false;
         return true;
+    }
+
+    public Pose2d getPose() {
+        return new Pose2d(getX(), getY(), getRotation());
     }
 }

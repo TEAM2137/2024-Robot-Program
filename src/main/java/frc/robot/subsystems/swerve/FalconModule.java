@@ -1,8 +1,8 @@
 package frc.robot.subsystems.swerve;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -127,8 +128,10 @@ public class FalconModule extends SwerveModule {
         setTurnBrakeMode(true);
 
         // Encoder setup
-        this.encoder = new CANcoder(encoderID, drivetrainCanBus);
-        this.encoder.getConfigurator().apply(new MagnetSensorConfigs().withMagnetOffset(-encoderOffset));
+        this.encoder = new CANcoder(encoderID, rioCanBus);
+        CANcoderConfiguration config = new CANcoderConfiguration();
+        config.MagnetSensor.MagnetOffset = -encoderOffset;
+        encoder.getConfigurator().apply(config);
 
         homeTurningMotor();
 
@@ -168,9 +171,10 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber(moduleName + "-Position", turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio);
-        SmartDashboard.putNumber(moduleName + "-Target", targetAngle.getDegrees());
-        SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble() + encoderOffset);
+        SmartDashboard.putNumber(moduleName + "-Position", MathUtil.inputModulus(turningMotor.getPosition()
+            .getValueAsDouble() * 360, -180, 180) * Constants.turningRatio);
+        SmartDashboard.putNumber(moduleName + "-Target", MathUtil.inputModulus(targetAngle.getDegrees(), -180, 180));
+        SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.updateValues();
     }
 

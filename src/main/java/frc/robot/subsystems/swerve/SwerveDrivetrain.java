@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
+import frc.robot.vision.AprilTagVision;
 
 // Everything in this file will be done in the order front left, front right, back left, back right
 public class SwerveDrivetrain extends SubsystemBase {
@@ -105,6 +106,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private Pigeon2 pigeonIMU;
 
     private SwerveDrivePoseEstimator poseEstimator;
+    private AprilTagVision vision;
 
     private Field2d field2d = new Field2d();
 
@@ -118,7 +120,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * Creates a swerve drivetrain (uses values from constants)
      */
-    public SwerveDrivetrain(ModuleType moduleType) {
+    public SwerveDrivetrain(ModuleType moduleType, AprilTagVision vision) {
         // locations of all of the modules (for kinematics)
         Translation2d frontLeftLocation = new Translation2d(Constants.length / 2, Constants.width / 2);
         Translation2d frontRightLocation = new Translation2d(Constants.length / 2, -Constants.width / 2);
@@ -177,16 +179,15 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         field2d.setRobotPose(getPose());
 
-        // SmartDashboard.putNumber("Pigeon Angle", getRobotAngle().getDegrees());
-        // SmartDashboard.putNumber("Drivetrain Angle", getPose().getRotation().getDegrees());
-        // SmartDashboard.putNumber("Drivetrain X", getPose().getX());
-        // SmartDashboard.putNumber("Drivetrain Y", getPose().getY());
-
         SmartDashboard.putData("Field", field2d);
 
         swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
         rotationPublisher.set(getRobotAngle());
         posePublisher.set(getPose()); // AdvantageScope pose
+
+        SmartDashboard.putNumber("Field Position X", getPose().getX());
+        SmartDashboard.putNumber("Field Position Y", getPose().getY());
+        SmartDashboard.putNumber("Robot Rotation", getPose().getRotation().getDegrees());
     }
 
     private void updateOdometry() {
@@ -197,24 +198,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         if (dt == 0) {
             return;
         }
-
-        double[] distances = new double[] {
-            frontLeftModule.getDriveDistance(),
-            frontRightModule.getDriveDistance(),
-            backLeftModule.getDriveDistance(),
-            backRightModule.getDriveDistance()
-        };
-
-        // SmartDashboard.putNumber("FrontLeft-DriveDistance", distances[0]);
-        // SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
-        // SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
-        // SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
         
-        modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
-        modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());
-        modulePositions[2] = new SwerveModulePosition(distances[2], backLeftModule.getModuleRotation());
-        modulePositions[3] = new SwerveModulePosition(distances[3], backRightModule.getModuleRotation());
-
+        updateModulePositions();
+        
+        poseEstimator.addVisionMeasurement(vision.getPose(), Timer.getFPGATimestamp());
         poseEstimator.updateWithTime(time, getRobotAngle(), modulePositions);
     }
 
@@ -230,6 +217,11 @@ public class SwerveDrivetrain extends SubsystemBase {
         modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());
         modulePositions[2] = new SwerveModulePosition(distances[2], backLeftModule.getModuleRotation());
         modulePositions[3] = new SwerveModulePosition(distances[3], backRightModule.getModuleRotation());
+
+        // SmartDashboard.putNumber("FrontLeft-DriveDistance", distances[0]);
+        // SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
+        // SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
+        // SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
     }
 
     public void resetModuleAngles() {
