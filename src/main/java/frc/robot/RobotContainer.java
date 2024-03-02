@@ -59,7 +59,7 @@ public class RobotContainer {
         operatorController = new CommandXboxController(1);
 
         // Initialize subsystems
-        driveSubsystem = new SwerveDrivetrain(ModuleType.Neo);
+        driveSubsystem = new SwerveDrivetrain(ModuleType.Falcon);
         // intakeSubsystem = new IntakeSubsystem();
         // shooterSubsystem = new ShooterSubsystem();
         // climberSubsystem = new ClimberSubsystem();
