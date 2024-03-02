@@ -199,10 +199,13 @@ public class SwerveDrivetrain extends SubsystemBase {
             return;
         }
         
-        vision.updateValues();
         updateModulePositions();
         
-        poseEstimator.addVisionMeasurement(vision.getPose(), Timer.getFPGATimestamp());
+        if (vision.hasTarget()) {
+            // Only update if aprilTags are visible
+            vision.updateValues();
+            poseEstimator.addVisionMeasurement(vision.getPose(), Timer.getFPGATimestamp());
+        }
         poseEstimator.updateWithTime(time, getRobotAngle(), modulePositions);
     }
 
