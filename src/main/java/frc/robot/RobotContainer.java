@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.vision.AprilTagVision;
@@ -11,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,11 +28,11 @@ public class RobotContainer {
 
     // Subsystems
     private SwerveDrivetrain driveSubsystem;
-    private IntakeSubsystem intakeSubsystem;
-    private ShooterSubsystem shooterSubsystem;
+    // private IntakeSubsystem intakeSubsystem;
+    // private ShooterSubsystem shooterSubsystem;
     // private ClimberSubsystem climberSubsystem;
-    private TransferSubsystem transferSubsystem;
-    private TrapperSubsystem trapperSubsystem;
+    // private TransferSubsystem transferSubsystem;
+    // private TrapperSubsystem trapperSubsystem;
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
@@ -62,28 +60,22 @@ public class RobotContainer {
 
         // Initialize subsystems
         driveSubsystem = new SwerveDrivetrain(ModuleType.Neo);
-        intakeSubsystem = new IntakeSubsystem();
-        shooterSubsystem = new ShooterSubsystem();
+        // intakeSubsystem = new IntakeSubsystem();
+        // shooterSubsystem = new ShooterSubsystem();
         // climberSubsystem = new ClimberSubsystem();
-        transferSubsystem = new TransferSubsystem();
-        trapperSubsystem = new TrapperSubsystem();
+        // transferSubsystem = new TransferSubsystem();
+        // trapperSubsystem = new TrapperSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
 
-        //NamedCommands.registerCommand("testMotorOn", testSubsystem.testMotorOn());
-        //NamedCommands.registerCommand("testMotorOff", testSubsystem.testMotorOff());
-        NamedCommands.registerCommand("speaker-aim", 
-           CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
-        NamedCommands.registerCommand("speaker-shoot", 
-           CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, shooterSubsystem));
-        NamedCommands.registerCommand("intake-down", 
-            CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
-
-        //NamedCommands.registerCommand("pointToSpeaker", 
+        // NamedCommands.registerCommand("speaker-aim", 
         //    CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
-        // NamedCommands.registerCommand("startIntake", CommandSequences.startIntakeCommand(intakeSubsystem, transferSubsystem, () -> false, 5.0));
-
+        // NamedCommands.registerCommand("speaker-shoot", 
+        //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, shooterSubsystem));
+        // NamedCommands.registerCommand("intake-down", 
+        //     CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
+        
         auto.configure();
 
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -117,7 +109,8 @@ public class RobotContainer {
     public void runTeleop() {
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
-        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem);
+        // teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem);
+        teleop.init();
     }
 
     /**
