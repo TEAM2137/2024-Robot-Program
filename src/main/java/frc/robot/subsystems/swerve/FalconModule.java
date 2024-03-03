@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.hardware.CANcoder;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -123,6 +124,8 @@ public class FalconModule extends SwerveModule {
         turningMotorConfig.Feedback.SensorToMechanismRatio = Constants.turningRatio;
         turningMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
+        turningMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
         // Setup turning pid
         PID turningPIDConstants = Constants.turningPIDConstants;
 
@@ -177,7 +180,7 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber(moduleName + "-Position", currentPosition);
+        SmartDashboard.putNumber(moduleName + "-Position", turningMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber(moduleName + "-Target", MathUtil.inputModulus(targetAngle.getDegrees(), -180, 180));
         SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.updateValues();
@@ -201,7 +204,7 @@ public class FalconModule extends SwerveModule {
 
     @Override
     public void homeTurningMotor() {
-        turningMotor.setPosition(encoder.getAbsolutePosition().getValueAsDouble() % 1);
+        turningMotor.setPosition(encoder.getAbsolutePosition().getValueAsDouble());
     }
 
     /**
