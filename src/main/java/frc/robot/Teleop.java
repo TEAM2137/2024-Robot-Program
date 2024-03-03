@@ -53,19 +53,17 @@ public class Teleop {
     }
 
     public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper) {
-        // // +++ Init Subsystems +++
+        // +++ Init Subsystems +++
 
         intake.init();
 
-        // // +++ Configure controller bindings here +++
+        // +++ Start controller bindings +++
 
-        // Driver controller
+        // +++ DRIVER +++
+
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
-        // driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
         driverController.b().onTrue(CommandSequences.rawShootCommand(0.7, transfer, shooter));
-
-        // play funny.chrp
-        // operatorController.start().onTrue(driveSubsystem.playMusic(0));
+        // driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
 
         // Spin robot 180 degrees
         driverController.leftStick().onTrue(
@@ -79,7 +77,7 @@ public class Teleop {
                 );
         }, driveSubsystem)).until(() -> Math.abs(prevRobotRot.plus(Rotation2d.fromDegrees(180)).minus(driveSubsystem.getRobotAngle()).getDegrees()) < 1)); // Hoping this will turn the robot 180 degrees
 
-        // Slow buttons
+        // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
             driveSpeed = slowSpeed;
             rotationSpeed = 0.75;
@@ -89,28 +87,39 @@ public class Teleop {
             rotationSpeed = 1.3;
         }));
 
-        // Shooting phase
+        // Intake phase
+        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
+        // Force stop
+        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
+
+        // Manual intake pivot
+        driverController.rightBumper().onTrue(intake.togglePivot());
+        // Stow command
+        driverController.leftBumper().onTrue(shooter.stowPivot().andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+
+        // +++ OPERATOR +++
+
+        // Shooter manual controls
         operatorController.a().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
         operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
 
-        // Shooter warm-up
+        // Shooter pivot manual controls
+        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle));
+        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.minAngle));
+
+        // Home arm
+        operatorController.rightTrigger().onTrue(trapper.homePosition());
+        // Setup arm for amp
+        operatorController.leftTrigger().onTrue(trapper.stage1());
+
+        // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
 
+        // Transfer note to arm
         operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
             .andThen(RumbleSequences.rumble(operatorController.getHID(), RumbleType.kLeftRumble, 1.0)));
 
-        operatorController.rightTrigger().onTrue(trapper.homePosition());
-        operatorController.leftTrigger().onTrue(trapper.stage1());
-
-        // Intake phase
-        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
-        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
-
-        driverController.rightBumper().onTrue(intake.togglePivot());
-        driverController.leftBumper().onTrue(shooter.stowPivot().andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
-
-        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle));
-        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.minAngle));
+        // +++ End controller bindings +++
 
         // Init teleop command
         CommandScheduler.getInstance().schedule(intake.moveIntakeUp());

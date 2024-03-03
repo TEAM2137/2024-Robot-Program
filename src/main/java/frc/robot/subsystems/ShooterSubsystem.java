@@ -158,11 +158,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the pivot to target its home angle of 0 degrees
+     * Sets the pivot to target its min angle
      * @return the command
      */
     public Command stowPivot() {
-        return setPivotTarget(0);
+        return setPivotTarget(Constants.minAngle);
     }
 
     @Override

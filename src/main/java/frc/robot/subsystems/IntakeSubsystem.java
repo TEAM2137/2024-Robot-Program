@@ -18,6 +18,10 @@ import frc.robot.util.PID;
 public class IntakeSubsystem extends SubsystemBase {
 
     public static class Constants {
+        public static double kP = 0.00167; // Power the pivot moves to its target with
+        public static double motorLimit = 0.4; // Max power of the pivot motor
+        public static double gMod = 0.75; // Reduces power moving the pivot down
+
         public static PID rollerPID = new PID(0.1, 0.2, 0.3, 0.4);
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
@@ -82,15 +86,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        double encoderPos = pivotEncoder.getPosition();
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
-        Rotation2d current = Rotation2d.fromDegrees(encoderPos);
+        Rotation2d current = Rotation2d.fromDegrees(pivotEncoder.getPosition());
 
-        double error = Math.max(Math.min(target.minus(current).getDegrees() / 320.0,
-            /* Max motor speed */ 0.5), /* Min motor speed */ -0.5);
+        double error = Math.max(Math.min(target.minus(current).getDegrees() * Constants.kP,
+            /* Max motor speed */ Constants.motorLimit), /* Min motor speed */ -Constants.motorLimit);
 
-        if (error < 0) error /= 2; // Reduce power going down
-        
+        if (error < 0) error *= Constants.gMod; // Reduce power going down
         pivotMotor.set(error);
 
         SmartDashboard.putNumber("Intake Encoder Position", pivotEncoder.getPosition());
