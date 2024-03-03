@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -24,7 +23,7 @@ public class Teleop {
     private final boolean fieldCentricRotation = false;
 
     // Set speeds
-    private final double slowSpeed = 0.5;
+    private final double slowSpeed = 0.4;
     private final double normalSpeed = 1.0;
 
     // Declare controllers and necessary subsystems
@@ -34,16 +33,13 @@ public class Teleop {
     private AprilTagVision vision;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
-    private double stickDeadzone = 0.3;
+    private double stickDeadzone = 0.2;
 
     // These ones are self explanatory
     private double driveSpeed = normalSpeed;
     private double rotationSpeed = 1.3;
 
     private double prevStickAngle = 0;
-
-    // Value of robot rotation before 180 degree command
-    private Rotation2d prevRobotRot;
 
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
@@ -63,21 +59,11 @@ public class Teleop {
 
         // +++ DRIVER +++
 
-        driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
-        driverController.b().onTrue(CommandSequences.rawShootCommand(0.7, transfer, shooter));
+        driverController.start().onTrue(Commands.runOnce(() -> {
+            driveSubsystem.resetGyro(); driveSubsystem.visionResetOdometry();
+        }, driveSubsystem));
+        driverController.b().onTrue(CommandSequences.rawShootCommand(0.6, transfer, shooter));
         // driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
-
-        // Spin robot 180 degrees
-        driverController.leftStick().onTrue(
-            new InstantCommand(() -> prevRobotRot = driveSubsystem.getRobotAngle())
-            .andThen(new RunCommand(() -> {
-                Rotation2d target = prevRobotRot.plus(Rotation2d.fromDegrees(180));
-
-                double error = target.minus(driveSubsystem.getRobotAngle()).getDegrees();
-                driveSubsystem.driveTranslationRotationRaw(
-                    new ChassisSpeeds(0, 0, error * 0.01 * rotationSpeed)
-                );
-        }, driveSubsystem)).until(() -> Math.abs(prevRobotRot.plus(Rotation2d.fromDegrees(180)).minus(driveSubsystem.getRobotAngle()).getDegrees()) < 1)); // Hoping this will turn the robot 180 degrees
 
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
@@ -90,7 +76,7 @@ public class Teleop {
         }));
 
         // Intake phase
-        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
+        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));//.andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
         // Force stop
         driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
 
@@ -101,16 +87,14 @@ public class Teleop {
 
         // +++ OPERATOR +++
 
-        operatorController.x().onTrue(intake.reverseRollers());
-        operatorController.x().onFalse(intake.stopRollers());
-
-        // Shooter manual controls
-        operatorController.a().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
-        operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));
+        operatorController.x().onTrue(intake.reverseRollers().andThen(transfer.reverse()));
+        operatorController.x().onFalse(intake.stopRollers().andThen(transfer.transferForceStop()));
 
         // Shooter pivot manual controls
-        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle));
-        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.minAngle));
+        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
+            .andThen(CommandSequences.rawShootCommand(0.9, transfer, shooter)));
+        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
+            .andThen(CommandSequences.rawShootCommand(0.6, transfer, shooter)));
 
         // Home arm
         operatorController.rightTrigger().onTrue(trapper.homePosition());
@@ -119,10 +103,12 @@ public class Teleop {
 
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
+        operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
+            .andThen(CommandSequences.rawShootCommand(0.3, transfer, shooter)));
 
         // Transfer note to arm
-        operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
-            .andThen(RumbleSequences.rumble(operatorController.getHID(), RumbleType.kLeftRumble, 1.0)));
+        // operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
+        //     .andThen(RumbleSequences.rumble(operatorController.getHID(), RumbleType.kLeftRumble, 1.0)));
 
         // +++ End controller bindings +++
 
@@ -136,7 +122,7 @@ public class Teleop {
         return new RunCommand(
             () -> {
                 // Controller + Pigeon inputs
-                double direction = driveSubsystem.getRobotAngle().getRadians();
+                double direction = driveSubsystem.getRotation().getRadians();
                 double controllerX = -driverController.getLeftX();
                 double controllerY = -driverController.getLeftY();
                 double rotationX = -driverController.getRightX();
@@ -175,9 +161,7 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
-                driveSubsystem.driveTranslationRotationRaw(
-                    new ChassisSpeeds(speedY, speedX, -rot)
-                );
+                driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, -rot));
             },
             driveSubsystem
         );

@@ -15,8 +15,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 
 /**
@@ -88,9 +91,8 @@ public class RobotContainer {
         SmartDashboard.putData("Drivetrain Type", drivetrainType);
         SmartDashboard.putData("Auto Chooser", autoChooser);
         
-        // HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5801/stream.mjpg");
-        // CameraServer.addCamera(httpCamera);
-        // Shuffleboard.getTab("SmartDashboard").add(httpCamera);
+        HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5800/");
+        CameraServer.addCamera(httpCamera);
         
         // Starts recording to data log
         DataLogManager.start();

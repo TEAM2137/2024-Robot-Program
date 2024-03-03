@@ -6,6 +6,7 @@ import java.util.function.BooleanSupplier;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +25,7 @@ public class TransferSubsystem extends SubsystemBase {
         super();
 
         beltMotor = new CANSparkMax(CanIDs.get("transfer-motor"), CANSparkLowLevel.MotorType.kBrushless);
+        beltMotor.setIdleMode(IdleMode.kCoast);
     }
 
     /**
@@ -42,6 +44,15 @@ public class TransferSubsystem extends SubsystemBase {
         ).until(() -> !inBeamBreak.get() || earlyStop.getAsBoolean() || motorsStopped).andThen(() -> {
             motorsStopped = false;
         })); // Stop when the beam breaks
+    }
+
+    public Command reverse() {
+        return removeForceStop().andThen(runEnd(
+            () -> beltMotor.set(-0.5),
+            () -> {
+                beltMotor.set(0);
+            }
+        ).until(() ->  motorsStopped)); // Stop when beam breaks
     }
 
     /**
@@ -96,7 +107,7 @@ public class TransferSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        SmartDashboard.putBoolean("Is Transfer Occupied", !inBeamBreak.get());
+        SmartDashboard.putBoolean("Has Ring", !inBeamBreak.get());
         SmartDashboard.updateValues();
     }
 }

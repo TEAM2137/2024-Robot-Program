@@ -4,40 +4,28 @@ import java.util.Random;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
-import frc.robot.util.PID;
  
 public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static PID shooterPID = new PID(0.0006, 0, 0);
-        public static SimpleMotorFeedforward shooterFF = new SimpleMotorFeedforward(0.65, 2.2, 0.15);
-
-        public static double maxAngle = 178.5;
-        public static double minAngle = 126.5;
+        public static double maxAngle = 164.4;
+        public static double midAngle = 142.8;
+        public static double minAngle = 131.5;
     }
 
     private CANSparkMax topMotor;
     private CANSparkMax bottomMotor;
     private CANSparkMax pivotMotor;
-
-    // private SparkPIDController topPID;
-    // private SparkPIDController bottomPID;
-
-    private RelativeEncoder topEncoder;
-
-    //private SparkPIDController pivotPID;
 
     private AbsoluteEncoder pivotEncoder;
     private double pivotTarget;
@@ -54,7 +42,6 @@ public class ShooterSubsystem extends SubsystemBase {
         bottomMotor.stopMotor();
 
         // topPID = topMotor.getPIDController();
-        topEncoder = topMotor.getEncoder();
         // topPID.setFeedbackDevice(topMotor.getEncoder());
         // topPID.setP(Constants.shooterPID.getP());
         // topPID.setI(Constants.shooterPID.getI());
@@ -180,8 +167,7 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotMotor.set(error - 0.005);
 
         // Display values
-        SmartDashboard.putNumber("Shooter RPM", topEncoder.getVelocity());
-        SmartDashboard.putNumber("Shooter Pivot Position", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Shooter Position", pivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }
 

@@ -184,7 +184,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         SmartDashboard.putData("Field", field2d);
 
         swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
-        rotationPublisher.set(getRobotAngle());
+        rotationPublisher.set(getRotation());
         posePublisher.set(getPose()); // AdvantageScope pose
 
         SmartDashboard.putNumber("Field Position X", getPose().getX());
@@ -203,12 +203,17 @@ public class SwerveDrivetrain extends SubsystemBase {
         
         updateModulePositions();
         
-        if (vision.hasTarget()) {
-            // Only update if aprilTags are visible
-            vision.updateValues();
-            poseEstimator.addVisionMeasurement(vision.getPose(), Timer.getFPGATimestamp());
-        }
-        poseEstimator.updateWithTime(time, getRobotAngle(), modulePositions);
+        // if (vision.hasTarget()) {
+        //     // Only update if aprilTags are visible
+        //     vision.updateValues();
+        //     poseEstimator.addVisionMeasurement(new Pose2d(
+        //         vision.getPose().getX(),
+        //         vision.getPose().getY(),
+        //         getRotation()), Timer.getFPGATimestamp()
+        //     );
+        // }
+        
+        poseEstimator.updateWithTime(time, getRotation(), modulePositions);
     }
 
     private void updateModulePositions() {
@@ -239,9 +244,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * @return the angle of the robot (CCW positive (normal))
      */
-    public Rotation2d getRobotAngle() {
+    public Rotation2d getRotation() {
         double raw = pigeonIMU.getYaw().getValueAsDouble(); // % 360;
         return Rotation2d.fromDegrees(raw);
+    }
+
+    public Translation2d getTranslation() {
+        return getPose().getTranslation();
     }
 
     public double getThetaVelocity() {
@@ -256,11 +265,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void resetGyro() {
-        pigeonIMU.setYaw(0);
-    }
-
-    public void addVisionReading(Pose2d pose, double processingTime) {
-        this.poseEstimator.addVisionMeasurement(pose, processingTime);
+        pigeonIMU.setYaw(180);
     }
 
     /**
@@ -381,17 +386,34 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRightModule.selfTargetAngle();
     }
 
+    /**
+     * Resets the PoseEstimator to a specified pose
+     */
     public void resetOdometry(Pose2d pose) {
-        poseEstimator.resetPosition(getRobotAngle(), modulePositions, new Pose2d(pose.getX(), pose.getY(), pose.getRotation()));
+        poseEstimator.resetPosition(getRotation(), modulePositions, new Pose2d(pose.getX(), pose.getY(), pose.getRotation()));
         updateOdometry();
     }
 
+    /**
+     * Resets the PoseEstimator to a specified position with the gyro rotation
+     */
     public void resetOdometry(Translation2d translation) {
-        resetOdometry(new Pose2d(translation, getRobotAngle()));
+        resetOdometry(new Pose2d(translation, getRotation()));
     }
 
+    /**
+     * Resets the PoseEstimator to (0, 0) with the gyro rotation
+     */
     private void resetOdometry() {
-        resetOdometry(new Pose2d());
+        resetOdometry(new Pose2d(new Translation2d(), getRotation()));
+    }
+
+    /**
+     * Sets the PoseEstimator position to wherever the limelight thinks the
+     * robot currently is
+     */
+    public void visionResetOdometry() {
+        resetOdometry(new Pose2d(vision.getPose().getTranslation(), getRotation()));
     }
 
     /**

@@ -35,11 +35,11 @@ public class FalconModule extends SwerveModule {
 
         public static final double driveMotorRamp = 0.0;
 
-        public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(180, 0, 6);
+        public static PID turningPIDConstants = new PID(220, 0, 3);
+        public static SimpleMotorFeedforward turningFeedForward = new SimpleMotorFeedforward(0.7, 1.4, 0.2);
 
-        public static PID drivePIDConstants = new PID(14, 0, 0.01);
-        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.65, 2.28, 0.41);
+        public static PID drivePIDConstants = new PID(60, 0, 0.15);
+        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.85, 2.38, 0.81);
     }
 
     private TalonFX driveMotor;
@@ -131,6 +131,9 @@ public class FalconModule extends SwerveModule {
         turningMotorConfig.Slot0.kP = turningPIDConstants.getP();
         turningMotorConfig.Slot0.kI = turningPIDConstants.getI();
         turningMotorConfig.Slot0.kD = turningPIDConstants.getD();
+        turningMotorConfig.Slot0.kS = Constants.turningFeedForward.ks;
+        turningMotorConfig.Slot0.kV = Constants.turningFeedForward.kv;
+        turningMotorConfig.Slot0.kA = Constants.turningFeedForward.ka;
         
         this.turningMotor.getConfigurator().apply(turningMotorConfig);
 

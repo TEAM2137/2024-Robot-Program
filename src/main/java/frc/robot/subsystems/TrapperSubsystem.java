@@ -130,10 +130,10 @@ public class TrapperSubsystem extends SubsystemBase {
         // if (Math.abs(armError) < 0.01) armError = 0;
         armMotor.set(armError);
 
-        SmartDashboard.putNumber("Trapper Wrist Encoder Target", wristTarget);
-        SmartDashboard.putNumber("Trapper Arm Encoder Target", armTarget);
-        SmartDashboard.putNumber("Trapper Wrist Encoder Position", wristEncoder.getPosition());
-        SmartDashboard.putNumber("Trapper Arm Encoder Position", armEncoder.getPosition());
+        // SmartDashboard.putNumber("Trapper Wrist Encoder Target", wristTarget);
+        // SmartDashboard.putNumber("Trapper Arm Encoder Target", armTarget);
+        SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
+        SmartDashboard.putNumber("Arm Position", armEncoder.getPosition());
         SmartDashboard.updateValues();
     }
 }

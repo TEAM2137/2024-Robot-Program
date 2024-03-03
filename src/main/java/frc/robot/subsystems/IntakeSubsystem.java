@@ -18,8 +18,10 @@ import frc.robot.util.PID;
 public class IntakeSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static double kP = 0.00356; // Power the pivot moves to its target with
-        public static double motorLimit = 0.4; // Max power of the pivot motor
+        public static double pivotKP = 0.00356; // Power the pivot moves to its target with
+        public static double rollersKP = 0.0001; // Power the rollers move to their targets with
+        public static double pivotMotorLimit = 0.4; // Max power of the pivot motor
+        public static double rollerMotorLimit = 0.75; // Max power of the pivot motor
         public static double gravityMod = 0.85; // Reduces power moving the pivot down
 
         public static PID rollerPID = new PID(0.1, 0.2, 0.3, 0.4);
@@ -28,10 +30,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // private double currentThreshold = 75;
 
-    private double minPos = 162.0;
+    private double minPos = 145.0;
     private double maxPos = 315.0;
 
     private double pivotTarget = maxPos;
+    private double rollerTarget = 0;
     
     private CANSparkMax pivotMotor;
     private CANSparkMax rollerMotor;
@@ -57,19 +60,20 @@ public class IntakeSubsystem extends SubsystemBase {
     public void init() {
         rollerMotor.stopMotor();
         pivotMotor.stopMotor();
+        rollerTarget = 0;
         pivotTarget = maxPos;
     }
 
     public Command startRollers() {
-        return runOnce(() -> rollerMotor.set(-0.75));
+        return runOnce(() -> rollerTarget = -0.9);
     }
 
     public Command reverseRollers() {
-        return runOnce(() -> rollerMotor.set(0.75));
+        return runOnce(() -> rollerTarget = 0.9);
     }
 
     public Command stopRollers() {
-        return runOnce(() -> rollerMotor.set(0));
+        return runOnce(() -> rollerTarget = 0);
     }
 
     public Command moveIntakeDown() {
@@ -90,16 +94,19 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
-        Rotation2d current = Rotation2d.fromDegrees(pivotEncoder.getPosition());
+        Rotation2d pivotTargetRotation = Rotation2d.fromDegrees(pivotTarget);
+        Rotation2d pivotRotation = Rotation2d.fromDegrees(pivotEncoder.getPosition());
 
-        double error = Math.max(Math.min(target.minus(current).getDegrees() * Constants.kP,
-            /* Max motor speed */ Constants.motorLimit), /* Min motor speed */ -Constants.motorLimit);
+        double pivotError = Math.max(Math.min(pivotTargetRotation.minus(pivotRotation).getDegrees() * Constants.pivotKP,
+            /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
+        if (pivotError < 0) pivotError *= Constants.gravityMod; // Reduce power going down
+        pivotMotor.set(pivotError);
 
-        if (error < 0) error *= Constants.gravityMod; // Reduce power going down
-        pivotMotor.set(error);
+        double rollersError = Math.max(Math.min(rollerTarget - rollerMotor.get() * Constants.pivotKP,
+            /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
+        rollerMotor.set(rollersError);
 
-        SmartDashboard.putNumber("Intake Encoder Position", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Intake Position", pivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }
 
