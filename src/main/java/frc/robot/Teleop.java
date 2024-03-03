@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
+import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.AprilTagVision;
 
@@ -50,7 +52,7 @@ public class Teleop {
         this.vision = vision;
     }
 
-    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer) {
+    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper) {
         // // +++ Init Subsystems +++
 
         intake.init();
@@ -61,6 +63,9 @@ public class Teleop {
         driverController.start().onTrue(Commands.runOnce(() -> driveSubsystem.resetGyro(), driveSubsystem));
         // driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
         driverController.b().onTrue(CommandSequences.rawShootCommand(0.7, transfer, shooter));
+
+        // play funny.chrp
+        // operatorController.start().onTrue(driveSubsystem.playMusic(0));
 
         // Spin robot 180 degrees
         driverController.leftStick().onTrue(
@@ -91,11 +96,11 @@ public class Teleop {
         // Shooter warm-up
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
 
-        // operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
-        //     .andThen(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1)));
+        operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
+            .andThen(RumbleSequences.rumble(operatorController.getHID(), RumbleType.kLeftRumble, 1.0)));
 
-        // operatorController.rightTrigger().onTrue(trapper.moveToHomePosition());
-        // operatorController.leftTrigger().onTrue(trapper.moveToFeedPosition());
+        operatorController.rightTrigger().onTrue(trapper.homePosition());
+        operatorController.leftTrigger().onTrue(trapper.stage1());
 
         // Intake phase
         driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
@@ -157,7 +162,7 @@ public class Teleop {
 
                 // Actually drive the swerve base
                 driveSubsystem.driveTranslationRotationRaw(
-                    new ChassisSpeeds(speedY, speedX, rot)
+                    new ChassisSpeeds(speedY, speedX, -rot)
                 );
             },
             driveSubsystem

@@ -5,7 +5,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -26,7 +26,8 @@ public class FalconModule extends SwerveModule {
         public static final double driveRatio = 1 / 6.75;
         public static final double measuredWheelDiameter = Units.inchesToMeters(4.0);
 
-        public static final double turningRatio = 1 / 21.42857;
+        // public static final double turningRatio = 1 / 21.42857;
+        public static final double turningRatio = 21.42857;
 
         public static final boolean invertDriveMotor = true;
         public static final boolean invertTurningMotor = true;
@@ -35,9 +36,9 @@ public class FalconModule extends SwerveModule {
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(0.21, 0, 0);
+        public static PID turningPIDConstants = new PID(40, 0, 3);
 
-        public static PID drivePIDConstants = new PID(3, 0, 0);
+        public static PID drivePIDConstants = new PID(10, 0, 0);
         public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911); //0.7, 2.15
     }
 
@@ -56,7 +57,7 @@ public class FalconModule extends SwerveModule {
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private TalonFXConfiguration turningMotorConfig = new TalonFXConfiguration();
 
-    private final PositionDutyCycle turnPositionRequest = new PositionDutyCycle(0);
+    private final MotionMagicVoltage turnPositionRequest = new MotionMagicVoltage(0);
     private final DutyCycleOut driveVoltageRequest = new DutyCycleOut(0);
     private final VelocityDutyCycle driveVelocityRequest = new VelocityDutyCycle(0);
 
@@ -85,7 +86,8 @@ public class FalconModule extends SwerveModule {
             .withSupplyTimeThreshold(1);
         
         driveMotorConfig.Feedback = new FeedbackConfigs()
-            .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor); // Again, params are missing. should have 10 second timeout. maybe it'll be fine?
+            .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+            .withRotorToSensorRatio(Constants.driveRatio); // Again, params are missing. should have 10 second timeout. maybe it'll be fine?
 
         // Setup drive pid
         PID drivePIDConstants = Constants.drivePIDConstants;
@@ -102,7 +104,11 @@ public class FalconModule extends SwerveModule {
         // Turning motor setup
         this.turningMotor = new TalonFX(turningID, drivetrainCanBus);
         this.turningMotor.getConfigurator().apply(new TalonFXConfiguration());
-        this.turningMotor.setInverted(Constants.invertTurningMotor);
+
+        turningMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 100.0 / Constants.turningRatio;
+        turningMotorConfig.MotionMagic.MotionMagicAcceleration = turningMotorConfig.MotionMagic.MotionMagicCruiseVelocity / 0.100;
+        turningMotorConfig.MotionMagic.MotionMagicExpo_kV = 0.12 * Constants.turningRatio;
+        turningMotorConfig.MotionMagic.MotionMagicExpo_kA = 0.1;
 
         turningMotorConfig.CurrentLimits = new CurrentLimitsConfigs()
             .withStatorCurrentLimitEnable(true)
@@ -112,9 +118,10 @@ public class FalconModule extends SwerveModule {
             .withSupplyCurrentThreshold(30)
             .withSupplyTimeThreshold(1);
 
-        turningMotorConfig.Feedback = new FeedbackConfigs()
-            // .withRotorToSensorRatio(Constants.turningRatio)
-            .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
+        // turningMotorConfig.Feedback.RotorToSensorRatio = Constants.turningRatio;
+        turningMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        turningMotorConfig.Feedback.SensorToMechanismRatio = Constants.turningRatio;
+        turningMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
         // Setup turning pid
         PID turningPIDConstants = Constants.turningPIDConstants;
@@ -153,8 +160,7 @@ public class FalconModule extends SwerveModule {
     public void periodic() {
         if(DriverStation.isDisabled()) selfTargetAngle();
 
-        turningMotor.setControl(turnPositionRequest.withPosition(targetAngle.getRotations()
-            / Constants.turningRatio * (Constants.flipTurnDirection ? -1 : 1)));
+        turningMotor.setControl(turnPositionRequest.withPosition(targetAngle.getRotations()));
         // turningMotor.set(0);
 
         switch(driveMode) {
@@ -171,7 +177,7 @@ public class FalconModule extends SwerveModule {
 
         currentPosition = getModuleRotation().getDegrees();
 
-        SmartDashboard.putNumber(moduleName + "-Position", getModuleRotation().getDegrees());
+        SmartDashboard.putNumber(moduleName + "-Position", currentPosition);
         SmartDashboard.putNumber(moduleName + "-Target", MathUtil.inputModulus(targetAngle.getDegrees(), -180, 180));
         SmartDashboard.putNumber(moduleName + "-CANCoder", encoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.updateValues();
@@ -182,8 +188,7 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public Rotation2d getModuleRotation() {
-        return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() * Constants.turningRatio * 360)
-            % 360 * (Constants.flipTurnDirection ? -1 : 1));
+        return Rotation2d.fromDegrees((turningMotor.getPosition().getValueAsDouble() * 360) % 360);
     }
 
     /**
@@ -196,7 +201,7 @@ public class FalconModule extends SwerveModule {
 
     @Override
     public void homeTurningMotor() {
-        turningMotor.setPosition(-encoder.getAbsolutePosition().getValueAsDouble() % 1 / Constants.turningRatio);
+        turningMotor.setPosition(encoder.getAbsolutePosition().getValueAsDouble() % 1);
     }
 
     /**

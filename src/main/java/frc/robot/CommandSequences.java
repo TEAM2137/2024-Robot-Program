@@ -100,7 +100,7 @@ public class CommandSequences {
 
     
     public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startShooter(speed)
+        return shooter.startShooter(speed).withTimeout(1)
             .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.7))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     } 
@@ -187,7 +187,7 @@ public class CommandSequences {
     }
 
     public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
-        return trapper.moveToFeedPosition()
+        return trapper.stage1()
             .andThen(timingCommand(0.5))
             .andThen(trapper.runMotor())
             .andThen(rawShootCommand(0.1, transfer, shooter))

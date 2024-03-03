@@ -80,7 +80,7 @@ public class TransferSubsystem extends SubsystemBase {
     public Command feedShooterCommand() {
         return removeForceStop().andThen(runEnd(
             () -> {
-                beltMotor.set(1);
+                beltMotor.set(0.5);
             },
             () -> {
                 beltMotor.set(0);

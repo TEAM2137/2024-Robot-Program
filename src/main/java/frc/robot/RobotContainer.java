@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
+import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.vision.AprilTagVision;
@@ -35,7 +36,7 @@ public class RobotContainer {
     private ShooterSubsystem shooterSubsystem;
     // private ClimberSubsystem climberSubsystem;
     private TransferSubsystem transferSubsystem;
-    // private TrapperSubsystem trapperSubsystem;
+    private TrapperSubsystem trapperSubsystem;
 
     // Misc stuff
     private final AprilTagVision vision = new AprilTagVision();
@@ -67,7 +68,7 @@ public class RobotContainer {
         shooterSubsystem = new ShooterSubsystem();
         // climberSubsystem = new ClimberSubsystem();
         transferSubsystem = new TransferSubsystem();
-        // trapperSubsystem = new TrapperSubsystem();
+        trapperSubsystem = new TrapperSubsystem();
 
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
@@ -112,8 +113,7 @@ public class RobotContainer {
     public void runTeleop() {
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
-        // teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem);
-        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem);
+        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem);
     }
 
     /**

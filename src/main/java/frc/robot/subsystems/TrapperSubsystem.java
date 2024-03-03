@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,14 +19,11 @@ import frc.robot.util.PID;
 
 public class TrapperSubsystem extends SubsystemBase {
     public static class Constants {
-        public static double ARM_HOME_ANGLE = 149.05;
-        public static double WRIST_HOME_ANGLE = 10.32;
+        public static double ARM_HOME_ANGLE = 51.9;
+        public static double WRIST_HOME_ANGLE = 109.8;
 
-        public static double ARM_FEED_ANGLE = 50.40;
-        public static double WRIST_FEED_ANGLE = 185.35;
-
-        public static double ARM_TRAP_ANGLE = 0.08189;
-        public static double WRIST_TRAP_ANGLE = 0.83944;
+        public static double ARM_STAGE1 = 51.9;
+        public static double WRIST_STAGE1 = 252.0;
 
         public static PID TRAPPER_PID = new PID(0.1, 0, 0.01, 0);
     }
@@ -51,19 +49,21 @@ public class TrapperSubsystem extends SubsystemBase {
 
         // Wrist (the end part)
         wristMotor = new CANSparkMax(CanIDs.get("trapper-wrist"), MotorType.kBrushless);
-        wristMotor.setInverted(true);
+        wristMotor.setInverted(false);
+        wristMotor.setIdleMode(IdleMode.kBrake);
 
         wristEncoder = wristMotor.getAbsoluteEncoder();
         wristEncoder.setPositionConversionFactor(360);
-        wristEncoder.setZeroOffset(300);
+        wristEncoder.setZeroOffset(200);
 
         // Arm (the bottom part)
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
         armMotor.setInverted(true);
+        armMotor.setIdleMode(IdleMode.kBrake);
 
         armEncoder = armMotor.getAbsoluteEncoder();
         armEncoder.setPositionConversionFactor(360);
-        armEncoder.setZeroOffset(0);
+        armEncoder.setZeroOffset(300);
 
         // Rollers (self-explanatory)
         rollers = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
@@ -86,14 +86,12 @@ public class TrapperSubsystem extends SubsystemBase {
     public Command setWristTarget(double target) {
         return runOnce(() -> {
             wristTarget = target;
-            //pivotPID.setReference(target, CANSparkBase.ControlType.kPosition);
         });
     }
 
     public Command setArmTarget(double target) {
         return runOnce(() -> {
             armTarget = target;
-            // armPID.setReference(target, CANSparkBase.ControlType.kPosition);
         });
     }
 
@@ -101,16 +99,12 @@ public class TrapperSubsystem extends SubsystemBase {
         return setWristTarget(pivotTarget).alongWith(setArmTarget(armTarget));
     }
 
-    public Command moveToFeedPosition() {
-        return setWristTarget(Constants.WRIST_FEED_ANGLE).andThen(setArmTarget(Constants.ARM_FEED_ANGLE));
-    }
-
-    public Command moveToHomePosition() {
+    public Command homePosition() {
         return setWristTarget(Constants.WRIST_HOME_ANGLE).andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
     }
 
-    public Command moveToTrapPosition() {
-        return setWristTarget(Constants.WRIST_TRAP_ANGLE).andThen(setArmTarget(Constants.ARM_TRAP_ANGLE));
+    public Command stage1() {
+        return setWristTarget(Constants.WRIST_STAGE1).andThen(setArmTarget(Constants.ARM_STAGE1));
     }
 
     @Override
