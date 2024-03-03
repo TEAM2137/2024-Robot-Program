@@ -25,6 +25,135 @@ public class CommandSequences {
     public static boolean shouldFlip;
     public static double calculatedShooterSpeed = 0.9;
 
+    // +++ Shooter +++
+
+    /**
+     * Spins up the shooter motors to a specified speed and shoots after 0.5
+     * seconds at whatever angle the shooter is currently at.
+     * @return
+     */
+    public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
+        return shooter.startAndRun(calculatedShooterSpeed, 0.5)
+            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.5))
+            .andThen(stopShooterAndTransfer(shooter, transfer));
+    }
+    
+    /**
+     * Starts both the shooter and transfer. You probably shouldn't call this
+     * until the shooter motors are spun up first.
+     * @return the command
+     */
+    public static Command startShooterAndTransfer(double speed, ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return shooter.startShooter(speed)
+            .alongWith(transfer.removeForceStop().andThen(transfer.feedShooterCommand()));
+    }
+
+    /**
+     * Force stops both the transfer and the shooter motors 
+     * @return the command
+     */
+    public static Command stopShooterAndTransfer(ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return shooter.stopShooter().alongWith(transfer.transferForceStop());
+    }
+
+    /**
+     * Starts the shooter motors for a specified amount of time. The 
+     * motors will not stop when the command ends.
+     * @param speed the desired RPM of the shooter motors
+     * @param time the amount of time the command will last
+     * @return the command
+     */
+    public static Command spinUpShooter(double speed, double time, ShooterSubsystem shooter) {
+        return shooter.startShooter(speed).andThen(new RunCommand(() -> {})).withTimeout(time);
+    }
+
+    // +++ Intake +++
+
+    /**
+     * Moves the intake down, starts the intake motors, and starts the transfer.
+     * Once a note is detected in the transfer, the command will end and everything stops.
+     * @return the command
+     */
+    public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
+        return (transfer.intakeNoteCommand(() -> false)
+            .alongWith(intake.deployIntake()))
+            .andThen(intake.stopRollers()
+            .andThen(intake.moveIntakeUp()));
+    }
+
+    /**
+     * Starts the intake rollers. autonStopIntake() must be called after
+     * to stop the rollers.
+     * @return the command
+     */
+    public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
+        return
+            intake.moveIntakeDown()
+            .andThen(intake.startRollers())
+            .alongWith(transfer.intakeNoteCommand(() -> false));
+    }
+
+    /**
+     * Stops the intake rollers if they are running and moves the intake
+     * back up.
+     * @return the command
+     */
+    public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
+        return
+            intake.stopRollers()
+            .andThen(transfer.transferForceStop())
+            .andThen(intake.moveIntakeUp());
+    }
+
+    // +++ Climber +++
+    
+    /**
+     * Raises the climber to the top
+     * @return the command
+     */
+    public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
+        return intake.moveIntakeDown().andThen(climb.climberUpCommand());
+    }
+
+    /**
+     * Lowers the climber to the bottom
+     * @return the command
+     */
+    public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
+        return intake.moveIntakeDown().andThen(climb.climberDownCommand());
+    }
+
+    // +++ Arm +++
+
+    /**
+     * Moves a stored note into the arm
+     * @return the command
+     */
+    public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return trapper.stage1()
+            .andThen(waitCommand(0.5))
+            .andThen(trapper.runMotor())
+            .andThen(rawShootCommand(0.1, transfer, shooter))
+            // .andThen(timingCommand(0.2))
+            .andThen(shooter.stopShooter())
+            .andThen(trapper.stopMotor());
+    }
+
+    // +++ Vision +++
+
+    /**
+     * Uses the limelight and AprilTags to point towards the speaker and
+     * shoot a stored note once centered. This command takes 1.3 seconds to complete.
+     * @return the command
+     */
+    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
+        TransferSubsystem transfer, ShooterSubsystem shooter) {
+        return pointAndAimCommand(driveSubsystem, shooter, vision)
+            .alongWith(shooter.startAndRun(calculatedShooterSpeed, 0.5))
+            .andThen(startShooterAndTransfer(calculatedShooterSpeed, shooter, transfer).withTimeout(0.5))
+            .andThen(stopShooterAndTransfer(shooter, transfer));
+    }
+
     /**
      * Uses the limelight and AprilTags to just point towards the speaker, from
      * wherever the robot is on the field. The shooter will also aim for a shot.
@@ -84,116 +213,7 @@ public class CommandSequences {
         ).withTimeout(0.8).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
     }
 
-    /**
-     * Uses the limelight and AprilTags to point towards the speaker and
-     * shoot a stored note once centered. This command takes 1.3 seconds to complete.
-     * @return the command
-     */
-    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
-        TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return pointAndAimCommand(driveSubsystem, shooter, vision)
-            .alongWith(shooter.startAndRun(calculatedShooterSpeed, 0.5))
-            .andThen(startShooterAndTransfer(calculatedShooterSpeed, shooter, transfer).withTimeout(0.5))
-            .andThen(stopShooterAndTransfer(shooter, transfer));
-    }
-
-    
-    public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startAndRun(calculatedShooterSpeed, 0.5)
-            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.5))
-            .andThen(stopShooterAndTransfer(shooter, transfer));
-    } 
-
-    /**
-     * Starts the shooter motors for a specified amount of time. The 
-     * motors will not stop when the command ends.
-     * @param speed the desired RPM of the shooter motors
-     * @param time the amount of time the command will last
-     * @return the command
-     */
-    public static Command spinUpShooter(double speed, double time, ShooterSubsystem shooter) {
-        return shooter.startShooter(speed).andThen(new RunCommand(() -> {})).withTimeout(time);
-    }
-
-    /**
-     * Starts the intake rollers. autonStopIntake() must be called after
-     * to stop the rollers.
-     * @return the command
-     */
-    public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return
-            intake.moveIntakeDown()
-            .andThen(intake.startRollers())
-            .alongWith(transfer.intakeNoteCommand(() -> false));
-    }
-
-    /**
-     * Stops the intake rollers if they are running and moves the intake
-     * back up.
-     * @return the command
-     */
-    public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return
-            intake.stopRollers()
-            .andThen(transfer.transferForceStop())
-            .andThen(intake.moveIntakeUp());
-    }
-    
-    /**
-     * TODO
-     * @return the command
-     */
-    public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
-        return intake.moveIntakeDown().andThen(climb.climberUpCommand());
-    }
-
-    /**
-     * TODO
-     * @return the command
-     */
-    public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
-        return intake.moveIntakeDown().andThen(climb.climberDownCommand());
-    }
-
-    /**
-     * Starts both the shooter and transfer. You probably shouldn't call this
-     * until the shooter motors are spun up first.
-     * @return the command
-     */
-    public static Command startShooterAndTransfer(double speed, ShooterSubsystem shooter, TransferSubsystem transfer) {
-        return shooter.startShooter(speed)
-            .alongWith(transfer.removeForceStop().andThen(transfer.feedShooterCommand()));
-    }
-
-    /**
-     * Force stops both the transfer and the shooter motors 
-     * @return the command
-     */
-    public static Command stopShooterAndTransfer(ShooterSubsystem shooter, TransferSubsystem transfer) {
-        return shooter.stopShooter().alongWith(transfer.transferForceStop());
-    }
-
-    /**
-     * Moves the intake down, starts the intake motors, and starts the transfer.
-     * Once a note is detected in the transfer, the command will end and everything stops.
-     * @return the command
-     */
-    public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return (transfer.intakeNoteCommand(() -> false)
-            .alongWith(intake.deployIntake()))
-            .andThen(intake.stopRollers()
-            .andThen(intake.moveIntakeUp()));
-    }
-
-    public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
-        return trapper.stage1()
-            .andThen(timingCommand(0.5))
-            .andThen(trapper.runMotor())
-            .andThen(rawShootCommand(0.1, transfer, shooter))
-            // .andThen(timingCommand(0.2))
-            .andThen(shooter.stopShooter())
-            .andThen(trapper.stopMotor());
-    }
+    // +++ Utility +++
 
     /**
      * Stops the motors of both the intake and the transfer, and stows the intake.
@@ -204,7 +224,11 @@ public class CommandSequences {
             .andThen(intake.moveIntakeUp()).andThen(shooter.stopShooter());
     }
 
-    public static Command timingCommand(double seconds) {
+    /**
+     * Waits for a specified amount of time
+     * @return the command
+     */
+    public static Command waitCommand(double seconds) {
         return new RunCommand(() -> {}).withTimeout(seconds);
     }
 }
