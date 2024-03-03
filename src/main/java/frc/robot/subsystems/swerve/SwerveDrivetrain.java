@@ -45,7 +45,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            0.419677734, "Front Left");
+            -0.080322266, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
@@ -55,7 +55,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("bl-drive"), 
             CanIDs.get("bl-turn"), 
             CanIDs.get("bl-encoder"),
-            0.335693359, "Back Left");
+            -0.164306641, "Back Left");
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 

@@ -27,7 +27,6 @@ public class FalconModule extends SwerveModule {
         public static final double driveRatio = 1 / 6.75;
         public static final double measuredWheelDiameter = Units.inchesToMeters(4.0);
 
-        // public static final double turningRatio = 1 / 21.42857;
         public static final double turningRatio = 21.42857;
 
         public static final boolean invertDriveMotor = true;
@@ -37,10 +36,10 @@ public class FalconModule extends SwerveModule {
         public static final double driveMotorRamp = 0.0;
 
         public static double turningFeedForward = 0.75;
-        public static PID turningPIDConstants = new PID(40, 0, 3);
+        public static PID turningPIDConstants = new PID(180, 0, 6);
 
-        public static PID drivePIDConstants = new PID(10, 0, 0);
-        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.64728, 2.2607, 0.15911); //0.7, 2.15
+        public static PID drivePIDConstants = new PID(14, 0, 0.01);
+        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.65, 2.28, 0.41);
     }
 
     private TalonFX driveMotor;
@@ -164,7 +163,6 @@ public class FalconModule extends SwerveModule {
         if(DriverStation.isDisabled()) selfTargetAngle();
 
         turningMotor.setControl(turnPositionRequest.withPosition(targetAngle.getRotations()));
-        // turningMotor.set(0);
 
         switch(driveMode) {
             case RawPower: //for use in teleop

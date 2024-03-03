@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -82,26 +81,26 @@ public class CommandSequences {
                 SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
             },
             driveSubsystem
-        ).withTimeout(0.9).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
+        ).withTimeout(0.8).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
     }
 
     /**
      * Uses the limelight and AprilTags to point towards the speaker and
-     * shoot a stored note once centered. This command takes 2.5 seconds to complete.
+     * shoot a stored note once centered. This command takes 1.3 seconds to complete.
      * @return the command
      */
     public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
         TransferSubsystem transfer, ShooterSubsystem shooter) {
         return pointAndAimCommand(driveSubsystem, shooter, vision)
-            .alongWith(Commands.run(() -> shooter.setPowerRaw(calculatedShooterSpeed), shooter).withTimeout(0.5))
+            .alongWith(shooter.startAndRun(calculatedShooterSpeed, 0.5))
             .andThen(startShooterAndTransfer(calculatedShooterSpeed, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
 
     
     public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startShooter(speed).withTimeout(1)
-            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.7))
+        return shooter.startAndRun(calculatedShooterSpeed, 0.5)
+            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     } 
 

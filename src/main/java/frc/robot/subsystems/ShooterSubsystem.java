@@ -99,6 +99,10 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
+    public Command startAndRun(double speed, double time) {
+        return run(() -> setPowerRaw(speed)).withTimeout(time);
+    }
+
     /**
      * Starts the shooter wheels
      * @param speed the RPM to set the wheels to
