@@ -33,8 +33,8 @@ public class CommandSequences {
      * @return
      */
     public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startAndRun(calculatedShooterSpeed, 0.5)
-            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.5))
+        return shooter.startAndRun(calculatedShooterSpeed, 0.6)
+            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.7))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
     

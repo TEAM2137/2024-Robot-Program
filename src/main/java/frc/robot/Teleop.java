@@ -101,6 +101,9 @@ public class Teleop {
 
         // +++ OPERATOR +++
 
+        operatorController.x().onTrue(intake.reverseRollers());
+        operatorController.x().onFalse(intake.stopRollers());
+
         // Shooter manual controls
         operatorController.a().onTrue(CommandSequences.startShooterAndTransfer(0.75, shooter, transfer));
         operatorController.a().onFalse(CommandSequences.stopShooterAndTransfer(shooter, transfer));

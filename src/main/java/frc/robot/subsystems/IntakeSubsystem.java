@@ -18,9 +18,9 @@ import frc.robot.util.PID;
 public class IntakeSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static double kP = 0.00167; // Power the pivot moves to its target with
+        public static double kP = 0.00356; // Power the pivot moves to its target with
         public static double motorLimit = 0.4; // Max power of the pivot motor
-        public static double gMod = 0.75; // Reduces power moving the pivot down
+        public static double gravityMod = 0.85; // Reduces power moving the pivot down
 
         public static PID rollerPID = new PID(0.1, 0.2, 0.3, 0.4);
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
@@ -28,8 +28,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // private double currentThreshold = 75;
 
-    private double minPos = 160.0;
-    private double maxPos = 306.8;
+    private double minPos = 162.0;
+    private double maxPos = 315.0;
 
     private double pivotTarget = maxPos;
     
@@ -61,7 +61,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command startRollers() {
-        return runOnce(() -> rollerMotor.set(-1));
+        return runOnce(() -> rollerMotor.set(-0.75));
+    }
+
+    public Command reverseRollers() {
+        return runOnce(() -> rollerMotor.set(0.75));
     }
 
     public Command stopRollers() {
@@ -92,7 +96,7 @@ public class IntakeSubsystem extends SubsystemBase {
         double error = Math.max(Math.min(target.minus(current).getDegrees() * Constants.kP,
             /* Max motor speed */ Constants.motorLimit), /* Min motor speed */ -Constants.motorLimit);
 
-        if (error < 0) error *= Constants.gMod; // Reduce power going down
+        if (error < 0) error *= Constants.gravityMod; // Reduce power going down
         pivotMotor.set(error);
 
         SmartDashboard.putNumber("Intake Encoder Position", pivotEncoder.getPosition());
