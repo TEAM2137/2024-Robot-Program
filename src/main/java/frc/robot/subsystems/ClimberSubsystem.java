@@ -7,6 +7,7 @@ import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
@@ -84,8 +85,7 @@ public class ClimberSubsystem extends SubsystemBase {
     public Command climberUpCommand() {
         return 
             setSpeedCommand(0.5)
-            .alongWith(run(() -> {}))
-            .until(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold)
+            .alongWith(Commands.waitUntil(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold))
             .andThen(stopClimber());
     }
 
@@ -96,8 +96,7 @@ public class ClimberSubsystem extends SubsystemBase {
     public Command climberDownCommand() {
         return 
             setSpeedCommand(-0.5)
-            .alongWith(run(() -> {}))
-            .until(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold)
+            .alongWith(Commands.waitUntil(() -> climbRight.getOutputCurrent() > Constants.HardStopThreshold))
             .andThen(stopClimber());
     }
 

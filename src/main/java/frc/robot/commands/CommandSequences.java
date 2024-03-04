@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -75,7 +76,7 @@ public class CommandSequences {
      * @return the command
      */
     public static Command spinUpShooter(double speed, double time, ShooterSubsystem shooter) {
-        return shooter.startShooter(speed).andThen(new RunCommand(() -> {})).withTimeout(time);
+        return shooter.startShooter(speed).andThen(Commands.waitSeconds(time));
     }
 
     // +++ Intake +++
@@ -233,13 +234,5 @@ public class CommandSequences {
     public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter) {
         return transfer.transferForceStop().andThen(intake.stopRollers())
             .andThen(intake.moveIntakeUp()).andThen(shooter.stopShooter());
-    }
-
-    /**
-     * Waits for a specified amount of time
-     * @return the command
-     */
-    public static Command waitCommand(double seconds) {
-        return new RunCommand(() -> {}).withTimeout(seconds);
     }
 }
