@@ -22,8 +22,8 @@ public class TrapperSubsystem extends SubsystemBase {
         public static double ARM_HOME_ANGLE = 51.9;
         public static double WRIST_HOME_ANGLE = 109.8;
 
-        public static double ARM_STAGE1 = 51.9;
-        public static double WRIST_STAGE1 = 252.0;
+        public static double ARM_STAGE1 = 20.0;
+        public static double WRIST_STAGE1 = 206.3;
 
         public static PID TRAPPER_PID = new PID(0.1, 0, 0.01, 0);
     }

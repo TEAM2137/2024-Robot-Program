@@ -20,6 +20,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public static class Constants {
         public static double maxAngle = 164.4;
         public static double midAngle = 142.8;
+        public static double ampAngle = 134.0;
         public static double minAngle = 131.5;
     }
 
@@ -37,23 +38,12 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotTarget = Constants.minAngle;
 
         topMotor = new CANSparkMax(CanIDs.get("shooter-top"), MotorType.kBrushless);
-        bottomMotor = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
+        topMotor.setIdleMode(IdleMode.kCoast);
         topMotor.stopMotor();
+        
+        bottomMotor = new CANSparkMax(CanIDs.get("shooter-bottom"), MotorType.kBrushless);
+        bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomMotor.stopMotor();
-
-        // topPID = topMotor.getPIDController();
-        // topPID.setFeedbackDevice(topMotor.getEncoder());
-        // topPID.setP(Constants.shooterPID.getP());
-        // topPID.setI(Constants.shooterPID.getI());
-        // topPID.setD(Constants.shooterPID.getD());
-        // topPID.setFF(0);
-
-        // bottomPID = bottomMotor.getPIDController();
-        // bottomPID.setFeedbackDevice(bottomMotor.getEncoder());
-        // bottomPID.setP(Constants.shooterPID.getP());
-        // bottomPID.setI(Constants.shooterPID.getI());
-        // bottomPID.setD(Constants.shooterPID.getD());
-        // bottomPID.setFF(0);
 
         pivotMotor = new CANSparkMax(CanIDs.get("shooter-pivot"), MotorType.kBrushless);
         pivotMotor.stopMotor();
@@ -62,15 +52,6 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotEncoder.setPositionConversionFactor(360);
         pivotEncoder.setZeroOffset(100);
-
-        /* The PID is removed as of now because it's trash and it rips the shooter apart :( */
-
-        //pivotPID = pivotMotor.getPIDController();
-        //pivotPID.setFeedbackDevice(absolutePivotEncoder);
-        //pivotPID.setP(Constants.pivotPID.getP());
-        //pivotPID.setI(Constants.pivotPID.getI());
-        //pivotPID.setD(Constants.pivotPID.getD());
-        //pivotPID.setFF(Constants.pivotPID.getFF());
     }
 
     /**

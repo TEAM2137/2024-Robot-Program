@@ -94,7 +94,7 @@ public class Teleop {
         operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
             .andThen(CommandSequences.rawShootCommand(0.9, transfer, shooter)));
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
-            .andThen(CommandSequences.rawShootCommand(0.6, transfer, shooter)));
+            .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
         // Home arm
         operatorController.rightTrigger().onTrue(trapper.homePosition());
@@ -103,9 +103,9 @@ public class Teleop {
 
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
-        operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
-            .andThen(CommandSequences.rawShootCommand(0.3, transfer, shooter)));
-
+        operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
+            .andThen(CommandSequences.ampShootCommand(0.13, transfer, shooter)));
+            
         // Transfer note to arm
         // operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
         //     .andThen(RumbleSequences.rumble(operatorController.getHID(), RumbleType.kLeftRumble, 1.0)));

@@ -33,8 +33,19 @@ public class CommandSequences {
      * @return
      */
     public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startAndRun(calculatedShooterSpeed, 0.8)
+        return shooter.startAndRun(speed, 0.8)
             .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.8))
+            .andThen(stopShooterAndTransfer(shooter, transfer));
+    }
+
+    /**
+     * Spins up the shooter motors to a specified speed and shoots after 0.5
+     * seconds at whatever angle the shooter is currently at.
+     * @return
+     */
+    public static Command ampShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
+        return shooter.startAndRun(speed, 1.2)
+            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(1.0))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
     
