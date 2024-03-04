@@ -143,7 +143,7 @@ public class CommandSequences {
      */
     public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return trapper.stage1()
-            .andThen(waitCommand(0.5))
+            .andThen(Commands.waitSeconds(0.5))
             .andThen(trapper.runMotor())
             .andThen(rawShootCommand(0.1, transfer, shooter))
             // .andThen(timingCommand(0.2))
