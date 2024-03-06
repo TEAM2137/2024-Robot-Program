@@ -20,8 +20,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public static class Constants {
         public static double maxAngle = 164.4;
         public static double midAngle = 142.8;
-        public static double ampAngle = 134.0;
-        public static double minAngle = 131.5;
+        public static double ampAngle = 134.0; 
+        public static double stowAngle = 107.9;
+        public static double minAngle = 107.9;
     }
 
     private CANSparkMax topMotor;

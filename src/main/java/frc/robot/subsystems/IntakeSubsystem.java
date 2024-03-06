@@ -54,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(180);
+        pivotEncoder.setZeroOffset(280);
     }
 
     public void init() {

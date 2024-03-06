@@ -44,8 +44,8 @@ public class Autonomous {
             drivetrain::getSpeeds, // ChassisSpeeds supplier, ROBOT RELATIVE
             drivetrain::driveTranslationRotationRaw, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig(
-                new PIDConstants(5.0, 0.0, 0.1), // Translation
-                new PIDConstants(6.0, 0.0, 0.6), // Rotation
+                new PIDConstants(4.0, 0.0, 0.1), // Translation
+                new PIDConstants(4.0, 0.0, 0.3), // Rotation
                 3.0, // Max module speed (m/s)
                 0.4, // Distance from robot center to furthest module (meters)
                 new ReplanningConfig()

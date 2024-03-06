@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.CommandSequences;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
@@ -74,12 +76,13 @@ public class RobotContainer {
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
 
-        // NamedCommands.registerCommand("speaker-aim", 
-        //    CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
-        // NamedCommands.registerCommand("speaker-shoot", 
-        //    CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, shooterSubsystem));
-        // NamedCommands.registerCommand("intake-down", 
-        //     CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
+        NamedCommands.registerCommand("speaker-aim", 
+           CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
+        NamedCommands.registerCommand("speaker-shoot", 
+           CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, shooterSubsystem)
+           .andThen(shooterSubsystem.stowPivot()));
+        NamedCommands.registerCommand("intake-down", 
+            CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
         
         auto.configure();
 

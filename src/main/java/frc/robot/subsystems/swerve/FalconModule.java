@@ -93,6 +93,8 @@ public class FalconModule extends SwerveModule {
         PID drivePIDConstants = Constants.drivePIDConstants;
         this.driveFeedForward = Constants.driveFeedforward;
 
+        driveMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
         driveMotorConfig.Slot0.kP = drivePIDConstants.getP();
         driveMotorConfig.Slot0.kI = drivePIDConstants.getI();
         driveMotorConfig.Slot0.kD = drivePIDConstants.getD();

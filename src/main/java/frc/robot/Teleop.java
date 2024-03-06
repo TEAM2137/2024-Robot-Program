@@ -62,8 +62,8 @@ public class Teleop {
         driverController.start().onTrue(Commands.runOnce(() -> {
             driveSubsystem.resetGyro(); driveSubsystem.visionResetOdometry();
         }, driveSubsystem));
-        driverController.b().onTrue(CommandSequences.rawShootCommand(0.6, transfer, shooter));
-        // driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+        // driverController.b().onTrue(CommandSequences.rawShootCommand(0.6, transfer, shooter));
+        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
 
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
@@ -104,7 +104,7 @@ public class Teleop {
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
         operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
-            .andThen(CommandSequences.ampShootCommand(0.13, transfer, shooter)));
+            .andThen(CommandSequences.ampShootCommand(0.2, transfer, shooter)));
             
         // Transfer note to arm
         // operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
@@ -161,7 +161,7 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
-                driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, -rot));
+                driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem
         );

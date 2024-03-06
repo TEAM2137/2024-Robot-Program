@@ -161,6 +161,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         timer.reset();
         timer.start();
         
+        resetGyro();
         resetOdometry();
     }
 
@@ -265,7 +266,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public void resetGyro() {
-        pigeonIMU.setYaw(180);
+        pigeonIMU.setYaw(0);
     }
 
     /**

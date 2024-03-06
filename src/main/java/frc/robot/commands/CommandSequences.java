@@ -29,8 +29,8 @@ public class CommandSequences {
     // +++ Shooter +++
 
     /**
-     * Spins up the shooter motors to a specified speed and shoots after 0.5
-     * seconds at whatever angle the shooter is currently at.
+     * Spins up the shooter motors to a specified speed and shoots with
+     * whatever angle the shooter is currently at.
      * @return
      */
     public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
@@ -40,12 +40,11 @@ public class CommandSequences {
     }
 
     /**
-     * Spins up the shooter motors to a specified speed and shoots after 0.5
-     * seconds at whatever angle the shooter is currently at.
+     * Shoots into the amp by aiming the shooter pivot and shooting
      * @return
      */
     public static Command ampShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startAndRun(speed, 1.2)
+        return shooter.startAndRun(speed, 1.0)
             .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(1.0))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
@@ -187,30 +186,31 @@ public class CommandSequences {
                 if (vision.hasTarget()) vision.updateValues();
 
                 // Gets the position of the robot from the limelight data
-                Pose2d pose = driveSubsystem.getPose();
-                double shooterZ = 0.2;
+                Pose2d pose = vision.getPose();
+                double shooterZ = 0;
 
                 // Calculate necessary angles and distances
                 double distance = Math.sqrt(Math.pow(targetX - pose.getX(), 2) + Math.pow(targetY - pose.getY(), 2));
                 double desiredAngle = Math.atan2(targetY - pose.getY(), targetX - pose.getX()) + (shouldFlip ? Math.PI : 0);
                 double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - shooterZ, distance));
 
-                Rotation2d currentAngle = pose.getRotation();
+                Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 26; // as this value increases, the angle gets higher
-                double shootAngle = (-desiredVerticalAngle + 90) - angleOffset;
+                double angleOffset = 105; // as this value increases, the angle gets higher
+                double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
-                double error = targetAngle.minus(currentAngle).getDegrees(); // Calculate error
+                double error = -currentAngle.minus(targetAngle).getDegrees(); // Calculate error
                 if (error > 20) error = 20;
                 if (error < -20) error = -20;
 
-                if (shootAngle < 27) calculatedShooterSpeed = 0.6;
-                else calculatedShooterSpeed = 0.9;
+                if (distance < 1) calculatedShooterSpeed = 0.5;
+                else calculatedShooterSpeed = 0.8;
 
                 // Actually drive the swerve base and set the shooter target
-                shooter.setPivotTargetRaw(shootAngle);
+                shooter.setPivotTargetRaw(Math.max(Math.min(shootAngle, ShooterSubsystem.Constants.maxAngle),
+                    ShooterSubsystem.Constants.minAngle));
                 driveSubsystem.driveTranslationRotationRaw(
                     new ChassisSpeeds(0, 0, error * kP)
                 );
@@ -218,11 +218,12 @@ public class CommandSequences {
                 // Post debug values
                 // SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
                 // SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
-                // SmartDashboard.putNumber("Distance", distance);
-                SmartDashboard.putNumber("Target Shoot Angle", shootAngle);
+                SmartDashboard.putNumber("Distance", distance);
+                SmartDashboard.putNumber("Raw Shoot Angle", desiredVerticalAngle);
+                SmartDashboard.putNumber("Shoot Angle", shootAngle);
             },
             driveSubsystem
-        ).withTimeout(0.8).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
+        ).withTimeout(1.4).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
     }
 
     // +++ Utility +++
