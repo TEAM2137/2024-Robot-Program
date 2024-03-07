@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.CommandSequences;
 import frc.robot.commands.RumbleSequences;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
@@ -50,7 +51,7 @@ public class Teleop {
         this.vision = vision;
     }
 
-    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper) {
+    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper, ClimberSubsystem climber) {
         // +++ Init Subsystems +++
 
         intake.init();
@@ -101,14 +102,15 @@ public class Teleop {
         // Setup arm for amp
         operatorController.leftTrigger().onTrue(trapper.stage1());
 
+        // operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
+        // operatorController.povUp().onFalse(climber.stopClimber());
+        // operatorController.povDown().onTrue(CommandSequences.climberDownCommand(climber));
+        // operatorController.povDown().onFalse(climber.stopClimber());
+
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
         operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
             .andThen(CommandSequences.ampShootCommand(0.2, transfer, shooter)));
-            
-        // Transfer note to arm
-        // operatorController.b().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer)
-        //     .andThen(RumbleSequences.rumble(operatorController.getHID(), RumbleType.kLeftRumble, 1.0)));
 
         // +++ End controller bindings +++
 

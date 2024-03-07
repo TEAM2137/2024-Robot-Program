@@ -44,8 +44,9 @@ public class CommandSequences {
      * @return
      */
     public static Command ampShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startAndRun(speed, 1.0)
-            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(1.0))
+        return shooter.startShooter(speed)
+            .andThen(Commands.waitSeconds(1.2))
+            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.8))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
     
@@ -116,24 +117,6 @@ public class CommandSequences {
             .andThen(intake.moveIntakeUp());
     }
 
-    // +++ Climber +++
-    
-    /**
-     * Raises the climber to the top
-     * @return the command
-     */
-    public static Command raiseClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
-        return intake.moveIntakeDown().andThen(climb.climberUpCommand());
-    }
-
-    /**
-     * Lowers the climber to the bottom
-     * @return the command
-     */
-    public static Command lowerClimberCommand(ClimberSubsystem climb, IntakeSubsystem intake) {
-        return intake.moveIntakeDown().andThen(climb.climberDownCommand());
-    }
-
     // +++ Arm +++
 
     /**
@@ -197,7 +180,7 @@ public class CommandSequences {
                 Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 105; // as this value increases, the angle gets higher
+                double angleOffset = 103; // as this value increases, the angle gets lower
                 double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
@@ -205,7 +188,7 @@ public class CommandSequences {
                 if (error > 20) error = 20;
                 if (error < -20) error = -20;
 
-                if (distance < 1) calculatedShooterSpeed = 0.5;
+                if (distance < 0.8) calculatedShooterSpeed = 0.5;
                 else calculatedShooterSpeed = 0.8;
 
                 // Actually drive the swerve base and set the shooter target
@@ -218,7 +201,7 @@ public class CommandSequences {
                 // Post debug values
                 // SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
                 // SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
-                SmartDashboard.putNumber("Distance", distance);
+                // SmartDashboard.putNumber("Distance", distance);
                 SmartDashboard.putNumber("Raw Shoot Angle", desiredVerticalAngle);
                 SmartDashboard.putNumber("Shoot Angle", shootAngle);
             },
@@ -235,5 +218,13 @@ public class CommandSequences {
     public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter) {
         return transfer.transferForceStop().andThen(intake.stopRollers())
             .andThen(intake.moveIntakeUp()).andThen(shooter.stopShooter());
+    }
+
+    public static Command climberUpCommand(ClimberSubsystem climber) {
+        return climber.setSpeedCommand(0.5);
+    }
+
+    public static Command climberDownCommand(ClimberSubsystem climber) {
+        return climber.setSpeedCommand(-0.5);
     }
 }

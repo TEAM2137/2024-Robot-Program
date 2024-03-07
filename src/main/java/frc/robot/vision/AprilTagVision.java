@@ -2,6 +2,7 @@ package frc.robot.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -72,5 +73,10 @@ public class AprilTagVision {
 
     public Pose2d getPose() {
         return new Pose2d(getX(), getY(), getRotation());
+    }
+
+    // TODO work in progress
+    public Pose2d getFieldPose() {
+        return new Pose2d(Units.metersToFeet(getX()), Units.metersToFeet(getY()), getRotation());
     }
 }
