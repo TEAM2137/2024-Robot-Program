@@ -170,7 +170,7 @@ public class CommandSequences {
 
                 // Gets the position of the robot from the limelight data
                 Pose2d pose = vision.getPose();
-                double shooterZ = 0;
+                double shooterZ = 0.1;
 
                 // Calculate necessary angles and distances
                 double distance = Math.sqrt(Math.pow(targetX - pose.getX(), 2) + Math.pow(targetY - pose.getY(), 2));
@@ -180,7 +180,7 @@ public class CommandSequences {
                 Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 101; // as this value increases, the angle gets lower
+                double angleOffset = 96.5; // as this value increases, the angle gets lower
                 double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
@@ -199,14 +199,12 @@ public class CommandSequences {
                 );
 
                 // Post debug values
-                // SmartDashboard.putNumber("Desired angle", targetAngle.getDegrees());
-                // SmartDashboard.putNumber("Current angle", currentAngle.getDegrees());
                 // SmartDashboard.putNumber("Distance", distance);
                 SmartDashboard.putNumber("Raw Shoot Angle", desiredVerticalAngle);
                 SmartDashboard.putNumber("Shoot Angle", shootAngle);
             },
             driveSubsystem
-        ).withTimeout(1.4).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
+        ).withTimeout(1.3).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
     }
 
     // +++ Utility +++

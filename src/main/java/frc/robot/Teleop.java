@@ -63,8 +63,8 @@ public class Teleop {
         driverController.start().onTrue(Commands.runOnce(() -> {
             driveSubsystem.resetGyro(); driveSubsystem.visionResetOdometry();
         }, driveSubsystem));
-        // driverController.b().onTrue(CommandSequences.rawShootCommand(0.6, transfer, shooter));
-        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter)
+            .andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
 
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
@@ -97,9 +97,7 @@ public class Teleop {
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
-        // Home arm
         operatorController.rightTrigger().onTrue(trapper.homePosition());
-        // Setup arm for amp
         operatorController.leftTrigger().onTrue(trapper.stage1());
 
         operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
@@ -110,7 +108,7 @@ public class Teleop {
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
         operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
-            .andThen(CommandSequences.ampShootCommand(0.2, transfer, shooter)));
+            .andThen(CommandSequences.ampShootCommand(0.2/* TODO tune this */, transfer, shooter)));
 
         // +++ End controller bindings +++
 
