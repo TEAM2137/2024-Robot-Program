@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9209549213878978,
-        "y": 6.164275958445155
+        "x": 0.32389132393923226,
+        "y": 4.275066580975393
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.901478536053158,
-        "y": 5.6968427104114
+        "x": 1.0542557739919756,
+        "y": 4.3140193516448715
       },
       "isLocked": false,
-      "linkedName": "Auto 4 End 1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8947741881248894,
-        "y": 5.287838618381864
+        "x": 1.7067146827057598,
+        "y": 4.713285251007039
       },
       "prevControl": {
-        "x": 1.8947741881248894,
-        "y": 5.287838618381864
+        "x": 1.3171869760109631,
+        "y": 4.430877663653311
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 4 End 4"
+      "linkedName": "Auto 6 End 1"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 4",
+  "folder": "Auto 6",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

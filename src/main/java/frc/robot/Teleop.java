@@ -16,7 +16,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.vision.AprilTagVision;
+import frc.robot.vision.VisionBlender;
 
 public class Teleop {
     // Enables and disables field centric modes
@@ -31,7 +31,7 @@ public class Teleop {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
     private SwerveDrivetrain driveSubsystem;
-    private AprilTagVision vision;
+    private VisionBlender vision;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
     private double stickDeadzone = 0.2;
@@ -44,7 +44,7 @@ public class Teleop {
 
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
-            CommandXboxController operatorController, AprilTagVision vision) {
+            CommandXboxController operatorController, VisionBlender vision) {
         this.driveSubsystem = driveSubsystem;
         this.driverController = driverController;
         this.operatorController = operatorController;
@@ -102,10 +102,10 @@ public class Teleop {
         // Setup arm for amp
         operatorController.leftTrigger().onTrue(trapper.stage1());
 
-        // operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
-        // operatorController.povUp().onFalse(climber.stopClimber());
-        // operatorController.povDown().onTrue(CommandSequences.climberDownCommand(climber));
-        // operatorController.povDown().onFalse(climber.stopClimber());
+        operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
+        operatorController.povUp().onFalse(climber.stopClimber());
+        operatorController.povDown().onTrue(CommandSequences.climberDownCommand(climber));
+        operatorController.povDown().onFalse(climber.stopClimber());
 
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));

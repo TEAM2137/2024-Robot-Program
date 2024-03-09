@@ -16,7 +16,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.vision.AprilTagVision;
+import frc.robot.vision.VisionBlender;
 
 /**
  * Static class containing all of the necessary command sequences for auton/teleop
@@ -140,7 +140,7 @@ public class CommandSequences {
      * shoot a stored note once centered. This command takes 1.3 seconds to complete.
      * @return the command
      */
-    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, AprilTagVision vision,
+    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, VisionBlender vision,
         TransferSubsystem transfer, ShooterSubsystem shooter) {
         return pointAndAimCommand(driveSubsystem, shooter, vision)
             .alongWith(shooter.startAndRun(calculatedShooterSpeed, 0.5))
@@ -152,7 +152,7 @@ public class CommandSequences {
      * Uses the limelight and AprilTags to just point towards the speaker, from
      * wherever the robot is on the field. The shooter will also aim for a shot.
      */
-    public static Command pointAndAimCommand(SwerveDrivetrain driveSubsystem, ShooterSubsystem shooter, AprilTagVision vision) {
+    public static Command pointAndAimCommand(SwerveDrivetrain driveSubsystem, ShooterSubsystem shooter, VisionBlender vision) {
         return new RunCommand(
             () -> {
 
@@ -166,7 +166,7 @@ public class CommandSequences {
                 // Z is vertical in this case
                 double targetZ = 1.451102;
             
-                if (vision.hasTarget()) vision.updateValues();
+                vision.updateValues();
 
                 // Gets the position of the robot from the limelight data
                 Pose2d pose = vision.getPose();
@@ -180,7 +180,7 @@ public class CommandSequences {
                 Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 103; // as this value increases, the angle gets lower
+                double angleOffset = 101; // as this value increases, the angle gets lower
                 double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with

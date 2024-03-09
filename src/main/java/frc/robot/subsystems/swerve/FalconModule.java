@@ -35,7 +35,7 @@ public class FalconModule extends SwerveModule {
 
         public static final double driveMotorRamp = 0.0;
 
-        public static PID turningPIDConstants = new PID(220, 0, 3);
+        public static PID turningPIDConstants = new PID(220, 0, 4);
         public static SimpleMotorFeedforward turningFeedForward = new SimpleMotorFeedforward(0.7, 1.4, 0.2);
 
         public static PID drivePIDConstants = new PID(60, 0, 0.15);

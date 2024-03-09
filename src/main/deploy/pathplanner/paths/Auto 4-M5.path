@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9209549213878978,
-        "y": 6.164275958445155
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 1.901478536053158,
-        "y": 5.6968427104114
-      },
-      "isLocked": false,
-      "linkedName": "Auto 4 End 1"
-    },
-    {
-      "anchor": {
         "x": 2.8947741881248894,
         "y": 5.287838618381864
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.8101642988576607,
+        "y": 6.505112701803102
+      },
+      "isLocked": false,
+      "linkedName": "Auto 4 End 4"
+    },
+    {
+      "anchor": {
+        "x": 8.27025654051308,
+        "y": 7.1380952251821475
+      },
       "prevControl": {
-        "x": 1.8947741881248894,
-        "y": 5.287838618381864
+        "x": 4.920318262937831,
+        "y": 7.069927876510558
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 4 End 4"
+      "linkedName": "Auto 4 End M5"
     }
   ],
   "rotationTargets": [],

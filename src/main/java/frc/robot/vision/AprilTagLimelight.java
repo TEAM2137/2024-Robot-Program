@@ -8,7 +8,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class AprilTagVision {
+public class AprilTagLimelight {
     
     private NetworkTable table;
     private NetworkTableEntry botpose;
@@ -19,8 +19,8 @@ public class AprilTagVision {
 
     private Rotation2d rotation;
 
-    public AprilTagVision() {
-        table = NetworkTableInstance.getDefault().getTable("limelight-a");
+    public AprilTagLimelight(String name) {
+        table = NetworkTableInstance.getDefault().getTable(name);
         botpose = table.getEntry("botpose");
     }
 

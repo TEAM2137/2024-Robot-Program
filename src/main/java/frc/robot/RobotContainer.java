@@ -6,8 +6,8 @@ import frc.robot.commands.CommandSequences;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
-import frc.robot.vision.AprilTagVision;
-
+import frc.robot.vision.AprilTagLimelight;
+import frc.robot.vision.VisionBlender;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -39,7 +39,10 @@ public class RobotContainer {
     private TrapperSubsystem trapperSubsystem;
 
     // Misc stuff
-    private final AprilTagVision vision = new AprilTagVision();
+    private final AprilTagLimelight visionA = new AprilTagLimelight("limelight-a");
+    private final AprilTagLimelight visionB = new AprilTagLimelight("limelight-b");
+    private final VisionBlender vision = new VisionBlender(visionA, visionB);
+
     private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;
 

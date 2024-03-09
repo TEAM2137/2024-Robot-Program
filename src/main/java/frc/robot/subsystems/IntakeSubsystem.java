@@ -65,11 +65,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command startRollers() {
-        return runOnce(() -> rollerTarget = -0.9);
+        return runOnce(() -> rollerTarget = -1);
     }
 
     public Command reverseRollers() {
-        return runOnce(() -> rollerTarget = 0.9);
+        return runOnce(() -> rollerTarget = 1);
     }
 
     public Command stopRollers() {

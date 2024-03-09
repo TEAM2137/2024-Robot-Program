@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
-import frc.robot.vision.AprilTagVision;
+import frc.robot.vision.VisionBlender;
 
 // Everything in this file will be done in the order front left, front right, back left, back right
 public class SwerveDrivetrain extends SubsystemBase {
@@ -45,7 +45,7 @@ public class SwerveDrivetrain extends SubsystemBase {
             CanIDs.get("fl-drive"), 
             CanIDs.get("fl-turn"), 
             CanIDs.get("fl-encoder"), 
-            -0.080322266, "Front Left");
+            -0.066650391, "Front Left");
         public static SwerveModuleConstants frontRight = new SwerveModuleConstants(
             CanIDs.get("fr-drive"), 
             CanIDs.get("fr-turn"), 
@@ -59,7 +59,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static SwerveModuleConstants backRight = new SwerveModuleConstants(
             CanIDs.get("br-drive"),
             CanIDs.get("br-turn"), 
-            CanIDs.get("br-encoder"), 
+            CanIDs.get("br-encoder"),
             0.280761718, "Back Right");
 
         public static PID translationPIDConstants = new PID(0.5, 0, 0);
@@ -106,7 +106,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     private Pigeon2 pigeonIMU;
 
     private SwerveDrivePoseEstimator poseEstimator;
-    private AprilTagVision vision;
+    private VisionBlender vision;
 
     private Field2d field2d = new Field2d();
 
@@ -120,7 +120,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * Creates a swerve drivetrain (uses values from constants)
      */
-    public SwerveDrivetrain(ModuleType moduleType, AprilTagVision vision) {
+    public SwerveDrivetrain(ModuleType moduleType, VisionBlender vision) {
         this.vision = vision;
 
         // locations of all of the modules (for kinematics)
