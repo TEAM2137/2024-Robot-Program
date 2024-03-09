@@ -61,7 +61,7 @@ public class Teleop {
         // +++ DRIVER +++
 
         driverController.start().onTrue(Commands.runOnce(() -> {
-            driveSubsystem.resetGyro(); driveSubsystem.visionResetOdometry();
+            driveSubsystem.resetGyro(); driveSubsystem.resetGyro();
         }, driveSubsystem));
         driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter)
             .andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
@@ -98,7 +98,7 @@ public class Teleop {
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
         operatorController.rightTrigger().onTrue(trapper.homePosition());
-        operatorController.leftTrigger().onTrue(trapper.stage1());
+        operatorController.leftTrigger().onTrue(trapper.ampPosition());
 
         operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
         operatorController.povUp().onFalse(climber.stopClimber());
@@ -106,9 +106,9 @@ public class Teleop {
         operatorController.povDown().onFalse(climber.stopClimber());
 
         // Shooter manual toggle
-        operatorController.y().onTrue(shooter.toggleShooter(0.5));
+        operatorController.y().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer));
         operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
-            .andThen(CommandSequences.ampShootCommand(0.3/* TODO tune this */, transfer, shooter)));
+            .andThen(CommandSequences.ampShootCommand(0.215/* TODO tune this */, transfer, shooter)));
 
         // +++ End controller bindings +++
 

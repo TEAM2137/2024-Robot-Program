@@ -19,7 +19,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
         public static double maxAngle = 164.4;
-        public static double midAngle = 142.8; // TODO tune this
+        public static double midAngle = 142.8;
         public static double ampAngle = 134.0; // TODO tune this
         public static double stowAngle = 107.9;
         public static double minAngle = 107.9;

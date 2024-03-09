@@ -22,8 +22,11 @@ public class TrapperSubsystem extends SubsystemBase {
         public static double ARM_HOME_ANGLE = 51.9;
         public static double WRIST_HOME_ANGLE = 109.8;
 
-        public static double ARM_STAGE1 = 20.0;
-        public static double WRIST_STAGE1 = 206.3;
+        public static double ARM_AMP = 7.3;
+        public static double WRIST_AMP = 182.4;
+
+        public static double ARM_GRAB = 7.3;
+        public static double WRIST_GRAB = 182.4;
 
         public static PID TRAPPER_PID = new PID(0.1, 0, 0.01, 0);
     }
@@ -103,8 +106,12 @@ public class TrapperSubsystem extends SubsystemBase {
         return setWristTarget(Constants.WRIST_HOME_ANGLE).andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
     }
 
-    public Command stage1() {
-        return setWristTarget(Constants.WRIST_STAGE1).andThen(setArmTarget(Constants.ARM_STAGE1));
+    public Command ampPosition() {
+        return setWristTarget(Constants.WRIST_AMP).andThen(setArmTarget(Constants.ARM_AMP));
+    }
+
+    public Command grabPosition() {
+        return setWristTarget(Constants.WRIST_GRAB).andThen(setArmTarget(Constants.ARM_GRAB));
     }
 
     @Override

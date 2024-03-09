@@ -7,7 +7,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // TODO use poi tracking for this
 public class AprilTagLimelight {
@@ -36,11 +35,6 @@ public class AprilTagLimelight {
         posX = pose[0];
         posY = pose[1];
         rotation = Rotation2d.fromDegrees(pose[5]);
-    
-        // Post botpose to smart dashboard
-        SmartDashboard.putNumber("LL-PositionX", posX);
-        SmartDashboard.putNumber("LL-PositionY", posY);
-        SmartDashboard.putNumber("LL-Rotation", rotation.getDegrees());
     }
 
     /**

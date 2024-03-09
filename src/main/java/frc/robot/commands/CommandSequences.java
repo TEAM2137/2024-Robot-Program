@@ -41,7 +41,7 @@ public class CommandSequences {
 
     /**
      * Shoots into the amp by aiming the shooter pivot and shooting
-     * @return
+     * @return the command
      */
     public static Command ampShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
         return shooter.startShooter(speed)
@@ -120,15 +120,16 @@ public class CommandSequences {
     // +++ Arm +++
 
     /**
+     * TODO tune this
      * Moves a stored note into the arm
      * @return the command
      */
     public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
-        return trapper.stage1()
+        return trapper.grabPosition()
             .andThen(Commands.waitSeconds(0.5))
             .andThen(trapper.runMotor())
             .andThen(rawShootCommand(0.1, transfer, shooter))
-            // .andThen(timingCommand(0.2))
+            .andThen(Commands.waitSeconds(0.1))
             .andThen(shooter.stopShooter())
             .andThen(trapper.stopMotor());
     }
@@ -155,14 +156,13 @@ public class CommandSequences {
     public static Command pointAndAimCommand(SwerveDrivetrain driveSubsystem, ShooterSubsystem shooter, VisionBlender vision) {
         return new RunCommand(
             () -> {
-
-                DriverStation.getAlliance().ifPresent((alliance) -> {
-                    shouldFlip = (alliance == Alliance.Blue);
-                });
+                
+                // Flips the aiming if the alliance is blue
+                DriverStation.getAlliance().ifPresent((alliance) -> shouldFlip = (alliance == Alliance.Blue));
 
                 // Sets where it should point (field space coords)
                 double targetX = 8.308467 * (shouldFlip ? -1 : 1);
-                double targetY = 1.42593; // 1.42593
+                double targetY = 1.42593;
                 // Z is vertical in this case
                 double targetZ = 1.451102;
             
@@ -173,14 +173,14 @@ public class CommandSequences {
                 double shooterZ = 0;
 
                 // Calculate necessary angles and distances
-                double distance = Math.sqrt(Math.pow(targetX - pose.getX(), 2) + Math.pow(targetY - pose.getY(), 2));
+                double distance = Math.hypot(targetX - pose.getX(), targetY - pose.getY());
                 double desiredAngle = Math.atan2(targetY - pose.getY(), targetX - pose.getX()) + (shouldFlip ? Math.PI : 0);
                 double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - shooterZ, distance));
 
                 Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 100; // as this value decreases, the angle gets higher
+                double angleOffset = 96; // as this value decreases, the angle gets higher
                 double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
