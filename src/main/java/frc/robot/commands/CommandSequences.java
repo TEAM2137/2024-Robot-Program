@@ -170,7 +170,7 @@ public class CommandSequences {
 
                 // Gets the position of the robot from the limelight data
                 Pose2d pose = vision.getPose();
-                double shooterZ = 0.1;
+                double shooterZ = 0;
 
                 // Calculate necessary angles and distances
                 double distance = Math.sqrt(Math.pow(targetX - pose.getX(), 2) + Math.pow(targetY - pose.getY(), 2));
@@ -180,13 +180,12 @@ public class CommandSequences {
                 Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 96.5; // as this value increases, the angle gets lower
+                double angleOffset = 100; // as this value decreases, the angle gets higher
                 double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
                 double error = -currentAngle.minus(targetAngle).getDegrees(); // Calculate error
-                if (error > 20) error = 20;
-                if (error < -20) error = -20;
+                if (error > 20) error = 20; if (error < -20) error = -20;
 
                 if (distance < 0.8) calculatedShooterSpeed = 0.5;
                 else calculatedShooterSpeed = 0.8;

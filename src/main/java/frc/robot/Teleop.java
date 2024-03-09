@@ -108,7 +108,7 @@ public class Teleop {
         // Shooter manual toggle
         operatorController.y().onTrue(shooter.toggleShooter(0.5));
         operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
-            .andThen(CommandSequences.ampShootCommand(0.2/* TODO tune this */, transfer, shooter)));
+            .andThen(CommandSequences.ampShootCommand(0.3/* TODO tune this */, transfer, shooter)));
 
         // +++ End controller bindings +++
 
