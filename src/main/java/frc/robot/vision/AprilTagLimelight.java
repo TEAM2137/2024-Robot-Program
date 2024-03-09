@@ -2,12 +2,14 @@ package frc.robot.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+// TODO use poi tracking for this
 public class AprilTagLimelight {
     
     private NetworkTable table;
@@ -75,8 +77,13 @@ public class AprilTagLimelight {
         return new Pose2d(getX(), getY(), getRotation());
     }
 
-    // TODO work in progress
+    // Total field size is 649x319
     public Pose2d getFieldPose() {
-        return new Pose2d(Units.metersToFeet(getX()), Units.metersToFeet(getY()), getRotation());
+        return new Pose2d(fieldPoint(new Translation2d(getX(), getY())), getRotation());
+    }
+
+    public static Translation2d fieldPoint(Translation2d point) {
+        return new Translation2d(Units.metersToInches(point.getX()) - 649.0 / 2,
+            Units.metersToInches(point.getY()) - 319.0 / 2);
     }
 }
