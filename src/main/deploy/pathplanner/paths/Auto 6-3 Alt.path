@@ -3,33 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.455282201193109,
-        "y": 0.7790554133895939
+        "x": 1.7067146827057598,
+        "y": 4.713285251007039
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.186283309695919,
-        "y": 0.8082699913917037
+        "x": 1.5932272835437171,
+        "y": 2.3848016651395847
       },
       "isLocked": false,
-      "linkedName": "Auto 6 End 3"
+      "linkedName": "Auto 6 End 1"
     },
     {
       "anchor": {
-        "x": 1.8722639580510483,
-        "y": 4.5964269389986
+        "x": 8.455282201193109,
+        "y": 0.7790554133895939
       },
       "prevControl": {
-        "x": 1.7257824725439657,
-        "y": 1.9422927423943426
+        "x": 4.404194051567225,
+        "y": 1.0614630007433212
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 6 End 3"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Slow for ring",
+      "minWaypointRelativePos": 0.95,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,

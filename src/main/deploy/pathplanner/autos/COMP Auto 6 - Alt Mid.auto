@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 6.0
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -32,31 +38,6 @@
         },
         {
           "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto 6-2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake-down"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker-shoot"
-          }
-        },
-        {
-          "type": "sequential",
           "data": {
             "commands": [
               {

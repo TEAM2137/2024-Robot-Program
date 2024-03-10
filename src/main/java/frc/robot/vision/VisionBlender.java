@@ -37,6 +37,8 @@ public class VisionBlender {
         if (visionA.hasTarget()) visionA.updateValues();
         if (visionB.hasTarget()) visionB.updateValues();
 
+        if (getPose() == null || getPose().getRotation() == null) return;
+
         // Post botpose to smart dashboard
         SmartDashboard.putNumber("LL-PositionX", getPose().getX());
         SmartDashboard.putNumber("LL-PositionY", getPose().getY());

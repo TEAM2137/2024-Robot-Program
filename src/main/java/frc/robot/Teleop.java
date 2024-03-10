@@ -80,6 +80,8 @@ public class Teleop {
         driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));//.andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
         // Force stop
         driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
+        // X Lock
+        driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
 
         // Manual intake pivot
         driverController.rightBumper().onTrue(intake.togglePivot());
