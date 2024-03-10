@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
@@ -22,11 +23,11 @@ public class TrapperSubsystem extends SubsystemBase {
         public static double ARM_HOME_ANGLE = 51.9;
         public static double WRIST_HOME_ANGLE = 109.8;
 
-        public static double ARM_AMP = 7.3;
-        public static double WRIST_AMP = 182.4;
+        public static double ARM_AMP = 10.5;
+        public static double WRIST_AMP = 184.4;
 
-        public static double ARM_GRAB = 7.3;
-        public static double WRIST_GRAB = 182.4;
+        public static double ARM_GRAB = 261.5;
+        public static double WRIST_GRAB = 201.0;
 
         public static PID TRAPPER_PID = new PID(0.1, 0, 0.01, 0);
     }
@@ -78,11 +79,11 @@ public class TrapperSubsystem extends SubsystemBase {
         SmartDashboard.putData("Trapper Mechanism", trapperMech);
     }
 
-    public Command runMotor() {
-        return runOnce(() -> rollers.set(0.2));
+    public Command runRollers(double speed) {
+        return runOnce(() -> rollers.set(speed));
     }
 
-    public Command stopMotor() {
+    public Command stopRollers() {
         return runOnce(() -> rollers.stopMotor());
     }
 
@@ -103,7 +104,8 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command homePosition() {
-        return setWristTarget(Constants.WRIST_HOME_ANGLE).andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
+        return setArmTarget(Constants.ARM_HOME_ANGLE).andThen(Commands.waitSeconds(0.8))
+            .andThen(setWristTarget(Constants.WRIST_HOME_ANGLE));
     }
 
     public Command ampPosition() {
@@ -111,7 +113,8 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command grabPosition() {
-        return setWristTarget(Constants.WRIST_GRAB).andThen(setArmTarget(Constants.ARM_GRAB));
+        return setWristTarget(Constants.WRIST_GRAB).andThen(Commands.waitSeconds(0.8))
+            .andThen(setArmTarget(Constants.ARM_GRAB));
     }
 
     @Override

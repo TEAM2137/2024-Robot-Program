@@ -79,7 +79,7 @@ public class Teleop {
         // Intake phase
         driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));//.andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
         // Force stop
-        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter));
+        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
 
         // Manual intake pivot
         driverController.rightBumper().onTrue(intake.togglePivot());
@@ -96,6 +96,9 @@ public class Teleop {
             .andThen(CommandSequences.rawShootCommand(0.9, transfer, shooter)));
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
+
+        operatorController.start().onTrue(trapper.runRollers(-0.7));
+        operatorController.start().onFalse(trapper.stopRollers());
 
         operatorController.rightTrigger().onTrue(trapper.homePosition());
         operatorController.leftTrigger().onTrue(trapper.ampPosition());

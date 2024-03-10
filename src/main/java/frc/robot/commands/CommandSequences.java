@@ -120,18 +120,19 @@ public class CommandSequences {
     // +++ Arm +++
 
     /**
-     * TODO tune this
      * Moves a stored note into the arm
      * @return the command
      */
     public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return trapper.grabPosition()
-            .andThen(Commands.waitSeconds(0.5))
-            .andThen(trapper.runMotor())
+            .andThen(trapper.runRollers(0.4))
+            .andThen(shooter.setPivotTarget(ShooterSubsystem.Constants.armAngle))
+            .andThen(Commands.waitSeconds(0.3))
             .andThen(rawShootCommand(0.1, transfer, shooter))
-            .andThen(Commands.waitSeconds(0.1))
+            .andThen(Commands.waitSeconds(0.2))
+            .andThen(trapper.stopRollers())
             .andThen(shooter.stopShooter())
-            .andThen(trapper.stopMotor());
+            .andThen(shooter.stowPivot());
     }
 
     // +++ Vision +++
@@ -212,9 +213,12 @@ public class CommandSequences {
      * Stops the motors of both the intake and the transfer, and stows the intake.
      * @return the command
      */
-    public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return transfer.transferForceStop().andThen(intake.stopRollers())
-            .andThen(intake.moveIntakeUp()).andThen(shooter.stopShooter());
+    public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, TrapperSubsystem trapper) {
+        return transfer.transferForceStop()
+            .andThen(intake.stopRollers())
+            .andThen(intake.moveIntakeUp())
+            .andThen(shooter.stopShooter())
+            .andThen(trapper.stopRollers());
     }
 
     public static Command climberUpCommand(ClimberSubsystem climber) {
