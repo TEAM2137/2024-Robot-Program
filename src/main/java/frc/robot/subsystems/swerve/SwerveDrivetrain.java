@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
 import frc.robot.util.PID;
+import frc.robot.vision.VisionBlendedPoseEstimator;
 import frc.robot.vision.VisionBlender;
 
 // Everything in this file will be done in the order front left, front right, back left, back right
@@ -105,7 +105,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private Pigeon2 pigeonIMU;
 
-    private SwerveDrivePoseEstimator poseEstimator;
+    private VisionBlendedPoseEstimator poseEstimator;
     private VisionBlender vision;
 
     private Field2d field2d = new Field2d();
@@ -155,7 +155,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         // create pose estimator
         updateModulePositions();
-        poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(), modulePositions, new Pose2d());
+        poseEstimator = new VisionBlendedPoseEstimator(kinematics, getRotation(), modulePositions, vision);
 
         timer = new Timer();
         timer.reset();
@@ -214,7 +214,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         //     );
         // }
         
-        poseEstimator.updateWithTime(time, getRotation(), modulePositions);
+        poseEstimator.update(time, getRotation(), modulePositions);
     }
 
     private void updateModulePositions() {
@@ -336,15 +336,7 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @return the pose of the robot in meters
      */
     public Pose2d getPose() {
-        return poseEstimator.getEstimatedPosition();
-    }
-
-    /**
-     * @param measurement Pose2d of the calculated position
-     * @param timestamp the timestamp the measurement is from
-     */
-    public void addVisionMeasurement(Pose2d measurement, double timestamp) {
-        poseEstimator.addVisionMeasurement(measurement, timestamp);
+        return poseEstimator.grabEstimatedPose();
     }
 
     /**

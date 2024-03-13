@@ -1,47 +1,40 @@
 package frc.robot.vision;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionBlender {
-    public AprilTagLimelight visionA;
-    public AprilTagLimelight visionB;
+    public ArrayList<AprilTagLimelight> limelights;
 
-    public VisionBlender(AprilTagLimelight visionA, AprilTagLimelight visionB) {
-        this.visionA = visionA;
-        this.visionB = visionB;
+    public VisionBlender(AprilTagLimelight... limelights) {
+        this.limelights.addAll(Arrays.asList(limelights));
     }
 
     public Pose2d getPose() {
+        // I'll do this later
+        return limelights.get(0).getPose();
+    }
 
-        return visionA.getPose();
-
-        // if (visionA.hasTarget() && !visionB.hasTarget()) return visionA.getPose();
-        // else if (visionB.hasTarget() && !visionA.hasTarget()) return visionA.getPose();
-        // else if (visionB.hasTarget() && visionA.hasTarget()) {
-        //     Translation2d translation = visionA.getPose().getTranslation()
-        //         .plus(visionB.getPose().getTranslation())
-        //         .div(2);
-            
-        //     Rotation2d rotation = visionA.getPose().getRotation()
-        //         .plus(visionB.getPose().getRotation())
-        //         .div(2);
-
-        //     return new Pose2d(translation, rotation);
-        // }
-
-        // return visionA.getPose();
+    public double getTimestamp() {
+        // I'll also do this later
+        return Timer.getFPGATimestamp();
     }
 
     public void updateValues() {
-        if (visionA.hasTarget()) visionA.updateValues();
-        if (visionB.hasTarget()) visionB.updateValues();
+        limelights.forEach((limelight) -> {
+            if (limelight.hasTarget()) limelight.updateValues();
+        });
 
-        if (getPose() == null || getPose().getRotation() == null) return;
+        Pose2d pose = getPose();
+        if (pose == null || pose.getRotation() == null) return;
 
         // Post botpose to smart dashboard
-        SmartDashboard.putNumber("LL-PositionX", getPose().getX());
-        SmartDashboard.putNumber("LL-PositionY", getPose().getY());
-        SmartDashboard.putNumber("LL-Rotation", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("LL-PositionX", pose.getX());
+        SmartDashboard.putNumber("LL-PositionY", pose.getY());
+        SmartDashboard.putNumber("LL-Rotation", pose.getRotation().getDegrees());
     }
 }

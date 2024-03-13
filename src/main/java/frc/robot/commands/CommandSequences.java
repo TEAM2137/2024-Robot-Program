@@ -181,7 +181,7 @@ public class CommandSequences {
                 Rotation2d currentAngle = driveSubsystem.getRotation();
                 Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
 
-                double angleOffset = 96; // as this value decreases, the angle gets higher
+                double angleOffset = 97; // as this value decreases, the angle gets higher
                 double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
 
                 double kP = 0.025; // The amount of force it turns to the target with
