@@ -1,27 +1,28 @@
 package frc.robot.util;
 
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public class ShooterLookupTable {
+public class LookupTable {
     private NavigableMap<Double, Double> dataPoints = new TreeMap<Double, Double>(); // First value is distance, second is angle
 
-    public ShooterLookupTable() {
-        dataPoints.put(1.0, 10.0); //TODO: actually plot values. This is only a placeholder
+    public LookupTable(Map<Double, Double> map) {
+        dataPoints.putAll(map);
     }
 
     /**
-     * Gets an interpolated angle from pre-recorded datapoints.
-     * @param distance Distance in whatever unit you set the data in.
-     * @return The shooter angle.
+     * Gets an interpolated value based on a key.
+     * @param key Key to the requested value.
+     * @return Value.
      */
-    public double getAngleAt(double distance) {
-        if(dataPoints.containsKey(distance)) {
-            return dataPoints.get(distance);
+    public double getInterpolated(double key) {
+        if(dataPoints.containsKey(key)) {
+            return dataPoints.get(key);
         }else{
-            double higherKey = dataPoints.ceilingKey(distance);
-            double lowerKey = dataPoints.floorKey(distance);
+            double higherKey = dataPoints.ceilingKey(key);
+            double lowerKey = dataPoints.floorKey(key);
 
             if(Objects.isNull(higherKey)) { // No idea why it won't just let me use == null
                 higherKey = lowerKey;
@@ -37,7 +38,7 @@ public class ShooterLookupTable {
 
             double intercept = dataPoints.get(lowerKey) - slope * lowerKey;
 
-            return (slope * distance) + intercept; // y=mx+b
+            return (slope * key) + intercept; // y=mx+b
         }
     }
 }
