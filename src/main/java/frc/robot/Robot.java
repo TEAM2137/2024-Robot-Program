@@ -10,7 +10,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   public RobotContainer robotContainer;
   
-  @Override public void robotInit() { robotContainer = new RobotContainer(); }
+  @Override public void robotInit() {
+    try { Thread.sleep(250); }
+    catch(Exception e) {}
+    robotContainer = new RobotContainer();
+  }
   @Override public void robotPeriodic() { CommandScheduler.getInstance().run(); }
   @Override public void autonomousInit() { robotContainer.runAutonomous(); }
   @Override public void autonomousPeriodic() {}
