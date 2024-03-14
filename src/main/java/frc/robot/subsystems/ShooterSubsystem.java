@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Random;
+import java.util.TreeMap;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
+import frc.robot.util.LookupTable;;
  
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -33,6 +35,9 @@ public class ShooterSubsystem extends SubsystemBase {
     private AbsoluteEncoder pivotEncoder;
     private double pivotTarget;
     private boolean running;
+
+    private LookupTable angleLookup;
+    private LookupTable powerLookup;
 
     public ShooterSubsystem() {
         super();
@@ -54,6 +59,14 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotEncoder.setPositionConversionFactor(360);
         pivotEncoder.setZeroOffset(100);
+
+        TreeMap<Double, Double> angleMap = new TreeMap<Double, Double>();
+        angleMap.put(0.0, 0.0); //TODO: Use actual values here
+        angleLookup = new LookupTable(angleMap);
+
+        TreeMap<Double, Double> powerMap = new TreeMap<Double, Double>();
+        powerMap.put(0.0, 0.0); //TODO: Use actual values here
+        powerLookup = new LookupTable(powerMap);
     }
 
     /**
@@ -71,6 +84,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command startAndRun(double speed, double time) {
         return run(() -> setPowerRaw(speed)).withTimeout(time);
+    }
+
+    public Command startWithInterpolation(double distance, double time) {
+        return setPivotTarget(angleLookup.getInterpolated(distance)).andThen(startAndRun(powerLookup.getInterpolated(distance), time));
     }
 
     /**
