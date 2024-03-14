@@ -39,10 +39,10 @@ public class AprilTagLimelight {
     }
 
     /**
-     * @return The calculated latency of the limelight images
+     * @return The raw latency of the limelight images
      */
     public double getLatency() {
-        return latency / 1000.0;
+        return latency;
     }
 
     /**

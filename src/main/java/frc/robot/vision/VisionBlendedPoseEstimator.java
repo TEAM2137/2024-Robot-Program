@@ -12,7 +12,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 
 public class VisionBlendedPoseEstimator {
-
     public static class Constants {
         private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
         private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
@@ -21,6 +20,13 @@ public class VisionBlendedPoseEstimator {
     public SwerveDrivePoseEstimator poseEstimator;
     public VisionBlender visionBlender;
 
+    /**
+     * Creates a new vision-blended swerve pose estimator
+     * @param kinematics kinematics of the swerve drivetrain
+     * @param gyroAngle the current angle ofthe gyro
+     * @param modulePositions the current positions of the modules
+     * @param visionBlender the vision blender to use for AprilTag data
+     */
     public VisionBlendedPoseEstimator(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
             SwerveModulePosition[] modulePositions, VisionBlender visionBlender) {
 
@@ -47,7 +53,12 @@ public class VisionBlendedPoseEstimator {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public void resetPosition(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d pose2d) {
+    /**
+     * @param rotation the gyro rotation to reset to
+     * @param pose2d the pose of the robot to reset to
+     * @param modulePositions current positions of the modules
+     */
+    public void resetPosition(Rotation2d rotation, Pose2d pose2d, SwerveModulePosition[] modulePositions) {
         poseEstimator.resetPosition(rotation, modulePositions, pose2d);
     }
 }

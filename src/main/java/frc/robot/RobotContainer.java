@@ -41,8 +41,7 @@ public class RobotContainer {
 
     // Misc stuff
     private final AprilTagLimelight visionA = new AprilTagLimelight("limelight-a");
-    private final AprilTagLimelight visionB = new AprilTagLimelight("limelight-b");
-    private final VisionBlender vision = new VisionBlender(visionA, visionB);
+    private final VisionBlender vision = new VisionBlender(visionA);
 
     private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;

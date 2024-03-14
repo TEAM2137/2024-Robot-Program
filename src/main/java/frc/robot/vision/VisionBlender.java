@@ -14,15 +14,21 @@ public class VisionBlender {
         this.limelights.addAll(Arrays.asList(limelights));
     }
 
+    // TODO
     public Pose2d getPose() {
-        // I'll do this later
         return limelights.get(0).getPose();
     }
 
+    /**
+     * @return the current limelight timestamp accounted for latency
+     */
     public double getTimestamp() {
-        return Timer.getFPGATimestamp() - (limelights.get(0).getLatency());
+        return Timer.getFPGATimestamp() - limelights.get(0).getLatency() / 1000.0;
     }
 
+    /**
+     * Grabs and updates the data from each of the limelights
+     */
     public void updateValues() {
         limelights.forEach((limelight) -> {
             if (limelight.hasTarget()) limelight.updateValues();
