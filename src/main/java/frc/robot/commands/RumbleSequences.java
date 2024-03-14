@@ -21,7 +21,7 @@ public class RumbleSequences {
     public static Command rumbleOnce(XboxController controller) {
         return
             rumble(controller, RumbleType.kBothRumble, 1)
-            .andThen(Commands.waitSeconds(.2))
+            .andThen(Commands.waitSeconds(.1))
             .andThen(shutOffRumble(controller));
     }
 

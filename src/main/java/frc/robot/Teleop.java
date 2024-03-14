@@ -77,7 +77,7 @@ public class Teleop {
         }));
 
         // Intake phase
-        driverController.a().onTrue(CommandSequences.intakeAndTransfer(intake, transfer));//.andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
+        driverController.rightTrigger().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
         // Force stop
         driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
         // X Lock
