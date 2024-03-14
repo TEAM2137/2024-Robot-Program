@@ -1,30 +1,48 @@
 package frc.robot.vision;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 
-/**
- * This class is kind of useless right now, I'm working on it
- */
 public class VisionBlendedPoseEstimator {
+
+    public static class Constants {
+        private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+        private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
+    }
+
     public SwerveDrivePoseEstimator poseEstimator;
     public VisionBlender visionBlender;
 
     public VisionBlendedPoseEstimator(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
             SwerveModulePosition[] modulePositions, VisionBlender visionBlender) {
-        this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyroAngle, modulePositions, new Pose2d());
+
         this.visionBlender = visionBlender;
+        this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyroAngle, modulePositions,
+            new Pose2d(), Constants.stateStdDevs, Constants.visionStdDevs);
     }
 
-    public void update(double time, Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
+    /**
+     * Updates the poseEstimator with new vision values and swerve module positions
+     * @param gyroAngle the measured angle of the gyro
+     * @param modulePositions the current positions of the swerve modules
+     */
+    public void update(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         visionBlender.updateValues();
         poseEstimator.addVisionMeasurement(visionBlender.getPose(), visionBlender.getTimestamp());
-        poseEstimator.updateWithTime(time, gyroAngle, modulePositions);
+        poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroAngle, modulePositions);
     }
 
+    /**
+     * @return the poseEstimator's estimated position
+     */
     public Pose2d grabEstimatedPose() {
         return poseEstimator.getEstimatedPosition();
     }

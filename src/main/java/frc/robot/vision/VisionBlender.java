@@ -20,8 +20,7 @@ public class VisionBlender {
     }
 
     public double getTimestamp() {
-        // I'll also do this later
-        return Timer.getFPGATimestamp();
+        return Timer.getFPGATimestamp() - (limelights.get(0).getLatency());
     }
 
     public void updateValues() {

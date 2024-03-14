@@ -8,33 +8,41 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-// TODO use poi tracking for this
 public class AprilTagLimelight {
     
     private NetworkTable table;
-    private NetworkTableEntry botpose;
+    private NetworkTableEntry botposeEntry;
+    
     private double[] pose;
-
+    private Rotation2d rotation;
     private double posX;
     private double posY;
 
-    private Rotation2d rotation;
+    private double latency;
 
     public AprilTagLimelight(String name) {
         table = NetworkTableInstance.getDefault().getTable(name);
-        botpose = table.getEntry("botpose");
+        botposeEntry = table.getEntry("botpose_wpiblue");
     }
 
     /**
      * Updates the position of the robot using the aprilTags
      */
     public void updateValues() {
-        pose = botpose.getDoubleArray(new double[6]);
+        pose = botposeEntry.getDoubleArray(new double[6]);
         if (pose.length == 0) pose = new double[6];
         
         posX = pose[0];
         posY = pose[1];
         rotation = Rotation2d.fromDegrees(pose[5]);
+        latency = pose[6];
+    }
+
+    /**
+     * @return The calculated latency of the limelight images
+     */
+    public double getLatency() {
+        return latency / 1000.0;
     }
 
     /**
@@ -62,7 +70,7 @@ public class AprilTagLimelight {
      * @return true if the limelight is detecting an aprilTag, false if it isn't
      */
     public boolean hasTarget() {
-        pose = botpose.getDoubleArray(new double[6]);
+        pose = botposeEntry.getDoubleArray(new double[6]);
         if (pose.length == 0 || pose[0] == 0) return false;
         return true;
     }

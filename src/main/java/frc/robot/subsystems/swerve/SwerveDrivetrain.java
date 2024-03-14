@@ -214,7 +214,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         //     );
         // }
         
-        poseEstimator.update(time, getRotation(), modulePositions);
+        poseEstimator.update(getRotation(), modulePositions);
     }
 
     private void updateModulePositions() {
