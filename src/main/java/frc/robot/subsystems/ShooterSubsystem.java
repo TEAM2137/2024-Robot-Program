@@ -29,6 +29,23 @@ public class ShooterSubsystem extends SubsystemBase {
         public static double armAngle = 167.9;
         public static double stowAngle = 107.9;
         public static double minAngle = 107.9;
+
+        public static LookupTable angleLookup;
+        public static LookupTable powerLookup;
+
+        static {
+            TreeMap<Double, Double> angleMap = new TreeMap<Double, Double>();
+            TreeMap<Double, Double> powerMap = new TreeMap<Double, Double>();
+
+            // -- Angle lookup table values (TODO)
+            angleMap.put(0.0, 0.0);
+
+            // -- Power lookup table values (TODO)
+            powerMap.put(0.0, 0.0);
+
+            angleLookup = new LookupTable(angleMap);
+            powerLookup = new LookupTable(powerMap);
+        }
     }
 
     private CANSparkMax topMotor;
@@ -40,9 +57,6 @@ public class ShooterSubsystem extends SubsystemBase {
     
     private double pivotTarget;
     private boolean running;
-
-    private LookupTable angleLookup;
-    private LookupTable powerLookup;
 
     public ShooterSubsystem() {
         super();
@@ -66,14 +80,6 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotEncoder.setZeroOffset(100);
 
         pivotPID = Constants.pivotPID.getWPIPIDController();
-
-        TreeMap<Double, Double> angleMap = new TreeMap<Double, Double>();
-        angleMap.put(0.0, 0.0); //TODO: Use actual values here
-        angleLookup = new LookupTable(angleMap);
-
-        TreeMap<Double, Double> powerMap = new TreeMap<Double, Double>();
-        powerMap.put(0.0, 0.0); //TODO: Use actual values here
-        powerLookup = new LookupTable(powerMap);
     }
 
     /**
@@ -94,7 +100,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command startWithInterpolation(double distance, double time) {
-        return setPivotTarget(angleLookup.getInterpolated(distance)).andThen(startAndRun(powerLookup.getInterpolated(distance), time));
+        return setPivotTarget(Constants.angleLookup.getInterpolated(distance))
+            .andThen(startAndRun(Constants.powerLookup.getInterpolated(distance), time));
     }
 
     /**
