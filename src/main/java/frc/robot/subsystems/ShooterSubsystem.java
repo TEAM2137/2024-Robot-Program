@@ -9,20 +9,23 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
-import frc.robot.util.LookupTable;;
+import frc.robot.util.LookupTable;
+import frc.robot.util.PID;
  
 public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
+        public static PID pivotPID = new PID(1.0, 0, 0.01); // TODO tune this
+
         public static double maxAngle = 164.4;
         public static double midAngle = 140.8;
-        public static double ampAngle = 134.0; // TODO tune this
+        public static double ampAngle = 134.0;
         public static double armAngle = 167.9;
         public static double stowAngle = 107.9;
         public static double minAngle = 107.9;
@@ -33,6 +36,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax pivotMotor;
 
     private AbsoluteEncoder pivotEncoder;
+    private PIDController pivotPID;
+    
     private double pivotTarget;
     private boolean running;
 
@@ -59,6 +64,8 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotEncoder.setPositionConversionFactor(360);
         pivotEncoder.setZeroOffset(100);
+
+        pivotPID = Constants.pivotPID.getWPIPIDController();
 
         TreeMap<Double, Double> angleMap = new TreeMap<Double, Double>();
         angleMap.put(0.0, 0.0); //TODO: Use actual values here
@@ -156,15 +163,18 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
+        /*
         // Calculate the target and current rotations
         double encoderPos = pivotEncoder.getPosition();
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
         Rotation2d current = Rotation2d.fromDegrees(encoderPos);
 
-        double error = Math.max(Math.min(target.minus(current).getDegrees() / 180.0,
-            /* Max motor speed */ 0.12), /* Min motor speed */ -0.12);
-        
+        double error = Math.max(Math.min(target.minus(current).getDegrees() / 180.0, 0.12), -0.12);
         pivotMotor.set(error - 0.005);
+        */
+
+        pivotPID.setSetpoint(pivotTarget);
+        pivotMotor.set(pivotPID.calculate(pivotEncoder.getPosition()));
 
         // Display values
         SmartDashboard.putNumber("Shooter Position", pivotEncoder.getPosition());
