@@ -5,6 +5,9 @@ import java.util.TreeMap;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -22,6 +25,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
         public static PID pivotPID = new PID(1.0, 0, 0.01); // TODO tune this
+        public static PID flywheelPID = new PID(1.0, 0, 0.01); //TODO: tune this
 
         public static double maxAngle = 164.4;
         public static double midAngle = 140.8;
@@ -29,6 +33,8 @@ public class ShooterSubsystem extends SubsystemBase {
         public static double armAngle = 167.9;
         public static double stowAngle = 107.9;
         public static double minAngle = 107.9;
+
+        public static double maximumRPMError = 10.0; //TODO: Check if this value is even realistic
 
         public static LookupTable angleLookup;
         public static LookupTable powerLookup;
@@ -54,9 +60,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private AbsoluteEncoder pivotEncoder;
     private PIDController pivotPID;
+
+    private SparkPIDController bottomPID;
+    private SparkPIDController topPID;
+    private RelativeEncoder bottomEncoder;
+    private RelativeEncoder topEncoder;
     
     private double pivotTarget;
     private boolean running;
+
+    private double targetRPM;
 
     public ShooterSubsystem() {
         super();
@@ -80,12 +93,25 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotEncoder.setZeroOffset(100);
 
         pivotPID = Constants.pivotPID.getWPIPIDController();
+
+        bottomPID = bottomMotor.getPIDController();
+        bottomPID.setP(Constants.flywheelPID.getP());
+        bottomPID.setI(Constants.flywheelPID.getI());
+        bottomPID.setD(Constants.flywheelPID.getD());
+
+        topPID = topMotor.getPIDController();
+        topPID.setP(Constants.flywheelPID.getP());
+        topPID.setI(Constants.flywheelPID.getI());
+        topPID.setD(Constants.flywheelPID.getD());
+
+        bottomEncoder = bottomMotor.getEncoder();
+        topEncoder = topMotor.getEncoder();
     }
 
     /**
      * Stops the shooter if it's running and starts it
      * if it's not, at the specified speed
-     * @param speed the RPM to set the wheels to
+     * @param speed the power to set the wheels to
      * @return the command
      */
     public Command toggleShooter(double speed) {
@@ -106,7 +132,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Starts the shooter wheels
-     * @param speed the RPM to set the wheels to
+     * @param speed the power to set the wheels to
      * @return the command
      */
     public Command startShooter(double speed) {
@@ -114,6 +140,14 @@ public class ShooterSubsystem extends SubsystemBase {
             bottomMotor.set(speed);
             topMotor.set(speed);
         }).andThen(() -> running = true);
+    }
+
+    public Command startShooterRPM(double rpm) {
+        return runOnce(() -> {
+            topPID.setReference(rpm, ControlType.kVelocity);
+            bottomPID.setReference(rpm, ControlType.kVelocity);
+            targetRPM = rpm;
+        });
     }
 
     /**
@@ -166,6 +200,17 @@ public class ShooterSubsystem extends SubsystemBase {
         return setPivotTarget(Constants.minAngle);
     }
 
+    /**
+     * Gets whether the flywheels are close enough to the desired speed
+     * @return Boolean determining if they are up to speed
+     */
+    public boolean upToSpeed() {
+        double topDeviation = Math.abs(targetRPM - topEncoder.getVelocity());
+        double bottomDeviation = Math.abs(targetRPM - bottomEncoder.getVelocity());
+
+        return topDeviation <= Constants.maximumRPMError && bottomDeviation <= Constants.maximumRPMError;
+    }
+
     @Override
     public void periodic() {
         super.periodic();
@@ -185,6 +230,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // Display values
         SmartDashboard.putNumber("Shooter Position", pivotEncoder.getPosition());
+        SmartDashboard.putBoolean("Shooter Up to Speed", upToSpeed());
         SmartDashboard.updateValues();
     }
 
