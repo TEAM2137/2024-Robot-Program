@@ -29,7 +29,6 @@ public class VisionBlendedPoseEstimator {
      */
     public VisionBlendedPoseEstimator(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
             SwerveModulePosition[] modulePositions, VisionBlender visionBlender) {
-
         this.visionBlender = visionBlender;
         this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyroAngle, modulePositions,
             new Pose2d(), Constants.stateStdDevs, Constants.visionStdDevs);
@@ -42,7 +41,17 @@ public class VisionBlendedPoseEstimator {
      */
     public void update(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         visionBlender.updateValues();
-        poseEstimator.addVisionMeasurement(visionBlender.getPose(), visionBlender.getTimestamp());
+        if (visionBlender.hasTarget()) {
+            Pose2d visionPose = visionBlender.getPose();
+            if (visionPose != null)
+                poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
+
+            // if (visionBlender.hasPose()) {
+            //     Pose2d visionPose = visionBlender.getPose();
+            //     if (visionPose != null)
+            //         poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
+            // }
+        }
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroAngle, modulePositions);
     }
 

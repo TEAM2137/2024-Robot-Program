@@ -50,9 +50,6 @@ public class RobotContainer {
     public final Teleop teleop;
     public final Autonomous auto;
 
-    // Auton Test stuff
-    // private final TestingSubsystem testSubsystem = new TestingSubsystem();
-
     // Initialize all subsystems and stuff here.
     public RobotContainer() {
         inst = this;
@@ -74,7 +71,7 @@ public class RobotContainer {
         trapperSubsystem = new TrapperSubsystem();
 
         auto = new Autonomous(driveSubsystem);
-        teleop = new Teleop(driveSubsystem, driverController, operatorController, vision);
+        teleop = new Teleop(driveSubsystem, driverController, operatorController);
 
         NamedCommands.registerCommand("speaker-aim", 
            CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
@@ -114,6 +111,8 @@ public class RobotContainer {
      * Called when teleop is enabled
      */
     public void runTeleop() {
+        vision.limelights.forEach(limelight -> limelight.resetAlliance());
+        
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
         teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem, climberSubsystem);
@@ -123,6 +122,8 @@ public class RobotContainer {
      * Called when autonomous is enabled
      */
     public void runAutonomous() {
+        vision.limelights.forEach(limelight -> limelight.resetAlliance());
+
         auto.init();
     }
 

@@ -7,6 +7,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class AprilTagLimelight {
     
@@ -22,7 +24,12 @@ public class AprilTagLimelight {
 
     public AprilTagLimelight(String name) {
         table = NetworkTableInstance.getDefault().getTable(name);
-        botposeEntry = table.getEntry("botpose_wpiblue");
+        resetAlliance();
+    }
+
+    public void resetAlliance() {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        botposeEntry = table.getEntry(alliance == Alliance.Blue ? "botpose_wpiblue" : "botpose_wpired");
     }
 
     /**

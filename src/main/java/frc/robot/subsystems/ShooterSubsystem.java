@@ -12,7 +12,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -27,12 +27,13 @@ public class ShooterSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(1.0, 0, 0.01); // TODO tune this
         public static PID flywheelPID = new PID(1.0, 0, 0.01); //TODO: tune this
 
-        public static double maxAngle = 164.4;
-        public static double midAngle = 140.8;
-        public static double ampAngle = 134.0;
-        public static double armAngle = 167.9;
-        public static double stowAngle = 107.9;
-        public static double minAngle = 107.9;
+        public static double armAngle = 10;
+        public static double maxAngle = 10;
+        public static double demoAngle = 10;
+        public static double midAngle = 10;
+        public static double ampAngle = 10;
+        public static double stowAngle = 10;
+        public static double minAngle = 10;
 
         public static double maximumRPMError = 10.0; //TODO: Check if this value is even realistic
 
@@ -44,10 +45,24 @@ public class ShooterSubsystem extends SubsystemBase {
             TreeMap<Double, Double> powerMap = new TreeMap<Double, Double>();
 
             // -- Angle lookup table values (TODO)
-            angleMap.put(0.0, 0.0);
+            angleMap.put(0.00, 32.0);
+            angleMap.put(1.39, 32.0);
+            angleMap.put(1.72, 40.0);
+            angleMap.put(2.00, 44.3);
+            angleMap.put(2.40, 50.0);
+            angleMap.put(2.88, 54.8);
+            angleMap.put(3.33, 59.0);
+            angleMap.put(3.67, 60.8);
+            angleMap.put(3.67, 60.8);
+            angleMap.put(3.89, 62.9);
+            angleMap.put(4.27, 63.5);
+            angleMap.put(5.00, 64.0);
 
             // -- Power lookup table values (TODO)
-            powerMap.put(0.0, 0.0);
+            powerMap.put(0.00, 0.6);
+            powerMap.put(1.40, 0.6);
+            powerMap.put(2.00, 0.8);
+            powerMap.put(5.00, 0.8);
 
             angleLookup = new LookupTable(angleMap);
             powerLookup = new LookupTable(powerMap);
@@ -59,7 +74,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private CANSparkMax pivotMotor;
 
     private AbsoluteEncoder pivotEncoder;
-    private PIDController pivotPID;
 
     private SparkPIDController bottomPID;
     private SparkPIDController topPID;
@@ -90,9 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(100);
-
-        pivotPID = Constants.pivotPID.getWPIPIDController();
+        pivotEncoder.setZeroOffset(198); // 4 degrees from zero for wrapping issues
 
         bottomPID = bottomMotor.getPIDController();
         bottomPID.setP(Constants.flywheelPID.getP());
@@ -106,6 +118,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         bottomEncoder = bottomMotor.getEncoder();
         topEncoder = topMotor.getEncoder();
+        // pivotPID = Constants.pivotPID.getWPIPIDController();
     }
 
     /**
@@ -123,11 +136,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command startAndRun(double speed, double time) {
         return run(() -> setPowerRaw(speed)).withTimeout(time);
-    }
-
-    public Command startWithInterpolation(double distance, double time) {
-        return setPivotTarget(Constants.angleLookup.getInterpolated(distance))
-            .andThen(startAndRun(Constants.powerLookup.getInterpolated(distance), time));
     }
 
     /**
@@ -185,6 +193,10 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotTarget = target;
     }
 
+    public void changePivotTarget(double amount) {
+        pivotTarget += amount;
+    }
+
     /**
      * @return the current pivot target
      */
@@ -215,7 +227,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        /*
+        
         // Calculate the target and current rotations
         double encoderPos = pivotEncoder.getPosition();
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
@@ -223,10 +235,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
         double error = Math.max(Math.min(target.minus(current).getDegrees() / 180.0, 0.12), -0.12);
         pivotMotor.set(error - 0.005);
-        */
-
-        pivotPID.setSetpoint(pivotTarget);
-        pivotMotor.set(pivotPID.calculate(pivotEncoder.getPosition()));
 
         // Display values
         SmartDashboard.putNumber("Shooter Position", pivotEncoder.getPosition());
@@ -241,5 +249,10 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setPowerRaw(double speed) {
         bottomMotor.set(speed);
         topMotor.set(speed);
+    }
+
+    public void setFromDistance(double distance) {
+        setPivotTargetRaw(Constants.angleLookup.getInterpolated(distance));
+        setPowerRaw(Constants.powerLookup.getInterpolated(distance));
     }
 }

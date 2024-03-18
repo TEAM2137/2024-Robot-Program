@@ -20,10 +20,10 @@ public class ClimberSubsystem extends SubsystemBase {
         climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
         climbRight = new CANSparkMax(CanIDs.get("climber-right"), CANSparkLowLevel.MotorType.kBrushless);
 
-        setDefaultCommand(run(() -> {
-            climbLeft.set(-0.05);
-            climbRight.set(-0.05);
-        }));
+        // setDefaultCommand(run(() -> {
+        //     climbLeft.set(-0.02);
+        //     climbRight.set(-0.02);
+        // }));
     }
 
     /**

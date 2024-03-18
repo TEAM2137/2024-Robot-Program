@@ -1,7 +1,13 @@
 package frc.robot;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,7 +22,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.vision.VisionBlender;
 
 public class Teleop {
     // Enables and disables field centric modes
@@ -31,7 +36,6 @@ public class Teleop {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
     private SwerveDrivetrain driveSubsystem;
-    private VisionBlender vision;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
     private double stickDeadzone = 0.2;
@@ -41,14 +45,13 @@ public class Teleop {
     private double rotationSpeed = 1.3;
 
     private double prevStickAngle = 0;
+    private boolean isTargetingSpeaker = false;
 
     // Grabs values from the RobotContainer
-    public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController,
-            CommandXboxController operatorController, VisionBlender vision) {
+    public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController, CommandXboxController operatorController) {
         this.driveSubsystem = driveSubsystem;
         this.driverController = driverController;
         this.operatorController = operatorController;
-        this.vision = vision;
     }
 
     public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper, ClimberSubsystem climber) {
@@ -63,8 +66,16 @@ public class Teleop {
         driverController.start().onTrue(Commands.runOnce(() -> {
             driveSubsystem.resetGyro(); driveSubsystem.resetGyro();
         }, driveSubsystem));
-        driverController.b().onTrue(CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transfer, shooter)
+
+        // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
+        driverController.b().onTrue(transfer.feedShooterCommand().withTimeout(0.8)
+            .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))
             .andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+
+        driverController.a().onTrue(Commands.runOnce(() -> isTargetingSpeaker = true));
+
+        driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
+        driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
 
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
@@ -79,7 +90,8 @@ public class Teleop {
         // Intake phase
         driverController.rightTrigger().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
         // Force stop
-        driverController.x().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
+        driverController.x().onTrue(Commands.runOnce(() -> isTargetingSpeaker = false).andThen(
+            CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper)));
         // X Lock
         driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
 
@@ -95,7 +107,7 @@ public class Teleop {
 
         // Shooter pivot manual controls
         operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
-            .andThen(CommandSequences.rawShootCommand(0.9, transfer, shooter)));
+            .andThen(CommandSequences.rawShootCommand(1, transfer, shooter)));
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
@@ -119,11 +131,11 @@ public class Teleop {
 
         // Init teleop command
         CommandScheduler.getInstance().schedule(intake.moveIntakeUp());
-        driveSubsystem.setDefaultCommand(getTeleopCommand());
+        driveSubsystem.setDefaultCommand(getTeleopCommand(shooter));
     }
 
     // Setup the teleop drivetrain command
-    public Command getTeleopCommand() {
+    public Command getTeleopCommand(ShooterSubsystem shooter) {
         return new RunCommand(
             () -> {
                 // Controller + Pigeon inputs
@@ -166,9 +178,44 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
+                if (isTargetingSpeaker) {
+                    Pair<Double, Double> data = getSpeakerAimData(shooter);
+                    rot = data.getFirst();
+                    shooter.setFromDistance(data.getSecond() + 0.25);
+                }
                 driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem
         );
+    }
+
+    public Pair<Double, Double> getSpeakerAimData(ShooterSubsystem shooter) {
+        // Flips the aiming if the alliance is blue
+        boolean isBlueAlliance = true;
+        isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+
+        // Sets where it should point (field space coords)
+        Translation2d targetPos;
+        if (isBlueAlliance) targetPos = new Translation2d(-0.15, 5.56);
+        else targetPos = new Translation2d(-0.15, 2.65); // 2.73
+        driveSubsystem.speakerPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
+
+        // Get robot pose
+        Pose2d robotPose = driveSubsystem.getPose();
+        
+        // Calculate stuff
+        double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
+        double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
+        Rotation2d currentAngle = robotPose.getRotation();
+        Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle + Math.PI);
+
+        double kP = 0.035; // The amount of force it turns to the target with
+        double error = -currentAngle.minus(targetAngle).getDegrees(); // Calculate error
+        if (error > 20) error = 20; if (error < -20) error = -20;
+
+        // Post debug values
+        SmartDashboard.putNumber("Distance", distance);
+
+        return new Pair<>(error * kP, distance);
     }
 }

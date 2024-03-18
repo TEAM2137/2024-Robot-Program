@@ -2,7 +2,6 @@ package frc.robot.util;
 
 import java.util.Map;
 import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -28,15 +27,15 @@ public class LookupTable {
         if(dataPoints.containsKey(key)) {
             return dataPoints.get(key);
         }else{
-            double higherKey = dataPoints.ceilingKey(key);
-            double lowerKey = dataPoints.floorKey(key);
+            Double higherKey = dataPoints.ceilingKey(key);
+            Double lowerKey = dataPoints.floorKey(key);
 
-            if(Objects.isNull(higherKey)) { // No idea why it won't just let me use == null
+            if (higherKey == null) { // No idea why it won't just let me use == null
                 higherKey = lowerKey;
                 lowerKey = dataPoints.lowerKey(higherKey); // Use the last two known points to extrapolate
             }
 
-            if(Objects.isNull(lowerKey)) {
+            if (lowerKey == null) {
                 lowerKey = higherKey;
                 higherKey = dataPoints.higherKey(lowerKey); // Ditto
             }

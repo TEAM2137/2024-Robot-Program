@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +23,7 @@ import frc.robot.vision.VisionBlender;
  */
 public class CommandSequences {
 
-    public static boolean shouldFlip;
+    public static boolean isBlueAlliance;
     public static double calculatedShooterSpeed = 0.9;
 
     // +++ Shooter +++
@@ -34,7 +34,7 @@ public class CommandSequences {
      * @return
      */
     public static Command rawShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startAndRun(speed, 0.8)
+        return shooter.startAndRun(speed, 1.2)
             .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.8))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
@@ -159,49 +159,39 @@ public class CommandSequences {
             () -> {
                 
                 // Flips the aiming if the alliance is blue
-                DriverStation.getAlliance().ifPresent((alliance) -> shouldFlip = (alliance == Alliance.Blue));
+                DriverStation.getAlliance().ifPresent((alliance) -> isBlueAlliance = (alliance == Alliance.Blue));
 
                 // Sets where it should point (field space coords)
-                double targetX = 8.308467 * (shouldFlip ? -1 : 1);
-                double targetY = 1.42593;
-                // Z is vertical in this case
-                double targetZ = 1.451102;
+                Translation2d targetPos;
+                if (isBlueAlliance) targetPos = new Translation2d(-0.4, 5.56);
+                else targetPos = new Translation2d(-0.4, 2.73);
             
                 vision.updateValues();
 
-                // Gets the position of the robot from the limelight data
-                Pose2d pose = vision.getPose();
-                double shooterZ = 0;
+                Pose2d robotPose = driveSubsystem.getPose();
+                
+                double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
+                double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
 
-                // Calculate necessary angles and distances
-                double distance = Math.hypot(targetX - pose.getX(), targetY - pose.getY());
-                double desiredAngle = Math.atan2(targetY - pose.getY(), targetX - pose.getX()) + (shouldFlip ? Math.PI : 0);
-                double desiredVerticalAngle = Units.radiansToDegrees(Math.atan2(targetZ - shooterZ, distance));
-
-                Rotation2d currentAngle = driveSubsystem.getRotation();
-                Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle); // Desired angle
-
-                double angleOffset = 97; // as this value decreases, the angle gets higher
-                double shootAngle = (-desiredVerticalAngle + 90) + angleOffset;
+                Rotation2d currentAngle = robotPose.getRotation();
+                Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle);
 
                 double kP = 0.025; // The amount of force it turns to the target with
                 double error = -currentAngle.minus(targetAngle).getDegrees(); // Calculate error
                 if (error > 20) error = 20; if (error < -20) error = -20;
 
-                if (distance < 0.8) calculatedShooterSpeed = 0.5;
-                else calculatedShooterSpeed = 0.8;
+                calculatedShooterSpeed = 0.8;
 
                 // Actually drive the swerve base and set the shooter target
-                shooter.setPivotTargetRaw(Math.max(Math.min(shootAngle, ShooterSubsystem.Constants.maxAngle),
-                    ShooterSubsystem.Constants.minAngle));
+                // shooter.setPivotTargetRaw(Math.max(Math.min(shootAngle, ShooterSubsystem.Constants.maxAngle),
+                //     ShooterSubsystem.Constants.minAngle));
+
                 driveSubsystem.driveTranslationRotationRaw(
                     new ChassisSpeeds(0, 0, error * kP)
                 );
 
                 // Post debug values
-                // SmartDashboard.putNumber("Distance", distance);
-                SmartDashboard.putNumber("Raw Shoot Angle", desiredVerticalAngle);
-                SmartDashboard.putNumber("Shoot Angle", shootAngle);
+                SmartDashboard.putNumber("Distance", distance);
             },
             driveSubsystem
         ).withTimeout(1.3).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));

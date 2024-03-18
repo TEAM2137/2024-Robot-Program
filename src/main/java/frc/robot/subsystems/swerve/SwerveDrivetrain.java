@@ -114,6 +114,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
     private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Pose", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> lastPosePublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Previous Pose", Pose2d.struct).publish();
+    public StructPublisher<Pose2d> speakerPosePublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Speaker Location", Pose2d.struct).publish();
     private StructPublisher<Rotation2d> rotationPublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Rotation", Rotation2d.struct).publish();
 
@@ -187,9 +191,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
         rotationPublisher.set(getRotation());
         posePublisher.set(getPose()); // AdvantageScope pose
+        lastPosePublisher.set(vision.lastPose); // AdvantageScope last pose
 
-        SmartDashboard.putNumber("Field Position X", getPose().getX());
-        SmartDashboard.putNumber("Field Position Y", getPose().getY());
+        SmartDashboard.putNumber("Robot X", getPose().getX());
+        SmartDashboard.putNumber("Robot Y", getPose().getY());
         SmartDashboard.putNumber("Robot Rotation", getPose().getRotation().getDegrees());
     }
 
@@ -203,26 +208,15 @@ public class SwerveDrivetrain extends SubsystemBase {
         }
         
         updateModulePositions();
-        
-        // if (vision.hasTarget()) {
-        //     // Only update if aprilTags are visible
-        //     vision.updateValues();
-        //     poseEstimator.addVisionMeasurement(new Pose2d(
-        //         vision.getPose().getX(),
-        //         vision.getPose().getY(),
-        //         getRotation()), Timer.getFPGATimestamp()
-        //     );
-        // }
-        
         poseEstimator.update(getRotation(), modulePositions);
     }
 
     private void updateModulePositions() {
         double[] distances = new double[] {
-            frontLeftModule.getDriveDistance(),
-            frontRightModule.getDriveDistance(),
-            backLeftModule.getDriveDistance(),
-            backRightModule.getDriveDistance()
+            -frontLeftModule.getDriveDistance(),
+            -frontRightModule.getDriveDistance(),
+            -backLeftModule.getDriveDistance(),
+            -backRightModule.getDriveDistance()
         };
 
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
@@ -336,7 +330,8 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @return the pose of the robot in meters
      */
     public Pose2d getPose() {
-        return poseEstimator.grabEstimatedPose();
+        Pose2d pose = poseEstimator.grabEstimatedPose();
+        return new Pose2d(pose.getX(), pose.getY(), getRotation());
     }
 
     /**
