@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.CommandSequences;
 import frc.robot.commands.RumbleSequences;
@@ -73,11 +74,9 @@ public class RobotContainer {
         auto = new Autonomous(driveSubsystem);
         teleop = new Teleop(driveSubsystem, driverController, operatorController);
 
-        NamedCommands.registerCommand("speaker-aim", 
-           CommandSequences.pointAndAimCommand(driveSubsystem, shooterSubsystem, vision));
+        NamedCommands.registerCommand("speaker-aim", teleop.startAimCommand().andThen(new WaitCommand(1.0)));
         NamedCommands.registerCommand("speaker-shoot", 
-           CommandSequences.speakerAimAndShootCommand(driveSubsystem, vision, transferSubsystem, shooterSubsystem)
-           .andThen(shooterSubsystem.stowPivot()));
+           CommandSequences.transferToShooterCommand(intakeSubsystem, transferSubsystem, shooterSubsystem, trapperSubsystem));
         NamedCommands.registerCommand("intake-down", 
             CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
         
@@ -124,7 +123,7 @@ public class RobotContainer {
     public void runAutonomous() {
         vision.limelights.forEach(limelight -> limelight.resetAlliance());
 
-        auto.init();
+        auto.init(shooterSubsystem);
     }
 
     /**

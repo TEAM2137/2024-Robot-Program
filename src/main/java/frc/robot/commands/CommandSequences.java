@@ -49,6 +49,11 @@ public class CommandSequences {
             .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.8))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
+
+    public static Command transferToShooterCommand(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, TrapperSubsystem trapper) {
+        return transfer.feedShooterCommand().withTimeout(0.8)
+            .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
+    }
     
     /**
      * Starts both the shooter and transfer. You probably shouldn't call this

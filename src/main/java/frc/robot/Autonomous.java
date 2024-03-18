@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class Autonomous {
@@ -22,12 +24,14 @@ public class Autonomous {
         this.drivetrain = drivetrain;
     }
 
-    public void init() {
+    public void init(ShooterSubsystem shooter) {
         // Init autonomous stuff
         drivetrain.resetOdometry(new Pose2d());
         
         // Run auton command
-        autonomousCommand = autoChooser.getSelected();
+        autonomousCommand = autoChooser.getSelected().alongWith(Commands.run(() -> {
+            RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
+        }));
         CommandScheduler.getInstance().schedule(autonomousCommand);
     }
 

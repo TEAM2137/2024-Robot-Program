@@ -68,11 +68,11 @@ public class Teleop {
         }, driveSubsystem));
 
         // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
-        driverController.b().onTrue(transfer.feedShooterCommand().withTimeout(0.8)
-            .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))
-            .andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+        driverController.b().onTrue(
+            CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper)
+                .andThen(shooter.stowPivot()));
 
-        driverController.a().onTrue(Commands.runOnce(() -> isTargetingSpeaker = true));
+        driverController.a().onTrue(startAimCommand());
 
         driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
         driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
@@ -178,15 +178,28 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
-                if (isTargetingSpeaker) {
-                    Pair<Double, Double> data = getSpeakerAimData(shooter);
-                    rot = data.getFirst();
-                    shooter.setFromDistance(data.getSecond() + 0.25);
-                }
+                targetSpeakerUpdate(shooter);
                 driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem
         );
+    }
+
+    /**
+     * @return the rotation error
+     */
+    public double targetSpeakerUpdate(ShooterSubsystem shooter) {
+        double rot = 0;
+        if (isTargetingSpeaker) {
+            Pair<Double, Double> data = getSpeakerAimData(shooter);
+            rot = data.getFirst();
+            shooter.setFromDistance(data.getSecond() + 0.25);
+        }
+        return rot;
+    }
+
+    public Command startAimCommand() {
+        return Commands.runOnce(() -> isTargetingSpeaker = true);
     }
 
     public Pair<Double, Double> getSpeakerAimData(ShooterSubsystem shooter) {
