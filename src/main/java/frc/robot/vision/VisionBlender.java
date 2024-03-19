@@ -85,7 +85,7 @@ public class VisionBlender {
      */
     public double getTimestamp() {
         if (limelights == null) return Timer.getFPGATimestamp();
-        return Timer.getFPGATimestamp();// - limelights.get(0).getLatency() / 1000.0;
+        return Timer.getFPGATimestamp() - limelights.get(0).getLatency() / 1000.0;
     }
 
     public boolean hasTarget() {

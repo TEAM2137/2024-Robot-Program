@@ -12,9 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "speaker-aim"
+            "waitTime": 0.4
           }
         },
         {
@@ -40,6 +40,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
@@ -96,6 +102,12 @@
           "type": "named",
           "data": {
             "name": "speaker-shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop-all"
           }
         }
       ]

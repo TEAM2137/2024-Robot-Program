@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 public class VisionBlendedPoseEstimator {
@@ -43,7 +44,7 @@ public class VisionBlendedPoseEstimator {
         visionBlender.updateValues();
         if (visionBlender.hasTarget()) {
             Pose2d visionPose = visionBlender.getPose();
-            if (visionPose != null)
+            if (visionPose != null && DriverStation.isTeleop())
                 poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
 
             // if (visionBlender.hasPose()) {

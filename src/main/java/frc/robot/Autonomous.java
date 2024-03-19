@@ -6,6 +6,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,20 +20,38 @@ public class Autonomous {
     private SendableChooser<Command> autoChooser;
 
     private Command autonomousCommand;
+    private Command autoAimCommand;
+    private boolean enableRotation;
 
-    public Autonomous(SwerveDrivetrain drivetrain) {
+    public Autonomous(SwerveDrivetrain drivetrain, ShooterSubsystem shooter) {
         this.drivetrain = drivetrain;
+
+        autoAimCommand = Commands.run(() -> {
+            double rot = RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
+            if (enableRotation) {
+                drivetrain.driveTranslationRotationRaw(
+                    new ChassisSpeeds(0, 0, rot));
+            }
+        });
     }
 
-    public void init(ShooterSubsystem shooter) {
+    public void init() {
         // Init autonomous stuff
         drivetrain.resetOdometry(new Pose2d());
         
         // Run auton command
-        autonomousCommand = autoChooser.getSelected().alongWith(Commands.run(() -> {
-            RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
-        }));
-        CommandScheduler.getInstance().schedule(autonomousCommand);
+        autonomousCommand = autoChooser.getSelected();
+
+        CommandScheduler.getInstance().schedule(autonomousCommand.alongWith(autoAimCommand)
+            .until(() -> DriverStation.isDisabled() || DriverStation.isTeleop()));
+    }
+
+    public Command enableRotationCommand() {
+        return Commands.runOnce(() -> enableRotation = true);
+    }
+
+    public Command disableRotationCommand() {
+        return Commands.runOnce(() -> enableRotation = false);
     }
 
     public void setAutoChooser(SendableChooser<Command> autoChooser) { this.autoChooser = autoChooser; }

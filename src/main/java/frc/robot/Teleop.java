@@ -63,9 +63,7 @@ public class Teleop {
 
         // +++ DRIVER +++
 
-        driverController.start().onTrue(Commands.runOnce(() -> {
-            driveSubsystem.resetGyro(); driveSubsystem.resetGyro();
-        }, driveSubsystem));
+        driverController.start().onTrue(Commands.runOnce(driveSubsystem::resetGyro));
 
         // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
         driverController.b().onTrue(
@@ -178,7 +176,7 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
-                targetSpeakerUpdate(shooter);
+                if (isTargetingSpeaker) targetSpeakerUpdate(shooter);
                 driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem
@@ -190,11 +188,9 @@ public class Teleop {
      */
     public double targetSpeakerUpdate(ShooterSubsystem shooter) {
         double rot = 0;
-        if (isTargetingSpeaker) {
-            Pair<Double, Double> data = getSpeakerAimData(shooter);
-            rot = data.getFirst();
-            shooter.setFromDistance(data.getSecond() + 0.25);
-        }
+        Pair<Double, Double> data = getSpeakerAimData(shooter);
+        rot = data.getFirst();
+        shooter.setFromDistance(data.getSecond() + 0.25);
         return rot;
     }
 
@@ -210,7 +206,7 @@ public class Teleop {
         // Sets where it should point (field space coords)
         Translation2d targetPos;
         if (isBlueAlliance) targetPos = new Translation2d(-0.15, 5.56);
-        else targetPos = new Translation2d(-0.15, 2.65); // 2.73
+        else targetPos = new Translation2d(16.75, 5.56);
         driveSubsystem.speakerPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
 
         // Get robot pose

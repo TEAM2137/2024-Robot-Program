@@ -34,11 +34,11 @@ public class RobotContainer {
 
     // Subsystems
     private SwerveDrivetrain driveSubsystem;
-    private IntakeSubsystem intakeSubsystem;
-    private ShooterSubsystem shooterSubsystem;
+    private IntakeSubsystem intake;
+    private ShooterSubsystem shooter;
     private ClimberSubsystem climberSubsystem;
-    private TransferSubsystem transferSubsystem;
-    private TrapperSubsystem trapperSubsystem;
+    private TransferSubsystem transfer;
+    private TrapperSubsystem trapper;
 
     // Misc stuff
     private final AprilTagLimelight visionA = new AprilTagLimelight("limelight-a");
@@ -65,20 +65,23 @@ public class RobotContainer {
 
         // Initialize subsystems
         driveSubsystem = new SwerveDrivetrain(ModuleType.Falcon, vision);
-        intakeSubsystem = new IntakeSubsystem();
-        shooterSubsystem = new ShooterSubsystem();
+        intake = new IntakeSubsystem();
+        shooter = new ShooterSubsystem();
         climberSubsystem = new ClimberSubsystem();
-        transferSubsystem = new TransferSubsystem();
-        trapperSubsystem = new TrapperSubsystem();
+        transfer = new TransferSubsystem();
+        trapper = new TrapperSubsystem();
 
-        auto = new Autonomous(driveSubsystem);
+        auto = new Autonomous(driveSubsystem, shooter);
         teleop = new Teleop(driveSubsystem, driverController, operatorController);
 
-        NamedCommands.registerCommand("speaker-aim", teleop.startAimCommand().andThen(new WaitCommand(1.0)));
-        NamedCommands.registerCommand("speaker-shoot", 
-           CommandSequences.transferToShooterCommand(intakeSubsystem, transferSubsystem, shooterSubsystem, trapperSubsystem));
+        NamedCommands.registerCommand("speaker-shoot", auto.enableRotationCommand()
+            .andThen(new WaitCommand(0.7))
+            .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper))
+            .andThen(auto.disableRotationCommand()));
         NamedCommands.registerCommand("intake-down", 
-            CommandSequences.intakeAndTransfer(intakeSubsystem, transferSubsystem).withTimeout(3));
+            CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
+        NamedCommands.registerCommand("stop-all", 
+            CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
         
         auto.configure();
 
@@ -114,7 +117,7 @@ public class RobotContainer {
         
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
-        teleop.init(shooterSubsystem, intakeSubsystem, transferSubsystem, trapperSubsystem, climberSubsystem);
+        teleop.init(shooter, intake, transfer, trapper, climberSubsystem);
     }
 
     /**
@@ -123,7 +126,7 @@ public class RobotContainer {
     public void runAutonomous() {
         vision.limelights.forEach(limelight -> limelight.resetAlliance());
 
-        auto.init(shooterSubsystem);
+        auto.init();
     }
 
     /**

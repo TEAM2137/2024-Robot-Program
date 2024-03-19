@@ -12,7 +12,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -213,10 +215,10 @@ public class SwerveDrivetrain extends SubsystemBase {
 
     private void updateModulePositions() {
         double[] distances = new double[] {
-            -frontLeftModule.getDriveDistance(),
-            -frontRightModule.getDriveDistance(),
-            -backLeftModule.getDriveDistance(),
-            -backRightModule.getDriveDistance()
+            frontLeftModule.getDriveDistance(),
+            frontRightModule.getDriveDistance(),
+            backLeftModule.getDriveDistance(),
+            backRightModule.getDriveDistance()
         };
 
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
@@ -331,7 +333,9 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     public Pose2d getPose() {
         Pose2d pose = poseEstimator.grabEstimatedPose();
-        return new Pose2d(pose.getX(), pose.getY(), getRotation());
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        return new Pose2d(pose.getX(), pose.getY(), getRotation()
+            .plus(Rotation2d.fromDegrees(alliance == Alliance.Blue ? 0 : 180)));
     }
 
     /**
