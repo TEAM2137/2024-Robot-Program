@@ -1,0 +1,102 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.3141531312718623,
+      "y": 4.2361138103059135
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 8-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 8-2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 8-3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 8-4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 8-5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Working Autons",
+  "choreoAuto": false
+}

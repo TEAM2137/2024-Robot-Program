@@ -127,8 +127,12 @@ public class Teleop {
 
         // +++ End controller bindings +++
 
+        // Schedule starting commands
+        CommandScheduler.getInstance().schedule(shooter.stowPivot());
+        CommandScheduler.getInstance().schedule(Commands.runOnce(() -> isTargetingSpeaker = false));
+        CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
+
         // Init teleop command
-        CommandScheduler.getInstance().schedule(intake.moveIntakeUp());
         driveSubsystem.setDefaultCommand(getTeleopCommand(shooter));
     }
 

@@ -25,7 +25,7 @@ public class FalconModule extends SwerveModule {
 
     public static class Constants {
         public static final double driveRatio = 1 / 6.75;
-        public static final double measuredWheelDiameter = Units.inchesToMeters(4.0);
+        public static final double measuredWheelDiameter = Units.inchesToMeters(4);
 
         public static final double turningRatio = 21.42857;
 
