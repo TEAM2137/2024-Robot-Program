@@ -214,11 +214,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     private void updateModulePositions() {
+        boolean flipDistances = false;
+
         double[] distances = new double[] {
-            frontLeftModule.getDriveDistance(),
-            frontRightModule.getDriveDistance(),
-            backLeftModule.getDriveDistance(),
-            backRightModule.getDriveDistance()
+            frontLeftModule.getDriveDistance() * (flipDistances ? -1 : 0),
+            frontRightModule.getDriveDistance() * (flipDistances ? -1 : 0),
+            backLeftModule.getDriveDistance() * (flipDistances ? -1 : 0),
+            backRightModule.getDriveDistance() * (flipDistances ? -1 : 0)
         };
 
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());

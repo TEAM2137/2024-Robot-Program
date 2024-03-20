@@ -44,15 +44,13 @@ public class VisionBlendedPoseEstimator {
         visionBlender.updateValues();
         if (visionBlender.hasTarget()) {
             Pose2d visionPose = visionBlender.getPose();
-            if (visionPose != null && DriverStation.isTeleop())
+            if (visionPose != null && DriverStation.isTeleop()) {
+                    // (RobotContainer.getInstance().auto != null && RobotContainer.getInstance().auto.isTargetingEnabled())) {
+                visionPose = new Pose2d(visionPose.getX(), visionPose.getY(), gyroAngle);
                 poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
-
-            // if (visionBlender.hasPose()) {
-            //     Pose2d visionPose = visionBlender.getPose();
-            //     if (visionPose != null)
-            //         poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
-            // }
+            }
         }
+        
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroAngle, modulePositions);
     }
 

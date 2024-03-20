@@ -180,7 +180,7 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
-                if (isTargetingSpeaker) targetSpeakerUpdate(shooter);
+                if (isTargetingSpeaker) rot = targetSpeakerUpdate(shooter);
                 driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem

@@ -17,7 +17,7 @@ public class Robot extends TimedRobot {
   }
   @Override public void robotPeriodic() { CommandScheduler.getInstance().run(); }
   @Override public void autonomousInit() { robotContainer.runAutonomous(); }
-  @Override public void autonomousPeriodic() {}
+  @Override public void autonomousPeriodic() { robotContainer.auto.autonomousPeriodic(); }
   @Override public void teleopInit() { robotContainer.runTeleop(); }
   @Override public void teleopPeriodic() {}
   @Override public void disabledInit() {}

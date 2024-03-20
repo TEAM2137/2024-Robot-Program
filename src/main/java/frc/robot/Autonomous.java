@@ -17,22 +17,15 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class Autonomous {
     private SwerveDrivetrain drivetrain;
+    private ShooterSubsystem shooter;
     private SendableChooser<Command> autoChooser;
 
     private Command autonomousCommand;
-    private Command autoAimCommand;
-    private boolean enableRotation;
+    private boolean enableTargeting;
 
     public Autonomous(SwerveDrivetrain drivetrain, ShooterSubsystem shooter) {
         this.drivetrain = drivetrain;
-
-        autoAimCommand = Commands.run(() -> {
-            double rot = RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
-            if (enableRotation) {
-                drivetrain.driveTranslationRotationRaw(
-                    new ChassisSpeeds(0, 0, rot));
-            }
-        });
+        this.shooter = shooter;
     }
 
     public void init() {
@@ -42,17 +35,26 @@ public class Autonomous {
         // Run auton command
         autonomousCommand = autoChooser.getSelected();
 
-        CommandScheduler.getInstance().schedule(autonomousCommand.alongWith(autoAimCommand)
-            .until(() -> DriverStation.isDisabled() || DriverStation.isTeleop()));
+        CommandScheduler.getInstance().schedule(autonomousCommand);
+    }
+
+    public void autonomousPeriodic() {
+        double rot = RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
+        // if (enableTargeting) {
+        //     drivetrain.driveTranslationRotationRaw(
+        //         new ChassisSpeeds(0, 0, rot));
+        // }
     }
 
     public Command enableRotationCommand() {
-        return Commands.runOnce(() -> enableRotation = true);
+        return Commands.runOnce(() -> enableTargeting = true);
     }
 
     public Command disableRotationCommand() {
-        return Commands.runOnce(() -> enableRotation = false);
+        return Commands.runOnce(() -> enableTargeting = false);
     }
+
+    public boolean isTargetingEnabled() { return enableTargeting; }
 
     public void setAutoChooser(SendableChooser<Command> autoChooser) { this.autoChooser = autoChooser; }
 
@@ -68,7 +70,7 @@ public class Autonomous {
             drivetrain::driveTranslationRotationRaw, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig(
                 new PIDConstants(5.0, 0.0, 0.01), // Translation
-                new PIDConstants(5.0, 0.0, 0.01), // Rotation
+                new PIDConstants(3.0, 0.0, 0.01), // Rotation
                 3.0, // Max module speed (m/s)
                 0.4, // Distance from robot center to furthest module (meters)
                 new ReplanningConfig()
