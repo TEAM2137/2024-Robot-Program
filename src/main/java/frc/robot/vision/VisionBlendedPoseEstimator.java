@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.RobotContainer;
 
 public class VisionBlendedPoseEstimator {
     public static class Constants {
@@ -44,8 +45,8 @@ public class VisionBlendedPoseEstimator {
         visionBlender.updateValues();
         if (visionBlender.hasTarget()) {
             Pose2d visionPose = visionBlender.getPose();
-            if (visionPose != null && DriverStation.isTeleop()) {
-                    // (RobotContainer.getInstance().auto != null && RobotContainer.getInstance().auto.isTargetingEnabled())) {
+            if (visionPose != null && (DriverStation.isTeleop() ||
+                    (RobotContainer.getInstance().auto != null && RobotContainer.getInstance().auto.isTargetingEnabled()))) {
                 visionPose = new Pose2d(visionPose.getX(), visionPose.getY(), gyroAngle);
                 poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
             }

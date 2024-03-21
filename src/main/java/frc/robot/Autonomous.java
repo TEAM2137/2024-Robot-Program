@@ -5,7 +5,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -30,7 +29,6 @@ public class Autonomous {
 
     public void init() {
         // Init autonomous stuff
-        drivetrain.resetOdometry(new Pose2d());
         
         // Run auton command
         autonomousCommand = autoChooser.getSelected();
@@ -40,10 +38,10 @@ public class Autonomous {
 
     public void autonomousPeriodic() {
         double rot = RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
-        // if (enableTargeting) {
-        //     drivetrain.driveTranslationRotationRaw(
-        //         new ChassisSpeeds(0, 0, rot));
-        // }
+        if (enableTargeting) {
+            drivetrain.driveTranslationRotationRaw(
+                new ChassisSpeeds(0, 0, rot));
+        }
     }
 
     public Command enableRotationCommand() {
@@ -69,9 +67,9 @@ public class Autonomous {
             drivetrain::getSpeeds, // ChassisSpeeds supplier, ROBOT RELATIVE
             drivetrain::driveTranslationRotationRaw, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig(
-                new PIDConstants(5.0, 0.0, 0.01), // Translation
-                new PIDConstants(3.0, 0.0, 0.01), // Rotation
-                3.0, // Max module speed (m/s)
+                new PIDConstants(4.0, 0, 0), // Translation
+                new PIDConstants(1.0, 0, 0), // Rotation
+                4.0, // Max module speed (m/s)
                 0.4, // Distance from robot center to furthest module (meters)
                 new ReplanningConfig()
             ),

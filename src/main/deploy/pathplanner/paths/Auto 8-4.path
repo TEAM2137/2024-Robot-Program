@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6513193714406413,
-        "y": 3.6323458649289786
+        "x": 2.3591735914195437,
+        "y": 3.603131286926869
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.796755603001122,
-        "y": 1.1101539640801703
+        "x": 2.3591735914195437,
+        "y": 2.336829193751211
       },
       "isLocked": false,
       "linkedName": "Auto 8 End 3"
     },
     {
       "anchor": {
-        "x": 8.581878705868919,
-        "y": 2.4150717815077387
+        "x": 5.660420905657945,
+        "y": 1.2464886614233497
       },
       "prevControl": {
-        "x": 6.5465964383886055,
-        "y": 2.3858572035056285
+        "x": 4.015064970533947,
+        "y": 1.2375948455578152
+      },
+      "nextControl": {
+        "x": 7.46198654912138,
+        "y": 1.2562268540907189
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.455282201193109,
+        "y": 2.0644968454824224
+      },
+      "prevControl": {
+        "x": 6.643978365062305,
+        "y": 2.074235038149793
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,14 +48,14 @@
     {
       "waypointRelativePos": 0.5,
       "rotationDegrees": 0,
-      "rotateFast": true
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

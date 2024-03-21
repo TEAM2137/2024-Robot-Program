@@ -10,9 +10,10 @@
     "Auto 5",
     "Auto 6",
     "Auto 7",
+    "Auto 8",
     "Evil Path",
     "Green Auto",
-    "Auto 8",
+    "Auto 9",
     "Red Path",
     "Testing"
   ],
@@ -20,8 +21,8 @@
     "Working Autons",
     "Testing"
   ],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxVel": 3.5,
+  "defaultMaxAccel": 3.4,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

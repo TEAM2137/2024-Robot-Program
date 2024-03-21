@@ -75,7 +75,7 @@ public class RobotContainer {
         teleop = new Teleop(driveSubsystem, driverController, operatorController);
 
         NamedCommands.registerCommand("speaker-shoot", auto.enableRotationCommand()
-            .andThen(new WaitCommand(0.7))
+            .andThen(new WaitCommand(0.4))
             .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper))
             .andThen(auto.disableRotationCommand()));
         NamedCommands.registerCommand("intake-down", 

@@ -40,8 +40,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static final double length = Units.inchesToMeters(21.5);
         public static final double width = Units.inchesToMeters(21.5);
 
-        public static final double driveMaxSpeed = 3.0;
-        public static final double driveMaxAccel = 1.0;
+        public static final double driveMaxSpeed = 3.5;
+        public static final double driveMaxAccel = 2.0;
 
         public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(
             CanIDs.get("fl-drive"), 
@@ -214,13 +214,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     private void updateModulePositions() {
-        boolean flipDistances = false;
+        boolean flipDistances = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
 
         double[] distances = new double[] {
-            frontLeftModule.getDriveDistance() * (flipDistances ? -1 : 0),
-            frontRightModule.getDriveDistance() * (flipDistances ? -1 : 0),
-            backLeftModule.getDriveDistance() * (flipDistances ? -1 : 0),
-            backRightModule.getDriveDistance() * (flipDistances ? -1 : 0)
+            frontLeftModule.getDriveDistance() * (flipDistances ? -1 : 1),
+            frontRightModule.getDriveDistance() * (flipDistances ? -1 : 1),
+            backLeftModule.getDriveDistance() * (flipDistances ? -1 : 1),
+            backRightModule.getDriveDistance() * (flipDistances ? -1 : 1)
         };
 
         modulePositions[0] = new SwerveModulePosition(distances[0], frontLeftModule.getModuleRotation());
@@ -384,7 +384,12 @@ public class SwerveDrivetrain extends SubsystemBase {
      * Resets the PoseEstimator to a specified pose
      */
     public void resetOdometry(Pose2d pose) {
-        poseEstimator.resetPosition(getRotation(), new Pose2d(pose.getX(), pose.getY(), pose.getRotation()), modulePositions);
+        // This is necessary because PathPlanner flips the ROTATION of the starting pose as well
+        // as the position for autons depending on the alliance, which we don't want.
+        boolean reFlip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+
+        poseEstimator.resetPosition(getRotation(), new Pose2d(pose.getX(), pose.getY(),
+            pose.getRotation().plus(Rotation2d.fromDegrees(reFlip ? 180 : 0))), modulePositions);
         updateOdometry();
     }
 

@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8947741881248894,
-        "y": 6.7972584818242
+        "x": 2.885035995457519,
+        "y": 5.404696930390302
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.242315279411105,
-        "y": 6.719352940485241
+        "x": 3.469327555499713,
+        "y": 6.300610655788334
       },
       "isLocked": false,
-      "linkedName": "Auto 4 End 2"
+      "linkedName": "Auto 9 End 1"
     },
     {
       "anchor": {
-        "x": 1.9209549213878978,
-        "y": 6.164275958445155
+        "x": 6.303141621704358,
+        "y": 6.407730775129404
       },
       "prevControl": {
-        "x": 1.9112167287205282,
-        "y": 6.65118559181365
+        "x": 5.114473479243518,
+        "y": 6.726047947944058
+      },
+      "nextControl": {
+        "x": 7.491809764165199,
+        "y": 6.0894136023147505
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.28973292584782,
+        "y": 5.7844864444177295
+      },
+      "prevControl": {
+        "x": 6.955600530418142,
+        "y": 5.842915600421949
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 4 End 1"
+      "linkedName": "Auto 9 End 2"
     }
   ],
   "rotationTargets": [],
@@ -43,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 4",
+  "folder": "Auto 9",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

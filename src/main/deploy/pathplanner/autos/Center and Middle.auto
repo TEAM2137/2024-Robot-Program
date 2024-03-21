@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3137735217120825,
-      "y": 4.3300897057116385
+      "x": 1.1808522786677846,
+      "y": 5.560508013068222
     },
     "rotation": 0
   },
@@ -12,15 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "A1-5n Starting Turn"
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "aimAndShootAtSpeaker"
+            "name": "speaker-shoot"
           }
         },
         {
@@ -30,35 +30,28 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1-5n Cycle 1-1"
+                  "pathName": "Auto 9-1"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "startIntake"
+                  "name": "intake-down"
                 }
               }
             ]
           }
         },
         {
-          "type": "sequential",
+          "type": "wait",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "A1-5n Cycle 1-2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "aimAndShootAtSpeaker"
-                }
-              }
-            ]
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker-shoot"
           }
         },
         {
@@ -68,13 +61,103 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A1-5n Cycle 2-1"
+                  "pathName": "Auto 9-2"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.4
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake-down"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 9-3"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "startIntake"
+                  "name": "speaker-shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Auto 9-4"
+                      }
+                    },
+                    {
+                      "type": "sequential",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.4
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intake-down"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 9-5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
                 }
               }
             ]
@@ -83,107 +166,12 @@
         {
           "type": "named",
           "data": {
-            "name": "aimAndShootAtSpeaker"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "A1-5n Cycle 3-1"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "startIntake"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "A1-5n Cycle 3-2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "aimAndShootAtSpeaker"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "A1-5n Cycle 4-1"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "startIntake"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "A1-5n Cycle 4-2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "aimAndShootAtSpeaker"
-                }
-              },
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "A1-5n Get One Last Ring"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "startIntake"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "name": "stop-all"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Working Autons",
   "choreoAuto": false
 }
