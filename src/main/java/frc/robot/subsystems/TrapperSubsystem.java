@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -125,23 +124,21 @@ public class TrapperSubsystem extends SubsystemBase {
 
         // Target the proper angles
 
-        double wristEncoderPos = wristEncoder.getPosition();
-        Rotation2d wristTargetRotation = Rotation2d.fromDegrees(wristTarget);
-        Rotation2d wristCurrentRotation = Rotation2d.fromDegrees(wristEncoderPos);
-        double wristError = Math.max(Math.min((wristTargetRotation.minus(wristCurrentRotation).getDegrees()) / 400.0,
-            /* Max motor speed */ 0.15), /* Min motor speed */ -0.15);
-        wristMotor.set(wristError);
+        // double wristEncoderPos = wristEncoder.getPosition();
+        // Rotation2d wristTargetRotation = Rotation2d.fromDegrees(wristTarget);
+        // Rotation2d wristCurrentRotation = Rotation2d.fromDegrees(wristEncoderPos);
+        // double wristError = Math.max(Math.min((wristTargetRotation.minus(wristCurrentRotation).getDegrees()) / 400.0,
+        //     /* Max motor speed */ 0.15), /* Min motor speed */ -0.15);
+        // wristMotor.set(wristError);
 
-        double armEncoderPos = armEncoder.getPosition();
-        Rotation2d armTargetRotation = Rotation2d.fromDegrees(armTarget);
-        Rotation2d armCurrentRotation = Rotation2d.fromDegrees(armEncoderPos);
-        double armError = Math.max(Math.min(armTargetRotation.minus(armCurrentRotation).getDegrees() / 300.0,
-            /* Max motor speed */ 0.25), /* Min motor speed */ -0.25);
-        // if (Math.abs(armError) < 0.01) armError = 0;
-        armMotor.set(armError);
+        // double armEncoderPos = armEncoder.getPosition();
+        // Rotation2d armTargetRotation = Rotation2d.fromDegrees(armTarget);
+        // Rotation2d armCurrentRotation = Rotation2d.fromDegrees(armEncoderPos);
+        // double armError = Math.max(Math.min(armTargetRotation.minus(armCurrentRotation).getDegrees() / 300.0,
+        //     /* Max motor speed */ 0.25), /* Min motor speed */ -0.25);
+        // // if (Math.abs(armError) < 0.01) armError = 0;
+        // armMotor.set(armError);
 
-        // SmartDashboard.putNumber("Trapper Wrist Encoder Target", wristTarget);
-        // SmartDashboard.putNumber("Trapper Arm Encoder Target", armTarget);
         SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
         SmartDashboard.putNumber("Arm Position", armEncoder.getPosition());
         SmartDashboard.updateValues();

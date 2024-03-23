@@ -32,19 +32,30 @@
     },
     {
       "anchor": {
-        "x": 8.28973292584782,
-        "y": 5.7844864444177295
+        "x": 8.328685696517299,
+        "y": 5.72605728841351
       },
       "prevControl": {
-        "x": 6.955600530418142,
-        "y": 5.842915600421949
+        "x": 6.99455330108762,
+        "y": 5.7844864444177295
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Auto 9 End 2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.6,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {

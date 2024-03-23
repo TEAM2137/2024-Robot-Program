@@ -43,12 +43,18 @@ public class CommandSequences {
      * Shoots into the amp by aiming the shooter pivot and shooting
      * @return the command
      */
-    public static Command ampShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return shooter.startShooter(speed)
+    public static Command ampShootCommand(double topSpeed, double bottomSpeed, TransferSubsystem transfer, ShooterSubsystem shooter) {
+        return shooter.startSeperateShooters(topSpeed, bottomSpeed)
             .andThen(Commands.waitSeconds(1.2))
-            .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.8))
+            .andThen(transfer.removeForceStop().andThen(transfer.feedShooterCommand()).withTimeout(0.8))
             .andThen(stopShooterAndTransfer(shooter, transfer));
     }
+    // public static Command ampShootCommand(double speed, TransferSubsystem transfer, ShooterSubsystem shooter) {
+    //     return shooter.startShooter(speed)
+    //         .andThen(Commands.waitSeconds(1.2))
+    //         .andThen(startShooterAndTransfer(speed, shooter, transfer).withTimeout(0.8))
+    //         .andThen(stopShooterAndTransfer(shooter, transfer));
+    // }
 
     public static Command transferToShooterCommand(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, TrapperSubsystem trapper) {
         return transfer.feedShooterCommand().withTimeout(0.8)
@@ -92,7 +98,7 @@ public class CommandSequences {
      * @return the command
      */
     public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return (transfer.intakeNoteCommand(() -> false)
+        return (transfer.intakeNoteCommand()
             .alongWith(intake.deployIntake()))
             .andThen(intake.stopRollers()
             .andThen(intake.moveIntakeUp()));
@@ -107,7 +113,7 @@ public class CommandSequences {
         return
             intake.moveIntakeDown()
             .andThen(intake.startRollers())
-            .alongWith(transfer.intakeNoteCommand(() -> false));
+            .alongWith(transfer.intakeNoteCommand());
     }
 
     /**
@@ -128,16 +134,25 @@ public class CommandSequences {
      * Moves a stored note into the arm
      * @return the command
      */
-    public static Command moveToTrapper(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
-        return trapper.grabPosition()
-            .andThen(trapper.runRollers(0.4))
-            .andThen(shooter.setPivotTarget(ShooterSubsystem.Constants.armAngle))
+    public static Command moveToShooterForArmCommand(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
+        return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage1Angle)
             .andThen(Commands.waitSeconds(0.3))
-            .andThen(rawShootCommand(0.1, transfer, shooter))
-            .andThen(Commands.waitSeconds(0.2))
-            .andThen(trapper.stopRollers())
+            .andThen(shooter.startShooter(0.04))
+            .andThen(transfer.feedArmCommand())
             .andThen(shooter.stopShooter())
+            .andThen(Commands.waitSeconds(0.2))
             .andThen(shooter.stowPivot());
+    }
+
+    public static Command shootIntoArmCommand(TrapperSubsystem trapper, ShooterSubsystem shooter) {
+        return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
+            .andThen(Commands.waitSeconds(0.1))
+            .andThen(trapper.runRollers(-0.5))
+            .andThen(Commands.waitSeconds(0.32))
+            .andThen(shooter.startShooter(0.3))
+            .andThen(Commands.waitSeconds(0.21))
+            .andThen(trapper.stopRollers())
+            .andThen(shooter.stopShooter());
     }
 
     // +++ Vision +++
@@ -217,10 +232,10 @@ public class CommandSequences {
     }
 
     public static Command climberUpCommand(ClimberSubsystem climber) {
-        return climber.setSpeedCommand(0.75);
+        return climber.setSpeedCommand(0.4); // 0.75
     }
 
     public static Command climberDownCommand(ClimberSubsystem climber) {
-        return climber.setSpeedCommand(-0.75);
+        return climber.setSpeedCommand(-0.4);
     }
 }

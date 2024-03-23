@@ -32,6 +32,7 @@ public class Autonomous {
         
         // Run auton command
         autonomousCommand = autoChooser.getSelected();
+        drivetrain.resetModuleAngles();
 
         CommandScheduler.getInstance().schedule(autonomousCommand);
     }

@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import frc.robot.util.CanIDs;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -20,6 +18,7 @@ public class TransferSubsystem extends SubsystemBase {
 
     // inBeamBreak is mounted so it's broken when a NOTE is fully in the transfer
     private DigitalInput inBeamBreak = new DigitalInput(0);
+    private DigitalInput secondBeamBreak = new DigitalInput(1);
 
     public TransferSubsystem() {
         super();
@@ -33,7 +32,7 @@ public class TransferSubsystem extends SubsystemBase {
      * @param earlyStop Condition to stop early
      * @return The command
      */
-    public Command intakeNoteCommand(BooleanSupplier earlyStop) {
+    public Command intakeNoteCommand() {
         return removeForceStop().andThen(runEnd(
             () -> {
                 beltMotor.set(0.6);
@@ -41,7 +40,7 @@ public class TransferSubsystem extends SubsystemBase {
             () -> {
                 beltMotor.set(0);
             }
-        ).until(() -> !inBeamBreak.get() || earlyStop.getAsBoolean() || motorsStopped).andThen(() -> {
+        ).until(() -> !inBeamBreak.get() || motorsStopped).andThen(() -> {
             motorsStopped = false;
         })); // Stop when the beam breaks
     }
@@ -97,6 +96,25 @@ public class TransferSubsystem extends SubsystemBase {
                 beltMotor.set(0);
             }
         ).until(() -> motorsStopped));
+    }
+
+    public Command feedArmCommand() {
+        return removeForceStop().andThen(runEnd(
+            () -> {
+                beltMotor.set(0.4);
+            },
+            () -> {
+                beltMotor.set(0);
+            }
+        ).until(() -> motorsStopped || !secondBeamBreak.get()))
+        .andThen(runEnd(
+            () -> {
+                beltMotor.set(0.4);
+            },
+            () -> {
+                beltMotor.set(0);
+            }
+        ).until(() -> motorsStopped || secondBeamBreak.get()));
     }
 
     public boolean getOccupied() {

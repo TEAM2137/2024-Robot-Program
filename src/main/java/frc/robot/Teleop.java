@@ -68,12 +68,12 @@ public class Teleop {
         // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
         driverController.b().onTrue(
             CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper)
-                .andThen(shooter.stowPivot()));
+                .andThen(shooter.stowPivot().andThen(() -> isTargetingSpeaker = false).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))));
 
         driverController.a().onTrue(startAimCommand());
 
-        driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
-        driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
+        // driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
+        // driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
 
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
@@ -96,7 +96,7 @@ public class Teleop {
         // Manual intake pivot
         driverController.rightBumper().onTrue(intake.togglePivot());
         // Stow command
-        driverController.leftBumper().onTrue(shooter.stowPivot().andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+        driverController.leftBumper().onTrue(shooter.stowPivot().andThen(() -> isTargetingSpeaker = false).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
 
         // +++ OPERATOR +++
 
@@ -121,9 +121,10 @@ public class Teleop {
         operatorController.povDown().onFalse(climber.stopClimber());
 
         // Shooter manual toggle
-        operatorController.y().onTrue(CommandSequences.moveToTrapper(trapper, shooter, transfer));
-        operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
-            .andThen(CommandSequences.ampShootCommand(0.215/* TODO tune this */, transfer, shooter)));
+        operatorController.y().onTrue(CommandSequences.moveToShooterForArmCommand(trapper, shooter, transfer));
+        // operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
+        //     .andThen(CommandSequences.ampShootCommand(0.215/* TODO tune this */, transfer, shooter)));
+        operatorController.b().onTrue(CommandSequences.shootIntoArmCommand(trapper, shooter));
 
         // +++ End controller bindings +++
 
@@ -133,6 +134,7 @@ public class Teleop {
         CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
 
         // Init teleop command
+        driveSubsystem.resetModuleAngles();
         driveSubsystem.setDefaultCommand(getTeleopCommand(shooter));
     }
 
@@ -194,7 +196,7 @@ public class Teleop {
         double rot = 0;
         Pair<Double, Double> data = getSpeakerAimData(shooter);
         rot = data.getFirst();
-        shooter.setFromDistance(data.getSecond() + 0.25);
+        shooter.setFromDistance(data.getSecond() - 0.16);
         return rot;
     }
 

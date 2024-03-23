@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.326288510228267,
-        "y": 6.83621125249368
+        "x": 4.1607392348829775,
+        "y": 6.972545949836858
       },
       "isLocked": false,
       "linkedName": "Auto 9 End 3"
@@ -28,7 +28,13 @@
       "linkedName": "Auto 9 End 4"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {

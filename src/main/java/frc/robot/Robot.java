@@ -11,7 +11,7 @@ public class Robot extends TimedRobot {
   public RobotContainer robotContainer;
   
   @Override public void robotInit() {
-    try { Thread.sleep(250); }
+    try { Thread.sleep(1000); }
     catch(Exception e) {}
     robotContainer = new RobotContainer();
   }

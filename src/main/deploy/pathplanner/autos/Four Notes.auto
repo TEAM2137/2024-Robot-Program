@@ -107,6 +107,18 @@
         {
           "type": "named",
           "data": {
+            "name": "speaker-shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop-all"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "stop-all"
           }
         }
