@@ -15,20 +15,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
-import frc.robot.util.PID;
 
 public class TrapperSubsystem extends SubsystemBase {
     public static class Constants {
-        public static double ARM_HOME_ANGLE = 51.9;
-        public static double WRIST_HOME_ANGLE = 109.8;
+        public static final double ARM_HOME_ANGLE = 232.0;
+        public static final double WRIST_HOME_ANGLE = 261.3;
 
-        public static double ARM_AMP = 10.5;
-        public static double WRIST_AMP = 184.4;
-
-        public static double ARM_GRAB = 261.5;
-        public static double WRIST_GRAB = 201.0;
-
-        public static PID TRAPPER_PID = new PID(0.1, 0, 0.01, 0);
+        public static final double ARM_AMP_ANGLE = 145.6;
+        public static final double WRIST_AMP_ANGLE = 150.2;
     }
 
     private CANSparkMax rollers;
@@ -52,12 +46,12 @@ public class TrapperSubsystem extends SubsystemBase {
 
         // Wrist (the end part)
         wristMotor = new CANSparkMax(CanIDs.get("trapper-wrist"), MotorType.kBrushless);
-        wristMotor.setInverted(false);
+        wristMotor.setInverted(true);
         wristMotor.setIdleMode(IdleMode.kBrake);
 
         wristEncoder = wristMotor.getAbsoluteEncoder();
         wristEncoder.setPositionConversionFactor(360);
-        wristEncoder.setZeroOffset(200);
+        wristEncoder.setZeroOffset(100);
 
         // Arm (the bottom part)
         armMotor = new CANSparkMax(CanIDs.get("trapper-arm"), MotorType.kBrushless);
@@ -103,17 +97,17 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command homePosition() {
-        return setArmTarget(Constants.ARM_HOME_ANGLE).andThen(Commands.waitSeconds(0.8))
-            .andThen(setWristTarget(Constants.WRIST_HOME_ANGLE));
+        return setWristTarget(Constants.WRIST_HOME_ANGLE).andThen(Commands.waitSeconds(0.25))
+            .andThen(setArmTarget(Constants.ARM_HOME_ANGLE));
     }
 
     public Command ampPosition() {
-        return setWristTarget(Constants.WRIST_AMP).andThen(setArmTarget(Constants.ARM_AMP));
+        return setArmTarget(Constants.ARM_AMP_ANGLE).andThen(Commands.waitSeconds(0.25))
+            .andThen(setWristTarget(Constants.WRIST_AMP_ANGLE));
     }
 
-    public Command grabPosition() {
-        return setWristTarget(Constants.WRIST_GRAB).andThen(Commands.waitSeconds(0.8))
-            .andThen(setArmTarget(Constants.ARM_GRAB));
+    public Command climbPosition() {
+        return setArmTarget(Constants.ARM_AMP_ANGLE).andThen(setWristTarget(Constants.WRIST_AMP_ANGLE));
     }
 
     @Override
@@ -124,20 +118,15 @@ public class TrapperSubsystem extends SubsystemBase {
 
         // Target the proper angles
 
-        // double wristEncoderPos = wristEncoder.getPosition();
-        // Rotation2d wristTargetRotation = Rotation2d.fromDegrees(wristTarget);
-        // Rotation2d wristCurrentRotation = Rotation2d.fromDegrees(wristEncoderPos);
-        // double wristError = Math.max(Math.min((wristTargetRotation.minus(wristCurrentRotation).getDegrees()) / 400.0,
-        //     /* Max motor speed */ 0.15), /* Min motor speed */ -0.15);
-        // wristMotor.set(wristError);
+        double wristEncoderPos = wristEncoder.getPosition();
+        double wristError = Math.max(Math.min((wristTarget - wristEncoderPos) / 390.0,
+            /* Max motor speed */ 0.16), /* Min motor speed */ -0.16);
+        wristMotor.set(wristError);
 
-        // double armEncoderPos = armEncoder.getPosition();
-        // Rotation2d armTargetRotation = Rotation2d.fromDegrees(armTarget);
-        // Rotation2d armCurrentRotation = Rotation2d.fromDegrees(armEncoderPos);
-        // double armError = Math.max(Math.min(armTargetRotation.minus(armCurrentRotation).getDegrees() / 300.0,
-        //     /* Max motor speed */ 0.25), /* Min motor speed */ -0.25);
-        // // if (Math.abs(armError) < 0.01) armError = 0;
-        // armMotor.set(armError);
+        double armEncoderPos = armEncoder.getPosition();
+        double armError = Math.max(Math.min((armTarget - armEncoderPos) / 300.0,
+            /* Max motor speed */ 0.28), /* Min motor speed */ -0.28);
+        armMotor.set(armError);
 
         SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
         SmartDashboard.putNumber("Arm Position", armEncoder.getPosition());

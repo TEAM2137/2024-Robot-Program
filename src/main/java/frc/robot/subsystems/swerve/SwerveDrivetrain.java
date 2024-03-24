@@ -118,7 +118,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         .getStructTopic("Robot Pose", Pose2d.struct).publish();
     private StructPublisher<Pose2d> lastPosePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Previous Pose", Pose2d.struct).publish();
-    public StructPublisher<Pose2d> speakerPosePublisher = NetworkTableInstance.getDefault()
+    public StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Speaker Location", Pose2d.struct).publish();
     private StructPublisher<Rotation2d> rotationPublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Rotation", Rotation2d.struct).publish();

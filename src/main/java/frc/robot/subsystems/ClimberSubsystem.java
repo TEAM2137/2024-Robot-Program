@@ -7,12 +7,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
 
 public class ClimberSubsystem extends SubsystemBase {
-    public static class Constants {
-
-    }
-
     private CANSparkMax climbLeft;
     private CANSparkMax climbRight;
+
+    private boolean forceStop;
 
     public ClimberSubsystem() {
         super();
@@ -20,10 +18,10 @@ public class ClimberSubsystem extends SubsystemBase {
         climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
         climbRight = new CANSparkMax(CanIDs.get("climber-right"), CANSparkLowLevel.MotorType.kBrushless);
 
-        // setDefaultCommand(run(() -> {
-        //     climbLeft.set(-0.02);
-        //     climbRight.set(-0.02);
-        // }));
+        setDefaultCommand(run(() -> {
+            climbLeft.set(-0.015);
+            climbRight.set(-0.015);
+        }));
     }
 
     /**
@@ -31,11 +29,11 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param speed Speed from -1.0 to 1.0
      * @return Command that sets the speed
      */
-    public Command setSpeedCommand(double speed) {
-        return runOnce(() -> {
+    public Command runClimber(double speed) {
+        return removeForceStop().andThen(run(() -> {
             climbLeft.set(speed);
             climbRight.set(speed);
-        });
+        }).until(() -> forceStop));
     }
 
     /**
@@ -43,10 +41,11 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return Command that stops the motor
      */
     public Command stopClimber() {
-        return runOnce(() -> {
-            climbLeft.stopMotor();
-            climbRight.stopMotor();
-        });
+        return runOnce(() -> forceStop = true);
+    }
+
+    public Command removeForceStop() {
+        return runOnce(() -> forceStop = false);
     }
 
     @Override

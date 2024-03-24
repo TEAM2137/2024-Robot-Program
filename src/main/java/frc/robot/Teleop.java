@@ -46,6 +46,7 @@ public class Teleop {
 
     private double prevStickAngle = 0;
     private boolean isTargetingSpeaker = false;
+    private boolean isTargetingHome = false;
 
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController, CommandXboxController operatorController) {
@@ -68,9 +69,10 @@ public class Teleop {
         // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
         driverController.b().onTrue(
             CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper)
-                .andThen(shooter.stowPivot().andThen(() -> isTargetingSpeaker = false).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))));
+                .andThen(shooter.stowPivot().andThen(cancelTargeting()).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))));
 
-        driverController.a().onTrue(startAimCommand());
+        driverController.a().onTrue(startSpeakerAimCommand());
+        driverController.back().onTrue(startHomeAimCommand());
 
         // driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
         // driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
@@ -88,7 +90,7 @@ public class Teleop {
         // Intake phase
         driverController.rightTrigger().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
         // Force stop
-        driverController.x().onTrue(Commands.runOnce(() -> isTargetingSpeaker = false).andThen(
+        driverController.x().onTrue(cancelTargeting().andThen(
             CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper)));
         // X Lock
         driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
@@ -104,26 +106,25 @@ public class Teleop {
         operatorController.x().onFalse(intake.stopRollers().andThen(transfer.transferForceStop()));
 
         // Shooter pivot manual controls
-        operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
-            .andThen(CommandSequences.rawShootCommand(1, transfer, shooter)));
-        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
-            .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
+        // operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
+        //     .andThen(CommandSequences.rawShootCommand(1, transfer, shooter)));
+        // operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
+        //     .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
-        operatorController.start().onTrue(trapper.runRollers(-0.7));
-        operatorController.start().onFalse(trapper.stopRollers());
+        operatorController.a().onTrue(trapper.runRollers(0.7));
+        operatorController.a().onFalse(trapper.stopRollers());
 
         operatorController.rightTrigger().onTrue(trapper.homePosition());
         operatorController.leftTrigger().onTrue(trapper.ampPosition());
 
-        operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
+        operatorController.povUp().onTrue(trapper.climbPosition()
+            .andThen(CommandSequences.climberUpCommand(climber)));
         operatorController.povUp().onFalse(climber.stopClimber());
         operatorController.povDown().onTrue(CommandSequences.climberDownCommand(climber));
         operatorController.povDown().onFalse(climber.stopClimber());
 
         // Shooter manual toggle
         operatorController.y().onTrue(CommandSequences.moveToShooterForArmCommand(trapper, shooter, transfer));
-        // operatorController.b().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.ampAngle)
-        //     .andThen(CommandSequences.ampShootCommand(0.215/* TODO tune this */, transfer, shooter)));
         operatorController.b().onTrue(CommandSequences.shootIntoArmCommand(trapper, shooter));
 
         // +++ End controller bindings +++
@@ -182,7 +183,9 @@ public class Teleop {
                     : rotationX) /* Robot centric */ * rotationSpeed;
 
                 // Actually drive the swerve base
-                if (isTargetingSpeaker) rot = targetSpeakerUpdate(shooter);
+                if (isTargetingSpeaker) rot = targetUpdate(shooter, ShotLocation.SPEAKER);
+                if (isTargetingHome) rot = targetUpdate(shooter, ShotLocation.HOME);
+
                 driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem
@@ -192,28 +195,60 @@ public class Teleop {
     /**
      * @return the rotation error
      */
-    public double targetSpeakerUpdate(ShooterSubsystem shooter) {
+    public double targetUpdate(ShooterSubsystem shooter, ShotLocation location) {
         double rot = 0;
-        Pair<Double, Double> data = getSpeakerAimData(shooter);
+        Pair<Double, Double> data = getAimData(shooter, location);
         rot = data.getFirst();
-        shooter.setFromDistance(data.getSecond() - 0.16);
+
+        switch (location) {
+            case SPEAKER:
+                shooter.setFromDistance(data.getSecond() - 0.08);
+                break;
+            // case HOME
+            default:
+                shooter.setPowerRaw(0.42f);
+                shooter.setPivotTargetRaw(42);
+                break;
+        }
+
         return rot;
     }
 
-    public Command startAimCommand() {
+    public Command startSpeakerAimCommand() {
         return Commands.runOnce(() -> isTargetingSpeaker = true);
     }
 
-    public Pair<Double, Double> getSpeakerAimData(ShooterSubsystem shooter) {
+    public Command startHomeAimCommand() {
+        return Commands.runOnce(() -> isTargetingHome = true);
+    }
+
+    public Command cancelTargeting() {
+        return Commands.runOnce(() -> { isTargetingSpeaker = false; isTargetingHome = false; });
+    }
+
+    public boolean isTargeting() { return isTargetingSpeaker || isTargetingHome; }
+    public boolean isTargetingSpeaker() { return isTargetingSpeaker; }
+    public boolean isTargetingHome() { return isTargetingHome; }
+
+    public Pair<Double, Double> getAimData(ShooterSubsystem shooter, ShotLocation location) {
         // Flips the aiming if the alliance is blue
         boolean isBlueAlliance = true;
         isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
 
         // Sets where it should point (field space coords)
         Translation2d targetPos;
-        if (isBlueAlliance) targetPos = new Translation2d(-0.15, 5.56);
-        else targetPos = new Translation2d(16.75, 5.56);
-        driveSubsystem.speakerPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
+        switch (location) {
+            case SPEAKER:
+                if (isBlueAlliance) targetPos = new Translation2d(-0.15, 5.43);
+                else targetPos = new Translation2d(16.75, 5.43);
+                break;
+            // case HOME
+            default:
+                if (isBlueAlliance) targetPos = new Translation2d(3.0, 6.5);
+                else targetPos = new Translation2d(13.6, 6.5);
+                break;
+        }
+        driveSubsystem.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
 
         // Get robot pose
         Pose2d robotPose = driveSubsystem.getPose();
@@ -232,5 +267,9 @@ public class Teleop {
         SmartDashboard.putNumber("Distance", distance);
 
         return new Pair<>(error * kP, distance);
+    }
+
+    public enum ShotLocation {
+        SPEAKER, HOME
     }
 }

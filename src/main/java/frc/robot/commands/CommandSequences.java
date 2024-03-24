@@ -232,10 +232,10 @@ public class CommandSequences {
     }
 
     public static Command climberUpCommand(ClimberSubsystem climber) {
-        return climber.setSpeedCommand(0.4); // 0.75
+        return climber.runClimber(0.7); // 0.75
     }
 
     public static Command climberDownCommand(ClimberSubsystem climber) {
-        return climber.setSpeedCommand(-0.4);
+        return climber.runClimber(-0.7);
     }
 }

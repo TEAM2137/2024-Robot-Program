@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Teleop.ShotLocation;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
@@ -38,7 +39,7 @@ public class Autonomous {
     }
 
     public void autonomousPeriodic() {
-        double rot = RobotContainer.getInstance().teleop.targetSpeakerUpdate(shooter);
+        double rot = RobotContainer.getInstance().teleop.targetUpdate(shooter, ShotLocation.SPEAKER);
         if (enableTargeting) {
             drivetrain.driveTranslationRotationRaw(
                 new ChassisSpeeds(0, 0, rot));
