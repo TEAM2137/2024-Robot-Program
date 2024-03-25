@@ -150,7 +150,7 @@ public class CommandSequences {
             .andThen(trapper.runRollers(-0.5))
             .andThen(Commands.waitSeconds(0.32))
             .andThen(shooter.startShooter(0.3))
-            .andThen(Commands.waitSeconds(0.21))
+            .andThen(Commands.waitSeconds(0.18))
             .andThen(trapper.stopRollers())
             .andThen(shooter.stopShooter());
     }

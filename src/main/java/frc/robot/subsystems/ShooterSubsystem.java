@@ -217,7 +217,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Rotation2d target = Rotation2d.fromDegrees(pivotTarget);
         Rotation2d current = Rotation2d.fromDegrees(encoderPos);
 
-        double error = Math.max(Math.min(target.minus(current).getDegrees() / 180.0, 0.14), -0.14);
+        double error = Math.max(Math.min(target.minus(current).getDegrees() / 160.0, 0.2), -0.2);
         pivotMotor.set(error - 0.005);
 
         // Display values

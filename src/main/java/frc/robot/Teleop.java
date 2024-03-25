@@ -202,11 +202,11 @@ public class Teleop {
 
         switch (location) {
             case SPEAKER:
-                shooter.setFromDistance(data.getSecond() - 0.08);
+                shooter.setFromDistance(data.getSecond());
                 break;
             // case HOME
             default:
-                shooter.setPowerRaw(0.42f);
+                shooter.setPowerRaw(0.44f);
                 shooter.setPivotTargetRaw(42);
                 break;
         }
