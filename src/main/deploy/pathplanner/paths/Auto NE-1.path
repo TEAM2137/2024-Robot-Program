@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.33362951660660206,
+        "y": 6.81673486715894
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.3336295166066012,
+        "y": 6.81673486715894
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5411654073604713,
+        "y": 6.81673486715894
+      },
+      "prevControl": {
+        "x": 0.5411654073604713,
+        "y": 6.81673486715894
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Auto NE End 1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.4,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 40.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Note Elimination",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

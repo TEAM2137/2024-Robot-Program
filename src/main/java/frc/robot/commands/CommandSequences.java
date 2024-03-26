@@ -147,7 +147,7 @@ public class CommandSequences {
     public static Command shootIntoArmCommand(TrapperSubsystem trapper, ShooterSubsystem shooter) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
             .andThen(Commands.waitSeconds(0.1))
-            .andThen(trapper.runRollers(-0.5))
+            .andThen(trapper.runRollers(-0.4))
             .andThen(Commands.waitSeconds(0.32))
             .andThen(shooter.startShooter(0.3))
             .andThen(Commands.waitSeconds(0.18))

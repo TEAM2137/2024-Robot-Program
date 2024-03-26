@@ -30,9 +30,10 @@ public class ShooterSubsystem extends SubsystemBase {
         public static double armStage2Angle = 4.6;
         public static double maxAngle = 10;
         public static double demoAngle = 10;
-        public static double midAngle = 10;
         public static double stowAngle = 10;
         public static double minAngle = 10;
+
+        public static double manualClose = 30.7;
 
         public static double maximumRPMError = 10.0; //TODO: Check if this value is even realistic
 
@@ -58,8 +59,8 @@ public class ShooterSubsystem extends SubsystemBase {
             angleMap.put(5.00, 64.0);
 
             // -- Power lookup table values (TODO)
-            powerMap.put(0.00, 0.5);
-            powerMap.put(1.40, 0.5);
+            powerMap.put(0.00, 0.55);
+            powerMap.put(1.40, 0.55);
             powerMap.put(2.00, 0.7);
             powerMap.put(5.00, 0.7);
 

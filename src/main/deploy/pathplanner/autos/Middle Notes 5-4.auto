@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.37670229186133763,
-      "y": 7.042007184254047
+      "x": 0.3141531312718623,
+      "y": 4.2361138103059135
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -18,13 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 1"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
+                  "pathName": "Auto 8-1"
                 }
               },
               {
@@ -45,65 +39,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "sequential",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 0.5
-                            }
-                          },
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "Path 2"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intake-down"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker-aim"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker-shoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
                       "type": "path",
                       "data": {
-                        "pathName": "Path 3"
+                        "pathName": "Auto 8-2"
                       }
                     },
                     {
@@ -113,7 +51,7 @@
                           {
                             "type": "wait",
                             "data": {
-                              "waitTime": 0.2
+                              "waitTime": 1.0
                             }
                           },
                           {
@@ -127,23 +65,18 @@
                     }
                   ]
                 }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.2
-                }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker-aim"
+                  "pathName": "Auto 8-3"
                 }
               },
               {
@@ -154,10 +87,74 @@
               }
             ]
           }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Auto 8-4"
+                      }
+                    },
+                    {
+                      "type": "sequential",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 1.0
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intake-down"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 8-5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop-all"
+          }
         }
       ]
     }
   },
-  "folder": "Testing",
+  "folder": "Common Autons",
   "choreoAuto": false
 }

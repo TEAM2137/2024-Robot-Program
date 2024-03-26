@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.29947111851519,
+        "y": 4.0413499569585145
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.299471118515189,
+        "y": 4.0413499569585145
+      },
+      "isLocked": false,
+      "linkedName": "Auto 12 End 1"
+    },
+    {
+      "anchor": {
+        "x": 4.336026702895636,
+        "y": 5.102812957701835
+      },
+      "prevControl": {
+        "x": 4.336026702895636,
+        "y": 4.102812957701835
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.4,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto 12",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

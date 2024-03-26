@@ -107,7 +107,7 @@ public class TrapperSubsystem extends SubsystemBase {
     }
 
     public Command climbPosition() {
-        return setArmTarget(Constants.ARM_AMP_ANGLE).andThen(setWristTarget(Constants.WRIST_AMP_ANGLE));
+        return setArmTarget(Constants.ARM_AMP_ANGLE).andThen(setWristTarget(Constants.WRIST_HOME_ANGLE));
     }
 
     @Override

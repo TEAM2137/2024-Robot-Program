@@ -72,7 +72,7 @@ public class Teleop {
                 .andThen(shooter.stowPivot().andThen(cancelTargeting()).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))));
 
         driverController.a().onTrue(startSpeakerAimCommand());
-        driverController.back().onTrue(startHomeAimCommand());
+        driverController.back().onTrue(intake.togglePivot());
 
         // driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
         // driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
@@ -95,10 +95,12 @@ public class Teleop {
         // X Lock
         driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
 
-        // Manual intake pivot
-        driverController.rightBumper().onTrue(intake.togglePivot());
+        // Manual intake pivot 
+        driverController.rightBumper().onTrue(startHomeAimCommand());
         // Stow command
-        driverController.leftBumper().onTrue(shooter.stowPivot().andThen(() -> isTargetingSpeaker = false).andThen(RumbleSequences.rumbleDualPulse(driverController.getHID())));
+        driverController.leftBumper().onTrue(cancelTargeting().andThen(
+            CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))
+            .andThen(RumbleSequences.rumbleDualPulse(driverController.getHID()).andThen(shooter.stowPivot())));
 
         // +++ OPERATOR +++
 
@@ -108,8 +110,8 @@ public class Teleop {
         // Shooter pivot manual controls
         // operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
         //     .andThen(CommandSequences.rawShootCommand(1, transfer, shooter)));
-        // operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.midAngle)
-        //     .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
+        operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.manualClose)
+            .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
         operatorController.a().onTrue(trapper.runRollers(0.7));
         operatorController.a().onFalse(trapper.stopRollers());
@@ -206,8 +208,8 @@ public class Teleop {
                 break;
             // case HOME
             default:
-                shooter.setPowerRaw(0.44f);
-                shooter.setPivotTargetRaw(42);
+                shooter.setPowerRaw(0.4f);
+                shooter.setPivotTargetRaw(42.5);
                 break;
         }
 
@@ -244,8 +246,8 @@ public class Teleop {
                 break;
             // case HOME
             default:
-                if (isBlueAlliance) targetPos = new Translation2d(3.0, 6.5);
-                else targetPos = new Translation2d(13.6, 6.5);
+                if (isBlueAlliance) targetPos = new Translation2d(3.0, 6);
+                else targetPos = new Translation2d(13.6, 6);
                 break;
         }
         driveSubsystem.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));

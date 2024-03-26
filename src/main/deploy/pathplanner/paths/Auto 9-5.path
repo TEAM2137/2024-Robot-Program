@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.29947111851519,
-        "y": 7.439979197870614
+        "x": 8.309209311182562,
+        "y": 7.410764619868505
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.559368475795077,
-        "y": 7.595790280548532
+        "x": 7.5691066684624495,
+        "y": 7.566575702546423
       },
       "isLocked": false,
       "linkedName": "Auto 9 End 4"
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.4,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0

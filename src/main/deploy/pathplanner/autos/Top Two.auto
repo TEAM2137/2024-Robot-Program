@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.3141531312718623,
-      "y": 4.2361138103059135
+      "x": 0.32389132393923226,
+      "y": 6.806996674491571
     },
     "rotation": 0
   },
@@ -18,7 +18,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Auto 8-1"
+                  "pathName": "Auto 11-1"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.2
                 }
               },
               {
@@ -41,42 +47,16 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Auto 8-2"
+                        "pathName": "Auto 11-2"
                       }
                     },
                     {
-                      "type": "sequential",
+                      "type": "named",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 1.0
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intake-down"
-                            }
-                          }
-                        ]
+                        "name": "intake-down"
                       }
                     }
                   ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto 8-3"
                 }
               },
               {
@@ -89,36 +69,29 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "parallel",
+                "type": "path",
+                "data": {
+                  "pathName": "Auto 11-3"
+                }
+              },
+              {
+                "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "wait",
                       "data": {
-                        "pathName": "Auto 8-4"
+                        "waitTime": 0.5
                       }
                     },
                     {
-                      "type": "sequential",
+                      "type": "named",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 1.0
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intake-down"
-                            }
-                          }
-                        ]
+                        "name": "intake-down"
                       }
                     }
                   ]
@@ -134,7 +107,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Auto 8-5"
+                  "pathName": "Auto 11-4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
                 }
               },
               {
@@ -155,6 +134,6 @@
       ]
     }
   },
-  "folder": "Working Autons",
+  "folder": "Common Autons",
   "choreoAuto": false
 }

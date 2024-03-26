@@ -1,0 +1,196 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.5411654073604713,
+        "y": 6.81673486715894
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.975076915752882,
+        "y": 7.128357032514777
+      },
+      "isLocked": false,
+      "linkedName": "Auto NE End 1"
+    },
+    {
+      "anchor": {
+        "x": 8.7,
+        "y": 7.430241005203245
+      },
+      "prevControl": {
+        "x": 8.685322903122174,
+        "y": 7.729881761488565
+      },
+      "nextControl": {
+        "x": 8.714677096877825,
+        "y": 7.130600248917924
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.724917751140366,
+        "y": 6.583018243142062
+      },
+      "prevControl": {
+        "x": 7.713946615398473,
+        "y": 6.946928852725563
+      },
+      "nextControl": {
+        "x": 7.73588888688226,
+        "y": 6.219107633558561
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.7,
+        "y": 5.774748251750359
+      },
+      "prevControl": {
+        "x": 8.7,
+        "y": 6.074748251750359
+      },
+      "nextControl": {
+        "x": 8.7,
+        "y": 5.474748251750359
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.724917751140366,
+        "y": 5.0249074163628755
+      },
+      "prevControl": {
+        "x": 7.740782774557752,
+        "y": 5.52465565401056
+      },
+      "nextControl": {
+        "x": 7.705441365805627,
+        "y": 4.411401278318571
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.7,
+        "y": 4.0900409202953645
+      },
+      "prevControl": {
+        "x": 8.7,
+        "y": 4.390040920295364
+      },
+      "nextControl": {
+        "x": 8.7,
+        "y": 3.7900409202953647
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.724917751140366,
+        "y": 3.359676470242621
+      },
+      "prevControl": {
+        "x": 7.7174188624027655,
+        "y": 3.7496186845979227
+      },
+      "nextControl": {
+        "x": 7.734655943807735,
+        "y": 2.8532904515393844
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.7,
+        "y": 2.4248099741751092
+      },
+      "prevControl": {
+        "x": 8.716776010313374,
+        "y": 2.6241051459128246
+      },
+      "nextControl": {
+        "x": 8.683223989686624,
+        "y": 2.225514802437394
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.724917751140366,
+        "y": 1.392561551433899
+      },
+      "prevControl": {
+        "x": 7.734655943807735,
+        "y": 1.9476385334739843
+      },
+      "nextControl": {
+        "x": 7.7170526445505505,
+        "y": 0.9442504758143202
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.7,
+        "y": 0.7595790280548544
+      },
+      "prevControl": {
+        "x": 8.7,
+        "y": 1.0595790280548545
+      },
+      "nextControl": {
+        "x": 8.7,
+        "y": 0.45957902805485445
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.00492815220506,
+        "y": 1.0419866154085817
+      },
+      "prevControl": {
+        "x": 5.368275125636847,
+        "y": 0.4576950553663876
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.4,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Note Elimination",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

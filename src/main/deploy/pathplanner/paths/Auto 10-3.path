@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.49423497186259,
+        "y": 2.2300461208277103
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.393819200449788,
+        "y": 3.9244916449500753
+      },
+      "isLocked": false,
+      "linkedName": "Auto 10 End 2"
+    },
+    {
+      "anchor": {
+        "x": 4.394455858899856,
+        "y": 5.0249074163628755
+      },
+      "prevControl": {
+        "x": 5.485133437645287,
+        "y": 4.479568626990161
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Auto 10 End 3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.4,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto 10",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

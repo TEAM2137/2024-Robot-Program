@@ -5,23 +5,27 @@
   "pathFolders": [
     "Auto 1",
     "Auto 1 (5 notes)",
+    "Auto 10",
+    "Auto 11",
+    "Auto 12",
     "Auto 3",
     "Auto 4",
     "Auto 5",
     "Auto 6",
     "Auto 7",
     "Auto 8",
+    "Auto 9",
     "Evil Path",
     "Green Auto",
-    "Auto 9",
+    "Note Elimination",
     "Red Path",
     "Testing"
   ],
   "autoFolders": [
-    "Working Autons",
-    "Testing"
+    "Testing",
+    "Common Autons"
   ],
-  "defaultMaxVel": 3.5,
+  "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.4,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
