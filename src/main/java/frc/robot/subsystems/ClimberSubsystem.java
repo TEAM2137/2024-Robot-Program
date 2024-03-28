@@ -18,10 +18,10 @@ public class ClimberSubsystem extends SubsystemBase {
         climbLeft = new CANSparkMax(CanIDs.get("climber-left"), CANSparkLowLevel.MotorType.kBrushless);
         climbRight = new CANSparkMax(CanIDs.get("climber-right"), CANSparkLowLevel.MotorType.kBrushless);
 
-        setDefaultCommand(run(() -> {
-            climbLeft.set(-0.015);
-            climbRight.set(-0.015);
-        }));
+        // setDefaultCommand(run(() -> {
+        //     climbLeft.set(-0.015);
+        //     climbRight.set(-0.015);
+        // }));
     }
 
     /**
@@ -30,9 +30,12 @@ public class ClimberSubsystem extends SubsystemBase {
      * @return Command that sets the speed
      */
     public Command runClimber(double speed) {
-        return removeForceStop().andThen(run(() -> {
+        return removeForceStop().andThen(runEnd(() -> {
             climbLeft.set(speed);
             climbRight.set(speed);
+        }, () -> {
+            climbLeft.stopMotor();
+            climbRight.stopMotor();
         }).until(() -> forceStop));
     }
 
