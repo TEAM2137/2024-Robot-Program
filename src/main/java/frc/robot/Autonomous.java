@@ -64,29 +64,25 @@ public class Autonomous {
 
     public void configure() {
         AutoBuilder.configureHolonomic(
-            drivetrain::getPose, // Robot pose supplier
-            drivetrain::resetOdometry, // Method to reset odometry
-            drivetrain::getSpeeds, // ChassisSpeeds supplier, ROBOT RELATIVE
-            drivetrain::driveTranslationRotationRaw, // Drive the robot given ROBOT RELATIVE ChassisSpeeds
+            drivetrain::getPose,
+            drivetrain::resetOdometry,
+            drivetrain::getSpeeds, // Robot Relative
+            drivetrain::driveTranslationRotationRaw, // Robot Relative
             new HolonomicPathFollowerConfig(
                 new PIDConstants(4.0, 0, 0), // Translation
-                new PIDConstants(1.0, 0, 0), // Rotation
-                4.0, // Max module speed (m/s)
-                0.4, // Distance from robot center to furthest module (meters)
+                new PIDConstants(3.5, 0, 0.1), // Rotation
+                SwerveDrivetrain.Constants.driveMaxSpeed,
+                0.26,
                 new ReplanningConfig()
             ),
             () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
                 var alliance = DriverStation.getAlliance();
                 if (alliance.isPresent()) {
                     return alliance.get() == DriverStation.Alliance.Red;
                 }
                 return false;
             },
-            drivetrain // Reference to the drivetrain to set requirements
+            drivetrain
         );
     }
 }

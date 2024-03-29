@@ -244,8 +244,8 @@ public class Teleop {
         Translation2d targetPos;
         switch (location) {
             case SPEAKER:
-                if (isBlueAlliance) targetPos = new Translation2d(-0.15, 5.43);
-                else targetPos = new Translation2d(16.75, 5.43);
+                if (isBlueAlliance) targetPos = new Translation2d(0, 5.43);
+                else targetPos = new Translation2d(16.6, 5.43);
                 break;
             // case HOME
             default:
