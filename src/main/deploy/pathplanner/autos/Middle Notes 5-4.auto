@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.32389132393923226,
-      "y": 4.284804773642762
+      "x": 0.3044149386044923,
+      "y": 4.294542966310132
     },
     "rotation": 0
   },
@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Auto 8-1"
+                  "pathName": "Auto 8-1 Fixed"
                 }
               },
               {

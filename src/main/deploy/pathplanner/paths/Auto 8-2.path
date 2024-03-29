@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7748820313773495,
-        "y": 3.5739167089247594
+        "x": 1.8625257653836784,
+        "y": 3.4667965895836894
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9824179221312184,
-        "y": 2.736432139530946
+        "x": 3.0700616561375473,
+        "y": 2.629312020189876
       },
       "isLocked": false,
       "linkedName": "Auto 8 End 1"
@@ -39,7 +39,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.4,
+    "maxAcceleration": 3.6,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
