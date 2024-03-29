@@ -80,7 +80,7 @@ public class Teleop {
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
             driveSpeed = slowSpeed;
-            rotationSpeed = 0.75;
+            rotationSpeed = 0.6;
         }));
         driverController.leftTrigger().onFalse(new InstantCommand(() -> {
             driveSpeed = normalSpeed;
@@ -204,9 +204,9 @@ public class Teleop {
 
         switch (location) {
             case SPEAKER:
-                shooter.setFromDistance(data.getSecond());
+                shooter.setFromDistance(data.getSecond() - 0.02);
                 break;
-            // case HOME
+            // case HOME:
             default:
                 shooter.setPowerRaw(0.4f);
                 shooter.setPivotTargetRaw(42.5);
