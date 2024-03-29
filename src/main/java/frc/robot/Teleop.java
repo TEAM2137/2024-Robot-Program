@@ -71,7 +71,11 @@ public class Teleop {
             CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper)
                 .andThen(shooter.stowPivot().andThen(cancelTargeting()).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))));
 
+        // Aiming
         driverController.a().onTrue(startSpeakerAimCommand());
+        driverController.rightBumper().onTrue(startHomeAimCommand());
+
+        // Manual intake pivot
         driverController.back().onTrue(intake.togglePivot());
 
         // driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
@@ -95,8 +99,6 @@ public class Teleop {
         // X Lock
         driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
 
-        // Manual intake pivot 
-        driverController.rightBumper().onTrue(startHomeAimCommand());
         // Stow command
         driverController.leftBumper().onTrue(cancelTargeting().andThen(
             CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))
@@ -204,7 +206,8 @@ public class Teleop {
 
         switch (location) {
             case SPEAKER:
-                shooter.setFromDistance(data.getSecond() - 0.02);
+                // Increasing offset makes the robot shoot lower
+                shooter.setFromDistance(data.getSecond() - 0.04);
                 break;
             // case HOME:
             default:
