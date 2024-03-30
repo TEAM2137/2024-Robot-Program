@@ -207,7 +207,7 @@ public class Teleop {
         switch (location) {
             case SPEAKER:
                 // Increasing offset makes the robot shoot lower
-                shooter.setFromDistance(data.getSecond() - 0.04);
+                shooter.setFromDistance(data.getSecond() + 0.23);
                 break;
             // case HOME:
             default:
@@ -244,8 +244,8 @@ public class Teleop {
         Translation2d targetPos;
         switch (location) {
             case SPEAKER:
-                if (isBlueAlliance) targetPos = new Translation2d(0, 5.43);
-                else targetPos = new Translation2d(16.6, 5.43);
+                if (isBlueAlliance) targetPos = new Translation2d(0.1, 5.43);
+                else targetPos = new Translation2d(16.5, 5.43);
                 break;
             // case HOME
             default:

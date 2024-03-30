@@ -76,11 +76,16 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("speaker-shoot", auto.enableRotationCommand()
             .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0))
-            .andThen(new WaitCommand(0.5))
+            .andThen(new WaitCommand(0.5)) // TODO improve this
             .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper))
             .andThen(auto.disableRotationCommand()));
+
+        NamedCommands.registerCommand("speaker-aim", auto.enableRotationCommand()
+            .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0)));
+
         NamedCommands.registerCommand("intake-down", 
             CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
+            
         NamedCommands.registerCommand("stop-all", 
             CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
         
