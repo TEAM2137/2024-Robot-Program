@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.64,
-        "y": 4.2
+        "y": 6.95
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.0751848252925456,
-        "y": 3.4112063939430373
+        "y": 6.161206393943037
       },
       "isLocked": false,
       "linkedName": "Auto 5 End 2"
