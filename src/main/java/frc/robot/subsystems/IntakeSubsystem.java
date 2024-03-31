@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -10,7 +11,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel;
 
+import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
+import frc.robot.util.LEDColor;
+import frc.robot.util.LEDs;
 import frc.robot.util.PID;
 
 // everything number is a placeholder
@@ -39,12 +43,16 @@ public class IntakeSubsystem extends SubsystemBase {
     private CANSparkMax rollerMotor;
 
     private AbsoluteEncoder pivotEncoder;
+    private DigitalInput noteSensor;
 
     private boolean isRaised;
+    private boolean noteVisible = false;
+    private boolean prevNoteVisible = false;
   
     public IntakeSubsystem() {
         super();
 
+        noteSensor = new DigitalInput(2);
         rollerMotor = new CANSparkMax(CanIDs.get("intake-rollers"), CANSparkLowLevel.MotorType.kBrushless);
 
         pivotMotor = new CANSparkMax(CanIDs.get("intake-pivot"), CANSparkLowLevel.MotorType.kBrushless);
@@ -57,10 +65,17 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void init() {
+        LEDs leds = RobotContainer.getInstance().teleop.getLEDs();
+        leds.setColor(LEDColor.BLUE);
+
         rollerMotor.stopMotor();
         pivotMotor.stopMotor();
+
         rollerTarget = 0;
         pivotTarget = maxPos;
+
+        noteVisible = false;
+        prevNoteVisible = false;
     }
 
     public Command startRollers() {
@@ -102,7 +117,11 @@ public class IntakeSubsystem extends SubsystemBase {
             /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
         rollerMotor.set(rollersError);
 
-        SmartDashboard.putNumber("Intake Target", pivotTarget);
+        noteVisible = noteSensor.get();
+        if (noteVisible && !prevNoteVisible) onNoteEnter();
+        prevNoteVisible = noteVisible;
+
+        SmartDashboard.putBoolean("Intake Sensor", noteSensor.get());
         SmartDashboard.putNumber("Intake Position", pivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }
@@ -116,5 +135,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command deployIntake() {
         return startRollers().andThen(moveIntakeDown());
+    }
+
+    public void onNoteEnter() {
+        LEDs leds = RobotContainer.getInstance().teleop.getLEDs();
+        if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
+        CommandScheduler.getInstance().schedule(leds.blinkColorCommand(LEDColor.YELLOW, LEDColor.NONE, 0.15, 8));
     }
 }

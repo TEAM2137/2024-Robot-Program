@@ -22,7 +22,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.util.LEDColor;
 import frc.robot.util.LEDs;
 
 public class Teleop {
@@ -142,8 +141,6 @@ public class Teleop {
         CommandScheduler.getInstance().schedule(Commands.runOnce(() -> isTargetingSpeaker = false));
         CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
 
-        leds.setDefaultCommand(leds.blinkLEDCommand(LEDColor.YELLOW, LEDColor.NONE, 0.18f));
-        
         // Init teleop command
         driveSubsystem.resetModuleAngles();
         driveSubsystem.setDefaultCommand(getTeleopCommand(shooter));
@@ -279,6 +276,8 @@ public class Teleop {
 
         return new Pair<>(error * kP, distance);
     }
+
+    public LEDs getLEDs() { return leds; }
 
     public enum ShotLocation {
         SPEAKER, HOME

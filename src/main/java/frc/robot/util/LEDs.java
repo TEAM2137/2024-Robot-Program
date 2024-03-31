@@ -9,9 +9,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDs extends SubsystemBase {
     public CANifier canifier;
+    public float brightness = 0.4f;
 
     public LEDs() {
         canifier = new CANifier(CanIDs.get("led-canifier"));
+        setDefaultCommand(setColorCommand(LEDColor.BLUE));
         onDisabled();
     }
 
@@ -20,16 +22,24 @@ public class LEDs extends SubsystemBase {
     }
 
     public void setColor(LEDColor color) {
-        canifier.setLEDOutput(color.getB(), LEDChannel.LEDChannelA);
-        canifier.setLEDOutput(color.getR(), LEDChannel.LEDChannelB);
-        canifier.setLEDOutput(color.getG(), LEDChannel.LEDChannelC);
+        canifier.setLEDOutput(color.getB() * brightness, LEDChannel.LEDChannelA);
+        canifier.setLEDOutput(color.getR() * brightness, LEDChannel.LEDChannelB);
+        canifier.setLEDOutput(color.getG() * brightness, LEDChannel.LEDChannelC);
     }
 
     public Command setColorCommand(LEDColor color) {
         return runOnce(() -> setColor(color));
     }
 
-    public Command blinkLEDCommand(LEDColor colorA, LEDColor colorB, double interval) {
+    public Command holdColorCommand(LEDColor color) {
+        return run(() -> setColor(color));
+    }
+
+    public Command blinkColorCommand(LEDColor colorA, LEDColor colorB, double interval, int times) {
+        return blinkColorCommand(colorA, colorB, interval).withTimeout(interval * 2 * times);
+    }
+
+    public Command blinkColorCommand(LEDColor colorA, LEDColor colorB, double interval) {
         return Commands.repeatingSequence(
             setColorCommand(colorA), Commands.waitSeconds(interval),
             setColorCommand(colorB), Commands.waitSeconds(interval)

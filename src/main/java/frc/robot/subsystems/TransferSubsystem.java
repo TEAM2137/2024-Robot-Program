@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
+import frc.robot.RobotContainer;
 import frc.robot.util.CanIDs;
+import frc.robot.util.LEDColor;
+import frc.robot.util.LEDs;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -9,6 +12,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TransferSubsystem extends SubsystemBase {
@@ -124,6 +128,13 @@ public class TransferSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+
+        if (!inBeamBreak.get()) {
+            LEDs leds = RobotContainer.getInstance().teleop.getLEDs();
+            
+            CommandScheduler.getInstance().schedule(leds.holdColorCommand(LEDColor.YELLOW)
+                .until(() -> inBeamBreak.get()));
+        }
 
         SmartDashboard.putBoolean("Has Ring", !inBeamBreak.get());
         SmartDashboard.updateValues();

@@ -5,6 +5,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
@@ -38,6 +39,8 @@ public class VisionBlendedPoseEstimator {
     public SwerveDrivePoseEstimator poseEstimator;
     public VisionBlender visionBlender;
 
+    private boolean didSeeVision = false;
+
     /**
      * Creates a new vision-blended swerve pose estimator
      * @param kinematics kinematics of the swerve drivetrain
@@ -70,8 +73,11 @@ public class VisionBlendedPoseEstimator {
             Pose2d currentPose = grabEstimatedPose();
             visionPose = new Pose2d(visionPose.getX(), visionPose.getY(), gyroAngle);
 
+            Translation2d currentPosition = currentPose.getTranslation();
+            Translation2d visionPosition = visionPose.getTranslation();
+
             // Ignore results that are more than a certain distance off from the current estimate
-            if (currentPose.getTranslation().getDistance(visionPose.getTranslation()) < Constants.visionIgnoreRadius) {
+            if (!didSeeVision || currentPosition.getDistance(visionPosition) < Constants.visionIgnoreRadius) {
                 poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
             }
         }    
