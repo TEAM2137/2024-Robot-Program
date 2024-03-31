@@ -2,82 +2,53 @@ package frc.robot.vision;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionBlender {
     public ArrayList<AprilTagLimelight> limelights = new ArrayList<>();
-    public Pose2d lastPose;
-
-    public static final int POSE_GRABS = 3;
-    public List<Pose2d> previousPoses = new ArrayList<>(3);
 
     public VisionBlender(AprilTagLimelight... limelights) {
         this.limelights.addAll(Arrays.asList(limelights));
     }
 
-    public Pose2d getAveragedPose() {
-        if (!hasTarget() || limelights == null) return null;
-        double averageX = 0;
-        double averageY = 0;
-        double averageRot = 0;
+    /**
+     * ( ! ) Make sure to call updateValues() regularly for this method to work properly
+     * @return The blended pose of all the limelights that are displaying valid poses
+     */
+    public Pose2d getBlendedPose() {
+        if (limelights == null || limelights.size() == 0) return null;
 
-        for (Pose2d pose : previousPoses) {
-            if (pose == null || pose.getRotation() == null) previousPoses.remove(pose);
-            averageX += pose.getX();
-            averageY += pose.getY();
-            averageRot += pose.getRotation().getDegrees();
-        }
+        ArrayList<Pose2d> currentPoses = new ArrayList<>(limelights.size());
 
-        averageX /= previousPoses.size();
-        averageY /= previousPoses.size();
-        averageRot /= previousPoses.size();
+        // Add all valid vision poses to the list
+        limelights.forEach(limelight -> {
+            if (limelight != null && limelight.hasTarget()) {
+                Pose2d grabbedPose = limelight.getPose();
+                if (grabbedPose != null) currentPoses.add(grabbedPose);
+            }
+        });
 
-        previousPoses.clear();
-        return new Pose2d(averageX, averageY, new Rotation2d(averageRot));
-    }
+        if (currentPoses.size() <= 0) return null;
 
-    public boolean hasPose() {
-        return previousPoses.size() >= POSE_GRABS;
-    }
+        Translation2d translation = new Translation2d();
+        Rotation2d rotation = new Rotation2d();
 
-    public Pose2d updatePose() {
-        if (limelights == null || !hasTarget()) return null;
-        Pose2d pose = limelights.get(0).getPose();
-        if (pose == null) return null;
-        
-        previousPoses.add(pose);
-        return pose;
-    }
+        // Average out all of the limelight poses
+        currentPoses.forEach(pose -> {
+            translation.plus(pose.getTranslation());
+            rotation.plus(pose.getRotation());
+        });
 
-    public Pose2d getPose() {
-        if (limelights == null) return null;
+        translation.div(currentPoses.size());
+        rotation.div(currentPoses.size());
 
-        Pose2d pose = limelights.get(0).getPose();
-        if (pose == null) return null;
-
-        if (lastPose == null) {
-            lastPose = pose;
-            return pose;
-        }
-
-        // // Calculate the error between the poses
-        // double diffX = lastPose.getX() - pose.getX();
-        // double diffY = lastPose.getY() - pose.getY();
-        // double dst = Math.hypot(diffX, diffY);
-
-        // // Invalidate the incoming pose if it is innacurate
-        // if (dst > 0.4) {
-        //     return null;
-        // }
-
-        // Otherwise, use the incoming pose
-        lastPose = pose;
-        return pose;
+        // Create a new pose with the averaged values
+        return new Pose2d(translation, rotation);
     }
 
     /**
@@ -88,17 +59,16 @@ public class VisionBlender {
         return Timer.getFPGATimestamp() - limelights.get(0).getLatency() / 1000.0;
     }
 
+    /**
+     * @return true if any of the limelights have a target
+     */
     public boolean hasTarget() {
-        if (limelights == null) {
-            lastPose = null;
-            return false;
-        }
+        if (limelights == null) return false;
 
         for (AprilTagLimelight limelight : limelights) {
             if (limelight.hasTarget()) return true;
         }
 
-        lastPose = null;
         return false;
     }
 
@@ -111,7 +81,7 @@ public class VisionBlender {
             if (limelight.hasTarget()) limelight.updateValues();
         });
 
-        Pose2d pose = getPose();
+        Pose2d pose = getBlendedPose();
         if (pose == null || pose.getRotation() == null) return;
 
         // Post botpose to smart dashboard

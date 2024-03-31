@@ -35,8 +35,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     public static class Constants {
         public static final int gyroID = 5;
 
-        // public static final String canBusName = "rio";
-
         public static final double length = Units.inchesToMeters(21.5);
         public static final double width = Units.inchesToMeters(21.5);
 
@@ -116,10 +114,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
     private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Pose", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> lastPosePublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Previous Pose", Pose2d.struct).publish();
     public StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Speaker Location", Pose2d.struct).publish();
+        .getStructTopic("Target Location", Pose2d.struct).publish();
     private StructPublisher<Rotation2d> rotationPublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Rotation", Rotation2d.struct).publish();
 
@@ -193,7 +189,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
         rotationPublisher.set(getRotation());
         posePublisher.set(getPose()); // AdvantageScope pose
-        lastPosePublisher.set(vision.lastPose); // AdvantageScope last pose
 
         SmartDashboard.putNumber("Robot X", getPose().getX());
         SmartDashboard.putNumber("Robot Y", getPose().getY());
@@ -227,15 +222,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());
         modulePositions[2] = new SwerveModulePosition(distances[2], backLeftModule.getModuleRotation());
         modulePositions[3] = new SwerveModulePosition(distances[3], backRightModule.getModuleRotation());
-
-        // SmartDashboard.putNumber("FrontLeft-DriveDistance", distances[0]);
-        // SmartDashboard.putNumber("FrontRight-DriveDistance", distances[1]);
-        // SmartDashboard.putNumber("BackLeft-DriveDistance", distances[2]);
-        // SmartDashboard.putNumber("BackRight-DriveDistance", distances[3]);
     }
 
     public void resetModuleAngles() {
-        for(SwerveModule module : swerveArray) {
+        for (SwerveModule module : swerveArray) {
             module.homeTurningMotor();
         }
     }
@@ -412,7 +402,7 @@ public class SwerveDrivetrain extends SubsystemBase {
      * robot currently is
      */
     public void visionResetOdometry() {
-        resetOdometry(new Pose2d(vision.getPose().getTranslation(), getRotation()));
+        resetOdometry(new Pose2d(vision.getBlendedPose().getTranslation(), getRotation()));
     }
 
     /**

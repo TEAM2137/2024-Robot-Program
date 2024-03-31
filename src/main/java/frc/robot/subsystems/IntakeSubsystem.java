@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,8 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // private double currentThreshold = 75;
 
-    private double minPos = 145.0;
-    private double maxPos = 315.0;
+    private double minPos = 125.0;
+    private double maxPos = 295.0;
 
     private double pivotTarget = maxPos;
     private double rollerTarget = 0;
@@ -54,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(280);
+        pivotEncoder.setZeroOffset(300);
     }
 
     public void init() {
@@ -94,10 +93,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        Rotation2d pivotTargetRotation = Rotation2d.fromDegrees(pivotTarget);
-        Rotation2d pivotRotation = Rotation2d.fromDegrees(pivotEncoder.getPosition());
-
-        double pivotError = Math.max(Math.min(pivotTargetRotation.minus(pivotRotation).getDegrees() * Constants.pivotKP,
+        double pivotError = Math.max(Math.min((pivotTarget - pivotEncoder.getPosition()) * Constants.pivotKP,
             /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
         if (pivotError < 0) pivotError *= Constants.gravityMod; // Reduce power going down
         pivotMotor.set(pivotError);
@@ -106,6 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
             /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
         rollerMotor.set(rollersError);
 
+        SmartDashboard.putNumber("Intake Target", pivotTarget);
         SmartDashboard.putNumber("Intake Position", pivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }

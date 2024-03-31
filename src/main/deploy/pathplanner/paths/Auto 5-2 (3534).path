@@ -3,55 +3,39 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.64,
-        "y": 4.2
+        "x": 2.82,
+        "y": 5.560508013068222
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0751848252925456,
-        "y": 3.4112063939430373
+        "x": 1.865696942791196,
+        "y": 5.034573341967638
       },
       "isLocked": false,
-      "linkedName": "Auto 5 End 2"
-    },
-    {
-      "anchor": {
-        "x": 1.9116107596377037,
-        "y": 5.210293333881466
-      },
-      "prevControl": {
-        "x": 2.063447704108704,
-        "y": 5.716416482118134
-      },
-      "nextControl": {
-        "x": 1.7977245665473984,
-        "y": 4.830672690247114
-      },
-      "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 5 End 1"
     },
     {
       "anchor": {
         "x": 2.64,
-        "y": 4.137865015614424
+        "y": 4.2
       },
       "prevControl": {
-        "x": 1.8472150826382572,
-        "y": 4.335803632351646
+        "x": 1.1695252464252412,
+        "y": 4.083238126459993
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Auto 5 End 2 (3534)"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.85,
       "rotationDegrees": 0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1.75,
+      "waypointRelativePos": 0.45,
       "rotationDegrees": 0,
       "rotateFast": false
     }
