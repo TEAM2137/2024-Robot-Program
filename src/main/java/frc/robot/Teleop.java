@@ -22,6 +22,8 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.TrapperSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.util.LEDColor;
+import frc.robot.util.LEDs;
 
 public class Teleop {
     // Enables and disables field centric modes
@@ -36,6 +38,7 @@ public class Teleop {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
     private SwerveDrivetrain driveSubsystem;
+    private LEDs leds;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
     private double stickDeadzone = 0.2;
@@ -49,10 +52,11 @@ public class Teleop {
     private boolean isTargetingHome = false;
 
     // Grabs values from the RobotContainer
-    public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController, CommandXboxController operatorController) {
+    public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController, CommandXboxController operatorController, LEDs leds) {
         this.driveSubsystem = driveSubsystem;
         this.driverController = driverController;
         this.operatorController = operatorController;
+        this.leds = leds;
     }
 
     public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper, ClimberSubsystem climber) {
@@ -138,6 +142,8 @@ public class Teleop {
         CommandScheduler.getInstance().schedule(Commands.runOnce(() -> isTargetingSpeaker = false));
         CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
 
+        leds.setDefaultCommand(leds.blinkLEDCommand(LEDColor.YELLOW, LEDColor.NONE, 0.18f));
+        
         // Init teleop command
         driveSubsystem.resetModuleAngles();
         driveSubsystem.setDefaultCommand(getTeleopCommand(shooter));

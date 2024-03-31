@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
   @Override public void autonomousPeriodic() { robotContainer.auto.autonomousPeriodic(); }
   @Override public void teleopInit() { robotContainer.runTeleop(); }
   @Override public void teleopPeriodic() {}
-  @Override public void disabledInit() {}
+  @Override public void disabledInit() { robotContainer.disabledInit(); }
   @Override public void disabledPeriodic() { robotContainer.disabledPeriodic(); }
   @Override public void testInit() {}
   @Override public void testPeriodic() {}

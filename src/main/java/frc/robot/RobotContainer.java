@@ -8,6 +8,7 @@ import frc.robot.commands.RumbleSequences;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
+import frc.robot.util.LEDs;
 import frc.robot.vision.AprilTagLimelight;
 import frc.robot.vision.VisionBlender;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -43,6 +44,7 @@ public class RobotContainer {
     // Misc stuff
     private final AprilTagLimelight visionA = new AprilTagLimelight("limelight-a");
     private final VisionBlender vision = new VisionBlender(visionA);
+    private final LEDs leds = new LEDs();
 
     private final SendableChooser<Command> autoChooser;
     private final SendableChooser<ModuleType> drivetrainType;
@@ -70,9 +72,9 @@ public class RobotContainer {
         climberSubsystem = new ClimberSubsystem();
         transfer = new TransferSubsystem();
         trapper = new TrapperSubsystem();
-
+        
         auto = new Autonomous(driveSubsystem, shooter);
-        teleop = new Teleop(driveSubsystem, driverController, operatorController);
+        teleop = new Teleop(driveSubsystem, driverController, operatorController, leds);
 
         NamedCommands.registerCommand("speaker-shoot", auto.enableRotationCommand()
             .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0))
@@ -139,6 +141,10 @@ public class RobotContainer {
      * Use this to get the main instance of the container when necessary
      */
     public static RobotContainer getInstance() { return inst; }
+
+    public void disabledInit() {
+        leds.onDisabled();
+    }
 
     public void disabledPeriodic() {
         RumbleSequences.shutOffRumble(driverController.getHID());
