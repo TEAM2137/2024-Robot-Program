@@ -2,6 +2,7 @@ package frc.robot.vision;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,10 +11,26 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionBlender {
-    public ArrayList<AprilTagLimelight> limelights = new ArrayList<>();
+    private ArrayList<AprilTagLimelight> limelights = new ArrayList<>();
 
-    public VisionBlender(AprilTagLimelight... limelights) {
-        this.limelights.addAll(Arrays.asList(limelights));
+    /**
+     * Creates a new vision blender from a list of limelights
+     */
+    public VisionBlender(List<AprilTagLimelight> limelights) {
+        this.limelights.addAll(limelights);
+    }
+
+    /**
+     * Creates a new vision blender from limelight hostnames
+     */
+    public VisionBlender(String... hostnames) {
+        this(mapHostnames(Arrays.asList(hostnames)));
+    }
+
+    static List<AprilTagLimelight> mapHostnames(List<String> hostnames) {
+        List<AprilTagLimelight> limelightList = List.of();
+        hostnames.forEach(hostname -> limelightList.add(new AprilTagLimelight(hostname)));
+        return limelightList;
     }
 
     /**
@@ -88,5 +105,18 @@ public class VisionBlender {
         SmartDashboard.putNumber("LL-PositionX", pose.getX());
         SmartDashboard.putNumber("LL-PositionY", pose.getY());
         SmartDashboard.putNumber("LL-Rotation", pose.getRotation().getDegrees());
+    }
+
+    public static boolean isInField(Translation2d pos) {
+        if (pos.getX() < 0 || pos.getX() > 16.5) return false;
+        if (pos.getY() < 0 || pos.getY() > 8.1) return false;
+        return true;
+    }
+
+    /**
+     * Sets the current botpose entry of the limelights to the correct alliance
+     */
+    public void resetAlliances() {
+        limelights.forEach(limelight -> limelight.resetAlliance());
     }
 }

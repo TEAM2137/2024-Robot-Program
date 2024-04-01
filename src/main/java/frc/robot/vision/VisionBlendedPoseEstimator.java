@@ -73,13 +73,17 @@ public class VisionBlendedPoseEstimator {
             Pose2d currentPose = grabEstimatedPose();
             visionPose = new Pose2d(visionPose.getX(), visionPose.getY(), gyroAngle);
 
-            Translation2d currentPosition = currentPose.getTranslation();
-            Translation2d visionPosition = visionPose.getTranslation();
+            Translation2d currentPos = currentPose.getTranslation();
+            Translation2d visionPos = visionPose.getTranslation();
+
+            // Ignore results that are outside of the field
+            if (!VisionBlender.isInField(visionPos)) return;
 
             // Ignore results that are more than a certain distance off from the current estimate
-            if (!didSeeVision || currentPosition.getDistance(visionPosition) < Constants.visionIgnoreRadius) {
-                poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
-            }
+            if (currentPos.getDistance(visionPos) < Constants.visionIgnoreRadius && didSeeVision) return;
+
+            didSeeVision = true;
+            poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
         }    
     }
 

@@ -9,7 +9,6 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
 import frc.robot.util.LEDs;
-import frc.robot.vision.AprilTagLimelight;
 import frc.robot.vision.VisionBlender;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,8 +41,7 @@ public class RobotContainer {
     private TrapperSubsystem trapper;
 
     // Misc stuff
-    private final AprilTagLimelight visionA = new AprilTagLimelight("limelight-a");
-    private final VisionBlender vision = new VisionBlender(visionA);
+    private final VisionBlender vision = new VisionBlender("limelight-a", "limelight-b");
     private final LEDs leds = new LEDs();
 
     private final SendableChooser<Command> autoChooser;
@@ -121,10 +119,12 @@ public class RobotContainer {
      * Called when teleop is enabled
      */
     public void runTeleop() {
-        vision.limelights.forEach(limelight -> limelight.resetAlliance());
+        vision.resetAlliances();
         
         // Cancel autonomous in case it's still running for whatever reason
         auto.cancelAutonomous();
+
+        // Initialize teleop
         teleop.init(shooter, intake, transfer, trapper, climberSubsystem);
     }
 
@@ -132,8 +132,9 @@ public class RobotContainer {
      * Called when autonomous is enabled
      */
     public void runAutonomous() {
-        vision.limelights.forEach(limelight -> limelight.resetAlliance());
+        vision.resetAlliances();
 
+        // Initialize auto
         auto.init();
     }
 
