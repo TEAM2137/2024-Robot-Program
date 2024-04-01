@@ -28,7 +28,7 @@ public class VisionBlender {
     }
 
     static List<AprilTagLimelight> mapHostnames(List<String> hostnames) {
-        List<AprilTagLimelight> limelightList = List.of();
+        List<AprilTagLimelight> limelightList = new ArrayList<>();
         hostnames.forEach(hostname -> limelightList.add(new AprilTagLimelight(hostname)));
         return limelightList;
     }
