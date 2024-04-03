@@ -156,6 +156,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         pigeonIMU.reset();
 
         // create pose estimator
+        resetDriveDistances();
         updateModulePositions();
         poseEstimator = new VisionBlendedPoseEstimator(kinematics, getRotation(), modulePositions, vision);
 
@@ -165,6 +166,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         
         resetGyro();
         resetOdometry();
+    }
+
+    public void init() {
+        poseEstimator.init();
     }
 
     public void displayCurrentOffsets() {
@@ -222,6 +227,11 @@ public class SwerveDrivetrain extends SubsystemBase {
         modulePositions[1] = new SwerveModulePosition(distances[1], frontRightModule.getModuleRotation());
         modulePositions[2] = new SwerveModulePosition(distances[2], backLeftModule.getModuleRotation());
         modulePositions[3] = new SwerveModulePosition(distances[3], backRightModule.getModuleRotation());
+
+        SmartDashboard.putNumber("Module Pos 0", distances[0]);
+        SmartDashboard.putNumber("Module Pos 1", distances[1]);
+        SmartDashboard.putNumber("Module Pos 2", distances[2]);
+        SmartDashboard.putNumber("Module Pos 3", distances[3]);
     }
 
     public void resetModuleAngles() {

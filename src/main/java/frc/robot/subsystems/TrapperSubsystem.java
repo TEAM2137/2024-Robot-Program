@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -32,6 +35,8 @@ public class TrapperSubsystem extends SubsystemBase {
 
     private CANSparkMax armMotor;
     private AbsoluteEncoder armEncoder;
+
+    private DigitalInput noteSensor;
 
     private Mechanism2d trapperMech = new Mechanism2d(38, 40);
     private MechanismRoot2d trapperRoot = trapperMech.getRoot("trapper", 12, 20);
@@ -64,6 +69,9 @@ public class TrapperSubsystem extends SubsystemBase {
 
         // Rollers (self-explanatory)
         rollers = new CANSparkMax(CanIDs.get("trapper-motor"), MotorType.kBrushless);
+
+        // Distance sensor looking for note
+        noteSensor = new DigitalInput(3);
 
         // Mechanism2d stuff
         trapperArmMech = trapperRoot.append(new MechanismLigament2d("arm", 10, 0, 1, new Color8Bit(Color.kCoral)));
@@ -131,5 +139,13 @@ public class TrapperSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
         SmartDashboard.putNumber("Arm Position", armEncoder.getPosition());
         SmartDashboard.updateValues();
+    }
+
+    public BooleanSupplier beamBroken() {
+        return () -> noteSensor.get();
+    }
+
+    public BooleanSupplier beamClear() {
+        return () -> !noteSensor.get();
     }
 }

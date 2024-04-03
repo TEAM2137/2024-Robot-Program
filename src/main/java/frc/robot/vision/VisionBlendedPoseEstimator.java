@@ -10,6 +10,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 
 public class VisionBlendedPoseEstimator {
@@ -26,20 +28,21 @@ public class VisionBlendedPoseEstimator {
         /*  Standard deviation for the limelight(s) pose.
             Increase these values to put less trust in the pose */
         private static final Vector<N3> visionStdDevs = VecBuilder.fill(
-            0.2, // Meters
-            0.2, // Meters
+            0.8, // Meters
+            0.8, // Meters
             Units.degreesToRadians(20) // Radians
         );
 
-        /*  Incoming vision poses will be ignored if they
-            are this far from the current estimate      */
-        private static final double visionIgnoreRadius = 1.0; // Meters
+        // /*  Incoming vision poses will be ignored if they
+        //     are this far from the current estimate      */
+        // private static final double visionIgnoreRadius = 1.0; // Meters
     }
 
     public SwerveDrivePoseEstimator poseEstimator;
     public VisionBlender visionBlender;
 
-    private boolean didSeeVision = false;
+    private StructPublisher<Pose2d> visionPosePublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Vision Pose", Pose2d.struct).publish();
 
     /**
      * Creates a new vision-blended swerve pose estimator
@@ -56,6 +59,9 @@ public class VisionBlendedPoseEstimator {
             new Pose2d(), Constants.stateStdDevs, Constants.visionStdDevs);
     }
 
+    public void init() {
+    }
+
     /**
      * Updates the pose estimator with new vision values and swerve module positions
      * @param gyroAngle the measured angle of the gyro
@@ -70,19 +76,17 @@ public class VisionBlendedPoseEstimator {
         Pose2d visionPose = visionBlender.getBlendedPose();
         if (visionPose != null && shouldUseVision()) {
 
-            Pose2d currentPose = grabEstimatedPose();
-            visionPose = new Pose2d(visionPose.getX(), visionPose.getY(), gyroAngle);
+            visionPose = new Pose2d(visionPose.getX(), visionPose.getY() + 0.1, gyroAngle);
+            visionPosePublisher.set(visionPose);
 
-            Translation2d currentPos = currentPose.getTranslation();
             Translation2d visionPos = visionPose.getTranslation();
 
             // Ignore results that are outside of the field
             if (!VisionBlender.isInField(visionPos)) return;
 
             // Ignore results that are more than a certain distance off from the current estimate
-            if (currentPos.getDistance(visionPos) < Constants.visionIgnoreRadius && didSeeVision) return;
+            // if (currentPos.getDistance(visionPos) > Constants.visionIgnoreRadius && didSeeVision) return;
 
-            didSeeVision = true;
             poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
         }    
     }

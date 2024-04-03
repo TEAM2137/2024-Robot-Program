@@ -17,11 +17,11 @@ public class Robot extends TimedRobot {
   }
   @Override public void robotPeriodic() { CommandScheduler.getInstance().run(); }
   @Override public void autonomousInit() { robotContainer.runAutonomous(); }
-  @Override public void autonomousPeriodic() { robotContainer.auto.autonomousPeriodic(); }
+  @Override public void autonomousPeriodic() { robotContainer.auto.periodic(); }
   @Override public void teleopInit() { robotContainer.runTeleop(); }
   @Override public void teleopPeriodic() {}
-  @Override public void disabledInit() { robotContainer.disabledInit(); }
-  @Override public void disabledPeriodic() { robotContainer.disabledPeriodic(); }
+  @Override public void disabledInit() { robotContainer.onDisabled(); }
+  @Override public void disabledPeriodic() {}
   @Override public void testInit() {}
   @Override public void testPeriodic() {}
   @Override public void simulationInit() {}

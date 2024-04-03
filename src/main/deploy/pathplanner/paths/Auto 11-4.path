@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.35,
-        "y": 7.3620736565316545
+        "x": 8.231303769843601,
+        "y": 7.439979197870614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.35,
-        "y": 7.3620736565316545
+        "x": 7.231303769843601,
+        "y": 7.439979197870614
       },
       "isLocked": false,
       "linkedName": "Auto 11 End 3"
     },
     {
       "anchor": {
-        "x": 4.170477427550348,
-        "y": 7.3
+        "x": 3.362207436158645,
+        "y": 6.845949445161049
       },
       "prevControl": {
-        "x": 5.0761816999770435,
-        "y": 7.3
+        "x": 4.511314170908294,
+        "y": 7.1380952251821475
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

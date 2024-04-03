@@ -1,10 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.CommandSequences;
-import frc.robot.commands.RumbleSequences;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.ModuleType;
@@ -16,10 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 /**
  * Main class that contains all the robot subsystems, controllers, opModes, etc.
@@ -29,7 +26,7 @@ public class RobotContainer {
     private static RobotContainer inst;
 
     // Controllers
-    private CommandXboxController driverController;
+    public CommandXboxController driverController;
     private CommandXboxController operatorController;
 
     // Subsystems
@@ -74,14 +71,14 @@ public class RobotContainer {
         auto = new Autonomous(driveSubsystem, shooter);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, leds);
 
-        NamedCommands.registerCommand("speaker-shoot", auto.enableRotationCommand()
+        NamedCommands.registerCommand("speaker-shoot", auto.enableTargetingCommand()
             .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0))
-            .andThen(new WaitCommand(0.5)) // TODO improve this
             .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper))
-            .andThen(auto.disableRotationCommand()));
+            .andThen(auto.disableTargetingCommand()));
 
-        NamedCommands.registerCommand("speaker-aim", auto.enableRotationCommand()
-            .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0)));
+        NamedCommands.registerCommand("path-end-aim", auto.pathEndAimCommand());
+
+        NamedCommands.registerCommand("speaker-aim", auto.enableTargetingCommand());
 
         NamedCommands.registerCommand("intake-down", 
             CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
@@ -96,9 +93,6 @@ public class RobotContainer {
 
         SmartDashboard.putData("Drivetrain Type", drivetrainType);
         SmartDashboard.putData("Auto Chooser", autoChooser);
-        
-        HttpCamera httpCamera = new HttpCamera("Limelight", "http://10.21.37.92:5800/");
-        CameraServer.addCamera(httpCamera);
         
         // Starts recording to data log
         DataLogManager.start();
@@ -119,6 +113,7 @@ public class RobotContainer {
      * Called when teleop is enabled
      */
     public void runTeleop() {
+        driveSubsystem.init();
         vision.resetAlliances();
         
         // Cancel autonomous in case it's still running for whatever reason
@@ -132,22 +127,20 @@ public class RobotContainer {
      * Called when autonomous is enabled
      */
     public void runAutonomous() {
+        driveSubsystem.init();
         vision.resetAlliances();
 
         // Initialize auto
         auto.init();
     }
 
+    public void onDisabled() {
+        leds.onDisabled();
+        driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
+    }
+
     /**
      * Use this to get the main instance of the container when necessary
      */
     public static RobotContainer getInstance() { return inst; }
-
-    public void disabledInit() {
-        leds.onDisabled();
-    }
-
-    public void disabledPeriodic() {
-        RumbleSequences.shutOffRumble(driverController.getHID());
-    }
 }

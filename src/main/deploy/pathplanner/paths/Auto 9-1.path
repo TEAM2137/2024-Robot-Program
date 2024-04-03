@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1808522786677846,
-        "y": 5.560508013068222
+        "x": 1.3,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1808522786677846,
-        "y": 5.560508013068222
+        "x": 2.3,
+        "y": 5.55
       },
       "isLocked": false,
       "linkedName": "Auto 5 Start 1"
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

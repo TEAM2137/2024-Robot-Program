@@ -67,7 +67,8 @@ public class Teleop {
 
         // +++ DRIVER +++
 
-        driverController.start().onTrue(Commands.runOnce(driveSubsystem::resetGyro));
+        driverController.start().onTrue(Commands.runOnce(driveSubsystem::resetGyro)
+            .andThen(RumbleSequences.rumbleOnce(driverController)));
 
         // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
         driverController.b().onTrue(
@@ -95,7 +96,8 @@ public class Teleop {
         }));
 
         // Intake phase
-        driverController.rightTrigger().onTrue(CommandSequences.intakeAndTransfer(intake, transfer).andThen(RumbleSequences.rumbleOnce(driverController.getHID())));
+        driverController.rightTrigger().onTrue(CommandSequences.intakeAndTransfer(intake, transfer)
+            .andThen(RumbleSequences.rumbleOnce(driverController)));
         // Force stop
         driverController.x().onTrue(cancelTargeting().andThen(
             CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper)));
@@ -105,7 +107,7 @@ public class Teleop {
         // Stow command
         driverController.leftBumper().onTrue(cancelTargeting().andThen(
             CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))
-            .andThen(RumbleSequences.rumbleDualPulse(driverController.getHID()).andThen(shooter.stowPivot())));
+            .andThen(RumbleSequences.rumbleDualPulse(driverController).andThen(shooter.stowPivot())));
 
         // +++ OPERATOR +++
 
@@ -210,7 +212,7 @@ public class Teleop {
         switch (location) {
             case SPEAKER:
                 // Increasing offset makes the robot shoot lower
-                shooter.setFromDistance(data.getSecond() + 0.23);
+                shooter.setFromDistance(data.getSecond() + 0.33);
                 break;
             // case HOME:
             default:
@@ -247,8 +249,8 @@ public class Teleop {
         Translation2d targetPos;
         switch (location) {
             case SPEAKER:
-                if (isBlueAlliance) targetPos = new Translation2d(0.1, 5.43);
-                else targetPos = new Translation2d(16.5, 5.43);
+                if (isBlueAlliance) targetPos = new Translation2d(0.1, 5.53);
+                else targetPos = new Translation2d(16.5, 5.53);
                 break;
             // case HOME
             default:

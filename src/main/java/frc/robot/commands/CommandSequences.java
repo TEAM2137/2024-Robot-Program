@@ -146,11 +146,11 @@ public class CommandSequences {
 
     public static Command shootIntoArmCommand(TrapperSubsystem trapper, ShooterSubsystem shooter) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
-            .andThen(Commands.waitSeconds(0.1))
             .andThen(trapper.runRollers(-0.4))
-            .andThen(Commands.waitSeconds(0.32))
+            .andThen(Commands.waitSeconds(0.4))
             .andThen(shooter.startShooter(0.3))
-            .andThen(Commands.waitSeconds(0.18))
+            .andThen(Commands.waitSeconds(1.5).until(trapper.beamBroken()))
+            .andThen(Commands.waitSeconds(1.5).until(trapper.beamClear()))
             .andThen(trapper.stopRollers())
             .andThen(shooter.stopShooter());
     }

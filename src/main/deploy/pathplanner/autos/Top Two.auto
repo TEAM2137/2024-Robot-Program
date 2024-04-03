@@ -16,9 +16,21 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "speaker-aim"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "Auto 11-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "path-end-aim"
                 }
               },
               {
@@ -45,9 +57,28 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "sequential",
                       "data": {
-                        "pathName": "Auto 11-2"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Auto 11-2"
+                            }
+                          },
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.4
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "path-end-aim"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -57,6 +88,12 @@
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.3
                 }
               },
               {
@@ -73,9 +110,16 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "Auto 11-3"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Auto 11-3"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -85,7 +129,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 0.7
                       }
                     },
                     {
@@ -105,9 +149,47 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "parallel",
                 "data": {
-                  "pathName": "Auto 11-4"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Auto 11-4"
+                      }
+                    },
+                    {
+                      "type": "sequential",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.4
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "speaker-aim"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "path-end-aim"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.2
                 }
               },
               {

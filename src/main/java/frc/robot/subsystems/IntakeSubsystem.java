@@ -12,6 +12,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel;
 
 import frc.robot.RobotContainer;
+import frc.robot.commands.RumbleSequences;
 import frc.robot.util.CanIDs;
 import frc.robot.util.LEDColor;
 import frc.robot.util.LEDs;
@@ -140,6 +141,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public void onNoteEnter() {
         LEDs leds = RobotContainer.getInstance().teleop.getLEDs();
         if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
+
         CommandScheduler.getInstance().schedule(leds.blinkColorCommand(LEDColor.YELLOW, LEDColor.NONE, 0.15, 8));
+        CommandScheduler.getInstance().schedule(RumbleSequences.rumbleOnce(RobotContainer.getInstance().driverController));
     }
 }

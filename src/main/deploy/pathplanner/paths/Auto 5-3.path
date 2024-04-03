@@ -3,71 +3,44 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.64,
-        "y": 6.95
+        "x": 2.7000103347774913,
+        "y": 6.78752028915683
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0751848252925456,
-        "y": 6.161206393943037
+        "x": 2.0865041967331868,
+        "y": 6.164275958445155
       },
       "isLocked": false,
       "linkedName": "Auto 5 End 2"
     },
     {
       "anchor": {
-        "x": 1.9116107596377037,
-        "y": 5.210293333881466
+        "x": 2.2325770867437353,
+        "y": 4.265328388308022
       },
       "prevControl": {
-        "x": 2.063447704108704,
-        "y": 5.716416482118134
-      },
-      "nextControl": {
-        "x": 1.7977245665473984,
-        "y": 4.830672690247114
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.64,
-        "y": 4.137865015614424
-      },
-      "prevControl": {
-        "x": 1.8472150826382572,
-        "y": 4.335803632351646
+        "x": 1.7846202240447193,
+        "y": 4.859358141017588
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 1.75,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": -35.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Auto 5",

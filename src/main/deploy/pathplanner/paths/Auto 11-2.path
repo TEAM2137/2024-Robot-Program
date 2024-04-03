@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.24,
-        "y": 6.81
+        "x": 1.570379985362581,
+        "y": 6.6706619771483915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2399999999999998,
-        "y": 6.81
+        "x": 1.9696458847247478,
+        "y": 6.6901383624831325
       },
       "isLocked": false,
       "linkedName": "Auto 11 End 1"
     },
     {
       "anchor": {
-        "x": 2.9,
-        "y": 6.85
+        "x": 2.661057564108011,
+        "y": 6.93
       },
       "prevControl": {
-        "x": 1.9,
-        "y": 6.85
+        "x": 2.1741479307395153,
+        "y": 6.949476385334739
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,22 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.1,
-      "rotationDegrees": 0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.8,
-      "rotationDegrees": 0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 0,
-      "rotateFast": true
-    },
-    {
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0,
       "rotateFast": true
     }
@@ -54,7 +39,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

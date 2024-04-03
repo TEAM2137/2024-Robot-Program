@@ -45,8 +45,8 @@ public class ShooterSubsystem extends SubsystemBase {
             TreeMap<Double, Double> powerMap = new TreeMap<Double, Double>();
 
             // -- Angle lookup table values
-            angleMap.put(0.20, 29.0);
-            angleMap.put(1.39, 32.0);
+            angleMap.put(0.20, 33.0);
+            angleMap.put(1.39, 33.0);
             angleMap.put(1.72, 40.0);
             angleMap.put(2.00, 44.3);
             angleMap.put(2.40, 50.0);

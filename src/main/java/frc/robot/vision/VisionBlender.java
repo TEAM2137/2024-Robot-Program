@@ -56,13 +56,13 @@ public class VisionBlender {
         Rotation2d rotation = new Rotation2d();
 
         // Average out all of the limelight poses
-        currentPoses.forEach(pose -> {
-            translation.plus(pose.getTranslation());
-            rotation.plus(pose.getRotation());
-        });
+        for (Pose2d pose : currentPoses) {
+            translation = translation.plus(pose.getTranslation());
+            rotation = rotation.plus(pose.getRotation());
+        }
 
-        translation.div(currentPoses.size());
-        rotation.div(currentPoses.size());
+        translation = translation.div(currentPoses.size());
+        rotation = rotation.div(currentPoses.size());
 
         // Create a new pose with the averaged values
         return new Pose2d(translation, rotation);
