@@ -20,7 +20,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
-import frc.robot.subsystems.TrapperSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.util.LEDs;
 
@@ -58,7 +58,7 @@ public class Teleop {
         this.leds = leds;
     }
 
-    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, TrapperSubsystem trapper, ClimberSubsystem climber) {
+    public void init(ShooterSubsystem shooter, IntakeSubsystem intake, TransferSubsystem transfer, ArmSubsystem arm, ClimberSubsystem climber) {
         // +++ Init Subsystems +++
 
         intake.init();
@@ -72,8 +72,8 @@ public class Teleop {
 
         // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
         driverController.b().onTrue(
-            CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper)
-                .andThen(shooter.stowPivot().andThen(cancelTargeting()).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))));
+            CommandSequences.transferToShooterCommand(intake, transfer, shooter, arm)
+                .andThen(shooter.stowPivot().andThen(cancelTargeting()).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm))));
 
         // Aiming
         driverController.a().onTrue(startSpeakerAimCommand());
@@ -100,13 +100,13 @@ public class Teleop {
             .andThen(RumbleSequences.rumbleOnce(driverController)));
         // Force stop
         driverController.x().onTrue(cancelTargeting().andThen(
-            CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper)));
+            CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm)));
         // X Lock
         driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
 
         // Stow command
         driverController.leftBumper().onTrue(cancelTargeting().andThen(
-            CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper))
+            CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm))
             .andThen(RumbleSequences.rumbleDualPulse(driverController).andThen(shooter.stowPivot())));
 
         // +++ OPERATOR +++
@@ -120,28 +120,38 @@ public class Teleop {
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.manualClose)
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 
-        operatorController.a().onTrue(trapper.runRollers(0.7));
-        operatorController.a().onFalse(trapper.stopRollers());
+        operatorController.a().onTrue(arm.runRollers(0.7));
+        operatorController.a().onFalse(arm.stopRollers());
 
-        operatorController.rightTrigger().onTrue(trapper.homePosition());
-        operatorController.leftTrigger().onTrue(trapper.ampPosition());
+        // Arm for amp
+        operatorController.rightTrigger().onTrue(arm.homePosition());
+        operatorController.leftTrigger().onTrue(arm.ampPosition());
 
-        operatorController.povUp().onTrue(trapper.climbPosition()
-            .andThen(CommandSequences.climberUpCommand(climber)));
+        // Climber commands
+        operatorController.povUp().onTrue(CommandSequences.climberUpCommand(climber));
         operatorController.povUp().onFalse(climber.stopClimber());
         operatorController.povDown().onTrue(CommandSequences.climberDownCommand(climber));
         operatorController.povDown().onFalse(climber.stopClimber());
 
+        operatorController.povLeft().onTrue(CommandSequences.climberHangCommand(climber));
+        operatorController.povLeft().onFalse(climber.stopClimber());
+        operatorController.povRight().onTrue(CommandSequences.climberHangCommand(climber));
+        operatorController.povRight().onFalse(climber.stopClimber());
+
+        // Arm for climb/trap
+        operatorController.start().onTrue(arm.climbPosition());
+        operatorController.back().onTrue(arm.trapPosition());
+
         // Shooter manual toggle
-        operatorController.y().onTrue(CommandSequences.moveToShooterForArmCommand(trapper, shooter, transfer));
-        operatorController.b().onTrue(CommandSequences.shootIntoArmCommand(trapper, shooter));
+        operatorController.y().onTrue(CommandSequences.moveToShooterForArmCommand(arm, shooter, transfer));
+        operatorController.b().onTrue(CommandSequences.shootIntoArmCommand(arm, shooter));
 
         // +++ End controller bindings +++
 
         // Schedule starting commands
         CommandScheduler.getInstance().schedule(shooter.stowPivot());
         CommandScheduler.getInstance().schedule(Commands.runOnce(() -> isTargetingSpeaker = false));
-        CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
+        CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm));
 
         // Init teleop command
         driveSubsystem.resetModuleAngles();

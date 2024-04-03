@@ -35,7 +35,7 @@ public class RobotContainer {
     private ShooterSubsystem shooter;
     private ClimberSubsystem climberSubsystem;
     private TransferSubsystem transfer;
-    private TrapperSubsystem trapper;
+    private ArmSubsystem arm;
 
     // Misc stuff
     private final VisionBlender vision = new VisionBlender("limelight-a", "limelight-b");
@@ -66,14 +66,14 @@ public class RobotContainer {
         shooter = new ShooterSubsystem();
         climberSubsystem = new ClimberSubsystem();
         transfer = new TransferSubsystem();
-        trapper = new TrapperSubsystem();
+        arm = new ArmSubsystem();
         
         auto = new Autonomous(driveSubsystem, shooter);
         teleop = new Teleop(driveSubsystem, driverController, operatorController, leds);
 
         NamedCommands.registerCommand("speaker-shoot", auto.enableTargetingCommand()
             .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0))
-            .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, trapper))
+            .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, arm))
             .andThen(auto.disableTargetingCommand()));
 
         NamedCommands.registerCommand("path-end-aim", auto.pathEndAimCommand());
@@ -84,7 +84,7 @@ public class RobotContainer {
             CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
             
         NamedCommands.registerCommand("stop-all", 
-            CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
+            CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm));
         
         auto.configure();
 
@@ -120,7 +120,7 @@ public class RobotContainer {
         auto.cancelAutonomous();
 
         // Initialize teleop
-        teleop.init(shooter, intake, transfer, trapper, climberSubsystem);
+        teleop.init(shooter, intake, transfer, arm, climberSubsystem);
     }
 
     /**

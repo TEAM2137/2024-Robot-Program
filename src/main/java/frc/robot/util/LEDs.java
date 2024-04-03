@@ -3,13 +3,14 @@ package frc.robot.util;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.LEDChannel;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDs extends SubsystemBase {
     public CANifier canifier;
-    public float brightness = 0.4f;
+    public float brightness = 0.5f;
 
     public LEDs() {
         canifier = new CANifier(CanIDs.get("led-canifier"));
@@ -18,13 +19,13 @@ public class LEDs extends SubsystemBase {
     }
 
     public void onDisabled() {
-        setColor(LEDColor.GREEN);
+        if (!DriverStation.isFMSAttached()) setColor(LEDColor.GREEN.mul(0.25f));
     }
 
     public void setColor(LEDColor color) {
-        canifier.setLEDOutput(color.getB() * brightness, LEDChannel.LEDChannelA);
+        canifier.setLEDOutput(color.getG() * brightness, LEDChannel.LEDChannelA);
         canifier.setLEDOutput(color.getR() * brightness, LEDChannel.LEDChannelB);
-        canifier.setLEDOutput(color.getG() * brightness, LEDChannel.LEDChannelC);
+        canifier.setLEDOutput(color.getB() * brightness, LEDChannel.LEDChannelC);
     }
 
     public Command setColorCommand(LEDColor color) {

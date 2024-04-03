@@ -14,7 +14,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
-import frc.robot.subsystems.TrapperSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.vision.VisionBlender;
 
@@ -56,7 +56,7 @@ public class CommandSequences {
     //         .andThen(stopShooterAndTransfer(shooter, transfer));
     // }
 
-    public static Command transferToShooterCommand(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, TrapperSubsystem trapper) {
+    public static Command transferToShooterCommand(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, ArmSubsystem trapper) {
         return transfer.feedShooterCommand().withTimeout(0.8)
             .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, trapper));
     }
@@ -134,7 +134,7 @@ public class CommandSequences {
      * Moves a stored note into the arm
      * @return the command
      */
-    public static Command moveToShooterForArmCommand(TrapperSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
+    public static Command moveToShooterForArmCommand(ArmSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage1Angle)
             .andThen(Commands.waitSeconds(0.3))
             .andThen(shooter.startShooter(0.04))
@@ -144,7 +144,7 @@ public class CommandSequences {
             .andThen(shooter.stowPivot());
     }
 
-    public static Command shootIntoArmCommand(TrapperSubsystem trapper, ShooterSubsystem shooter) {
+    public static Command shootIntoArmCommand(ArmSubsystem trapper, ShooterSubsystem shooter) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
             .andThen(trapper.runRollers(-0.4))
             .andThen(Commands.waitSeconds(0.4))
@@ -223,7 +223,7 @@ public class CommandSequences {
      * Stops the motors of both the intake and the transfer, and stows the intake.
      * @return the command
      */
-    public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, TrapperSubsystem trapper) {
+    public static Command stopAllSubsystems(IntakeSubsystem intake, TransferSubsystem transfer, ShooterSubsystem shooter, ArmSubsystem trapper) {
         return transfer.transferForceStop()
             .andThen(intake.stopRollers())
             .andThen(intake.moveIntakeUp())
@@ -232,10 +232,14 @@ public class CommandSequences {
     }
 
     public static Command climberUpCommand(ClimberSubsystem climber) {
-        return climber.runClimber(0.5); // 0.75
+        return climber.runClimber(0.6);
     }
 
     public static Command climberDownCommand(ClimberSubsystem climber) {
         return climber.runClimber(-0.5);
+    }
+
+    public static Command climberHangCommand(ClimberSubsystem climber) {
+        return climber.runClimber(-0.1);
     }
 }

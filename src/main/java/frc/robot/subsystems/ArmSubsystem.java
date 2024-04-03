@@ -19,13 +19,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
 
-public class TrapperSubsystem extends SubsystemBase {
+public class ArmSubsystem extends SubsystemBase {
     public static class Constants {
         public static final double ARM_HOME_ANGLE = 232.0;
         public static final double WRIST_HOME_ANGLE = 261.3;
 
         public static final double ARM_AMP_ANGLE = 145.6;
         public static final double WRIST_AMP_ANGLE = 150.2;
+
+        public static final double ARM_TRAP_ANGLE = 134.7;
+        public static final double WRIST_TRAP_ANGLE = 115.6;
     }
 
     private CANSparkMax rollers;
@@ -46,7 +49,7 @@ public class TrapperSubsystem extends SubsystemBase {
     private double armTarget = Constants.ARM_HOME_ANGLE;
     private double wristTarget = Constants.WRIST_HOME_ANGLE;
 
-    public TrapperSubsystem() {
+    public ArmSubsystem() {
         super();
 
         // Wrist (the end part)
@@ -116,6 +119,10 @@ public class TrapperSubsystem extends SubsystemBase {
 
     public Command climbPosition() {
         return setArmTarget(Constants.ARM_AMP_ANGLE).andThen(setWristTarget(Constants.WRIST_HOME_ANGLE));
+    }
+
+    public Command trapPosition() {
+        return setArmTarget(Constants.ARM_TRAP_ANGLE).andThen(setWristTarget(Constants.WRIST_TRAP_ANGLE));
     }
 
     @Override
