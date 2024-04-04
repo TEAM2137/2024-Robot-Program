@@ -134,7 +134,7 @@ public class CommandSequences {
      * Moves a stored note into the arm
      * @return the command
      */
-    public static Command moveToShooterForArmCommand(ArmSubsystem trapper, ShooterSubsystem shooter, TransferSubsystem transfer) {
+    public static Command moveToShooterForArmCommand(ArmSubsystem arm, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage1Angle)
             .andThen(Commands.waitSeconds(0.3))
             .andThen(shooter.startShooter(0.04))
@@ -144,14 +144,25 @@ public class CommandSequences {
             .andThen(shooter.stowPivot());
     }
 
-    public static Command shootIntoArmCommand(ArmSubsystem trapper, ShooterSubsystem shooter) {
+    // public static Command shootIntoArmCommand(ArmSubsystem trapper, ShooterSubsystem shooter) {
+    //     return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
+    //         .andThen(trapper.runRollers(-0.4))
+    //         .andThen(Commands.waitSeconds(0.4))
+    //         .andThen(shooter.startShooter(0.3))
+    //         .andThen(Commands.waitSeconds(1.5).until(trapper.beamBroken()))
+    //         .andThen(Commands.waitSeconds(1.5).until(trapper.beamClear()))
+    //         .andThen(trapper.stopRollers())
+    //         .andThen(shooter.stopShooter());
+    // }
+
+    public static Command shootIntoArmCommand(ArmSubsystem arm, ShooterSubsystem shooter) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
-            .andThen(trapper.runRollers(-0.4))
-            .andThen(Commands.waitSeconds(0.4))
+            .andThen(Commands.waitSeconds(0.1))
+            .andThen(arm.runRollers(-0.4))
+            .andThen(Commands.waitSeconds(0.32))
             .andThen(shooter.startShooter(0.3))
-            .andThen(Commands.waitSeconds(1.5).until(trapper.beamBroken()))
-            .andThen(Commands.waitSeconds(1.5).until(trapper.beamClear()))
-            .andThen(trapper.stopRollers())
+            .andThen(Commands.waitSeconds(0.18))
+            .andThen(arm.stopRollers())
             .andThen(shooter.stopShooter());
     }
 

@@ -21,7 +21,7 @@ public class RumbleSequences {
     public static Command rumbleOnce(CommandXboxController driverController) {
         return
             rumble(driverController, RumbleType.kBothRumble, 1)
-            .andThen(Commands.waitSeconds(.1))
+            .andThen(Commands.waitSeconds(.2))
             .andThen(shutOffRumble(driverController));
     }
 

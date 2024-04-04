@@ -123,6 +123,10 @@ public class Teleop {
         operatorController.a().onTrue(arm.runRollers(0.7));
         operatorController.a().onFalse(arm.stopRollers());
 
+        // Manual arm roller controls
+        operatorController.rightStick().whileTrue(arm.runRollers(operatorController.getRightY() * 0.15));
+        operatorController.rightStick().onFalse(arm.stopRollers());
+
         // Arm for amp
         operatorController.rightTrigger().onTrue(arm.homePosition());
         operatorController.leftTrigger().onTrue(arm.ampPosition());
