@@ -28,7 +28,13 @@
       "linkedName": "Auto 5 End 2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": 45.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -40,7 +46,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 45.0,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "Auto 5",

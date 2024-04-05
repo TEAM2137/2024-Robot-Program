@@ -245,7 +245,8 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     public Rotation2d getRotation() {
         double raw = pigeonIMU.getYaw().getValueAsDouble(); // % 360;
-        return Rotation2d.fromDegrees(raw);
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        return Rotation2d.fromDegrees(raw).plus(Rotation2d.fromDegrees(alliance == Alliance.Red ? 180 : 0));
     }
 
     public Translation2d getTranslation() {
@@ -335,9 +336,7 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     public Pose2d getPose() {
         Pose2d pose = poseEstimator.grabEstimatedPose();
-        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        return new Pose2d(pose.getX(), pose.getY(), getRotation()
-            .plus(Rotation2d.fromDegrees(alliance == Alliance.Blue ? 0 : 180)));
+        return new Pose2d(pose.getX(), pose.getY(), getRotation());
     }
 
     /**

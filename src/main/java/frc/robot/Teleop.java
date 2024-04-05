@@ -47,6 +47,7 @@ public class Teleop {
     private double rotationSpeed = 1.3;
 
     private double prevStickAngle = 0;
+    private double prevOperatorY = 0;
     private boolean isTargetingSpeaker = false;
     private boolean isTargetingHome = false;
 
@@ -159,15 +160,30 @@ public class Teleop {
 
         // Init teleop command
         driveSubsystem.resetModuleAngles();
-        driveSubsystem.setDefaultCommand(getTeleopCommand(shooter));
+        driveSubsystem.setDefaultCommand(getTeleopCommand(shooter, arm));
     }
 
     // Setup the teleop drivetrain command
-    public Command getTeleopCommand(ShooterSubsystem shooter) {
+    public Command getTeleopCommand(ShooterSubsystem shooter, ArmSubsystem arm) {
         return new RunCommand(
             () -> {
+
+                double operatorY = operatorController.getRightY();
+                operatorY = Math.abs(operatorY) < stickDeadzone ? 0 : operatorY;
+
+                if (operatorY == 0 && prevOperatorY != 0) {
+                    CommandScheduler.getInstance().schedule(arm.stopRollers());
+                } else if (operatorY != 0) {
+                    CommandScheduler.getInstance().schedule(arm.runRollers(operatorY * 0.15));
+                }
+
+                prevOperatorY = operatorY;
+
                 // Controller + Pigeon inputs
-                double direction = driveSubsystem.getRotation().getRadians();
+                Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+                double direction = driveSubsystem.getRotation()
+                    .plus(Rotation2d.fromDegrees(alliance == Alliance.Red ? 180 : 0)).getRadians();
                 double controllerX = -driverController.getLeftX();
                 double controllerY = -driverController.getLeftY();
                 double rotationX = -driverController.getRightX();

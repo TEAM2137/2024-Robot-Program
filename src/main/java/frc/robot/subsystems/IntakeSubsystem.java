@@ -3,10 +3,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.BooleanSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel;
@@ -127,22 +131,38 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.updateValues();
     }
 
-    public Command togglePivot() {
-        return runOnce(() -> {
-            if (isRaised) CommandScheduler.getInstance().schedule(moveIntakeDown());
-            else CommandScheduler.getInstance().schedule(moveIntakeUp());
-        });
+    /**
+     * @return A {@code BooleanSupplier} for if the intake is currently raised
+     */
+    private BooleanSupplier intakeRaised() {
+        return () -> isRaised;
     }
 
+    /**
+     * Raises the intake if it is lowered and lowers it if it's raised
+     * @return The command
+     */
+    public Command togglePivot() {
+        return new ConditionalCommand(moveIntakeDown(), moveIntakeUp(), intakeRaised());
+    }
+
+    /**
+     * Starts the intake rollers and moves it down
+     * @return The command
+     */
     public Command deployIntake() {
         return startRollers().andThen(moveIntakeDown());
     }
 
+    /**
+     * Called once when a note is detected in the intake
+     */
     public void onNoteEnter() {
         LEDs leds = RobotContainer.getInstance().teleop.getLEDs();
         if (leds.getCurrentCommand() != null) leds.getCurrentCommand().cancel();
 
-        CommandScheduler.getInstance().schedule(leds.blinkColorCommand(LEDColor.YELLOW, LEDColor.NONE, 0.15, 8));
-        CommandScheduler.getInstance().schedule(RumbleSequences.rumbleOnce(RobotContainer.getInstance().driverController));
+        CommandScheduler.getInstance().schedule(leds.blinkColorCommand(LEDColor.YELLOW, LEDColor.NONE, 0.15, 8,
+            () -> RumbleSequences.rumble(RobotContainer.getInstance().driverController, RumbleType.kBothRumble, 1.0),
+            () -> RumbleSequences.rumble(RobotContainer.getInstance().driverController, RumbleType.kBothRumble, 0.0)));
     }
 }

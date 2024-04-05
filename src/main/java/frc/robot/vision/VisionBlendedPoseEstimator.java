@@ -60,6 +60,7 @@ public class VisionBlendedPoseEstimator {
     }
 
     public void init() {
+
     }
 
     /**
@@ -83,10 +84,7 @@ public class VisionBlendedPoseEstimator {
 
             // Ignore results that are outside of the field
             if (!VisionBlender.isInField(visionPos)) return;
-
-            // Ignore results that are more than a certain distance off from the current estimate
-            // if (currentPos.getDistance(visionPos) > Constants.visionIgnoreRadius && didSeeVision) return;
-
+            
             poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
         }    
     }

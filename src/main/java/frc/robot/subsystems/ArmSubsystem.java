@@ -27,8 +27,8 @@ public class ArmSubsystem extends SubsystemBase {
         public static final double ARM_AMP_ANGLE = 145.6;
         public static final double WRIST_AMP_ANGLE = 150.2;
 
-        public static final double ARM_TRAP_ANGLE = 134.7;
-        public static final double WRIST_TRAP_ANGLE = 115.6;
+        public static final double ARM_TRAP_ANGLE = 125.9;
+        public static final double WRIST_TRAP_ANGLE = 100.7;
     }
 
     private CANSparkMax rollers;
@@ -134,8 +134,8 @@ public class ArmSubsystem extends SubsystemBase {
         // Target the proper angles
 
         double wristEncoderPos = wristEncoder.getPosition();
-        double wristError = Math.max(Math.min((wristTarget - wristEncoderPos) / 390.0,
-            /* Max motor speed */ 0.16), /* Min motor speed */ -0.16);
+        double wristError = Math.max(Math.min((wristTarget - wristEncoderPos) / 300.0,
+            /* Max motor speed */ 0.20), /* Min motor speed */ -0.20);
         wristMotor.set(wristError);
 
         double armEncoderPos = armEncoder.getPosition();
