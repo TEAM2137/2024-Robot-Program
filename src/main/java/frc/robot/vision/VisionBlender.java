@@ -71,11 +71,11 @@ public class VisionBlender {
     /**
      * @return the current limelight timestamp accounted for latency
      */
-    public double getTimestamp() {
+    public double getTimestamp(int limelight) {
         if (limelights == null) return Timer.getFPGATimestamp();
-        return Timer.getFPGATimestamp() - limelights.get(0).getLatency() / 1000.0;
+        return Timer.getFPGATimestamp() - limelights.get(limelight).getLatency() / 1000.0;
     }
-
+    
     /**
      * @return true if any of the limelights have a target
      */
@@ -118,5 +118,9 @@ public class VisionBlender {
      */
     public void resetAlliances() {
         limelights.forEach(limelight -> limelight.resetAlliance());
+    }
+
+    public double getLatency(int limelight) {
+        return limelights.get(limelight).getLatency();
     }
 }

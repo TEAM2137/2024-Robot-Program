@@ -199,7 +199,7 @@ public class CommandSequences {
             
                 vision.updateValues();
 
-                Pose2d robotPose = driveSubsystem.getPose();
+                Pose2d robotPose = driveSubsystem.getFieldPose();
                 
                 double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
                 double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
@@ -217,7 +217,7 @@ public class CommandSequences {
                 // shooter.setPivotTargetRaw(Math.max(Math.min(shootAngle, ShooterSubsystem.Constants.maxAngle),
                 //     ShooterSubsystem.Constants.minAngle));
 
-                driveSubsystem.driveTranslationRotationRaw(
+                driveSubsystem.driveTranslationRotationPower(
                     new ChassisSpeeds(0, 0, error * kP)
                 );
 

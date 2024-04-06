@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Teleop.ShotLocation;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.swerve.SwerveDrivetrain.Perspective;
 
 public class Autonomous {
     private SwerveDrivetrain drivetrain;
@@ -49,11 +50,11 @@ public class Autonomous {
 
     public void periodic() {
         double rot = RobotContainer.getInstance().teleop.targetUpdate(shooter, ShotLocation.SPEAKER);
-        if (pathTargeting) {
-            targetRotation = Optional.of(drivetrain.getRotation().plus(new Rotation2d(rot / 2)));
-        }
         if (pathEndTargeting) {
-            drivetrain.driveTranslationRotationRaw(new ChassisSpeeds(0, 0, rot));
+            drivetrain.driveTranslationRotationPower(new ChassisSpeeds(0, 0, rot));
+        } else if (pathTargeting) {
+            targetRotation = Optional.of(drivetrain.getRotation(Perspective.Driver)
+                .plus(new Rotation2d(rot / 2)));
         }
     }
     
@@ -64,10 +65,10 @@ public class Autonomous {
 
     public void configure() {
         AutoBuilder.configureHolonomic(
-            drivetrain::getPose,
-            drivetrain::resetOdometry,
+            drivetrain::getFieldPose,
+            drivetrain::setPathplannerOdometry,
             drivetrain::getSpeeds, // Robot Relative
-            drivetrain::driveTranslationRotationRaw, // Robot Relative
+            drivetrain::driveTranslationRotationPower, // Robot Relative
             new HolonomicPathFollowerConfig(
                 new PIDConstants(5.0, 0, 0), // Translation
                 new PIDConstants(5.0, 0, 0), // Rotation

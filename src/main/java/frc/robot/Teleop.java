@@ -22,6 +22,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.swerve.SwerveDrivetrain.Perspective;
 import frc.robot.util.LEDs;
 
 public class Teleop {
@@ -68,10 +69,9 @@ public class Teleop {
 
         // +++ DRIVER +++
 
-        driverController.start().onTrue(Commands.runOnce(driveSubsystem::resetGyro)
+        driverController.start().onTrue(Commands.runOnce(driveSubsystem::setPerspective)
             .andThen(RumbleSequences.rumbleOnce(driverController)));
 
-        // driverController.back().onTrue(CommandSequences.rawShootCommand(0.8, transfer, shooter));
         driverController.b().onTrue(
             CommandSequences.transferToShooterCommand(intake, transfer, shooter, arm)
                 .andThen(shooter.stowPivot().andThen(cancelTargeting()).andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm))));
@@ -82,9 +82,6 @@ public class Teleop {
 
         // Manual intake pivot
         driverController.back().onTrue(intake.togglePivot());
-
-        // driverController.povUp().whileTrue(Commands.run(() -> shooter.changePivotTarget(0.3)));
-        // driverController.povDown().whileTrue(Commands.run(() -> shooter.changePivotTarget(-0.3)));
 
         // Slow button
         driverController.leftTrigger().onTrue(new InstantCommand(() -> {
@@ -116,10 +113,10 @@ public class Teleop {
         operatorController.x().onFalse(intake.stopRollers().andThen(transfer.transferForceStop()));
 
         // Shooter pivot manual controls
-        // operatorController.rightBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.maxAngle)
-        //     .andThen(CommandSequences.rawShootCommand(1, transfer, shooter)));
         operatorController.leftBumper().onTrue(shooter.setPivotTarget(ShooterSubsystem.Constants.manualClose)
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
+        operatorController.rightBumper().onTrue(shooter.setPivotTarget(42.5)
+            .andThen(CommandSequences.rawShootCommand(0.4, transfer, shooter)));
 
         operatorController.a().onTrue(arm.runRollers(0.7));
         operatorController.a().onFalse(arm.stopRollers());
@@ -138,8 +135,7 @@ public class Teleop {
         operatorController.povDown().onTrue(CommandSequences.climberDownCommand(climber));
         operatorController.povDown().onFalse(climber.stopClimber());
 
-        operatorController.povLeft().onTrue(CommandSequences.climberHangCommand(climber));
-        operatorController.povLeft().onFalse(climber.stopClimber());
+        operatorController.povLeft().onTrue(arm.extendPosition());
         operatorController.povRight().onTrue(CommandSequences.climberHangCommand(climber));
         operatorController.povRight().onFalse(climber.stopClimber());
 
@@ -182,7 +178,7 @@ public class Teleop {
                 // Controller + Pigeon inputs
                 Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
 
-                double direction = driveSubsystem.getRotation()
+                double direction = driveSubsystem.getRotation(Perspective.Driver)
                     .plus(Rotation2d.fromDegrees(alliance == Alliance.Red ? 180 : 0)).getRadians();
                 double controllerX = -driverController.getLeftX();
                 double controllerY = -driverController.getLeftY();
@@ -225,7 +221,7 @@ public class Teleop {
                 if (isTargetingSpeaker) rot = targetUpdate(shooter, ShotLocation.SPEAKER);
                 if (isTargetingHome) rot = targetUpdate(shooter, ShotLocation.HOME);
 
-                driveSubsystem.driveTranslationRotationRaw(new ChassisSpeeds(speedY, speedX, rot));
+                driveSubsystem.driveTranslationRotationPower(new ChassisSpeeds(speedY, speedX, rot));
             },
             driveSubsystem
         );
@@ -291,7 +287,7 @@ public class Teleop {
         driveSubsystem.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
 
         // Get robot pose
-        Pose2d robotPose = driveSubsystem.getPose();
+        Pose2d robotPose = driveSubsystem.getFieldPose();
         
         // Calculate stuff
         double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());

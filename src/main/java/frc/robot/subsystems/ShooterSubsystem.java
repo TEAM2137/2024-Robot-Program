@@ -28,12 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         public static double armStage1Angle = 53.92;
         public static double armStage2Angle = 4.6;
-        public static double maxAngle = 10;
-        public static double demoAngle = 10;
-        public static double stowAngle = 10;
         public static double minAngle = 10;
-
-        public static double manualClose = 30.7;
+        public static double manualClose = 36.0;
 
         public static double maximumRPMError = 10.0; //TODO: Check if this value is even realistic
 

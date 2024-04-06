@@ -1,0 +1,63 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.57708433329085,
+        "y": 6.81673486715894
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4535216733541423,
+        "y": 7.1867861885189965
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.267859354224047,
+        "y": 7.342597271196915
+      },
+      "prevControl": {
+        "x": 3.267859354224047,
+        "y": 7.342597271196915
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 40.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.5,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "A1 Auto",
+  "previewStartingState": {
+    "rotation": 75.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

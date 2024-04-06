@@ -10,14 +10,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -106,26 +103,27 @@ public class SwerveDrivetrain extends SubsystemBase {
     private Pigeon2 pigeonIMU;
 
     private VisionBlendedPoseEstimator poseEstimator;
-    private VisionBlender vision;
-
-    private Field2d field2d = new Field2d();
 
     private StructArrayPublisher<SwerveModuleState> swervePublisher = NetworkTableInstance.getDefault()
         .getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
+
     private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Robot Pose", Pose2d.struct).publish();
+
     public StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Target Location", Pose2d.struct).publish();
-    private StructPublisher<Rotation2d> rotationPublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Robot Rotation", Rotation2d.struct).publish();
+
+    private StructPublisher<Rotation2d> fieldRotPublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Field Space Rotation", Rotation2d.struct).publish();
+
+    private StructPublisher<Rotation2d> driverRotPublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Driver Space Rotation", Rotation2d.struct).publish();
 
     /**
      * Creates a swerve drivetrain (uses values from constants)
      */
     public SwerveDrivetrain(ModuleType moduleType, VisionBlender vision) {
-        this.vision = vision;
-
-        // locations of all of the modules (for kinematics)
+        // Locations of all of the modules (for kinematics)
         Translation2d frontLeftLocation = new Translation2d(Constants.length / 2, Constants.width / 2);
         Translation2d frontRightLocation = new Translation2d(Constants.length / 2, -Constants.width / 2);
         Translation2d backLeftLocation = new Translation2d(-Constants.length / 2, Constants.width / 2);
@@ -134,7 +132,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         // the kinematics object for converting chassis speeds to module rotations and powers
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-        // each of the modules
         if (moduleType == ModuleType.Neo) {
             frontLeftModule = new NeoModule(Constants.frontLeft);
             frontRightModule = new NeoModule(Constants.frontRight);
@@ -147,25 +144,19 @@ public class SwerveDrivetrain extends SubsystemBase {
             backRightModule = new FalconModule(Constants.backRight);
         }
 
-        // an array of the swerve modules, to make life easier
-        swerveArray = new SwerveModule[]{frontLeftModule, frontRightModule, backLeftModule, backRightModule};
+        swerveArray = new SwerveModule[] {frontLeftModule, frontRightModule, backLeftModule, backRightModule};
 
-        // the gyro
         pigeonIMU = new Pigeon2(Constants.gyroID, RobotContainer.getRioCanBusName());
         pigeonIMU.getConfigurator().apply(new Pigeon2Configuration());
         pigeonIMU.reset();
 
         // create pose estimator
-        resetDriveDistances();
-        updateModulePositions();
-        poseEstimator = new VisionBlendedPoseEstimator(kinematics, getRotation(), modulePositions, vision);
+        setPerspective();
+        poseEstimator = new VisionBlendedPoseEstimator(kinematics, getRotation(Perspective.Field), modulePositions, vision);
 
         timer = new Timer();
         timer.reset();
-        timer.start();
-        
-        resetGyro();
-        resetOdometry();
+        timer.start();        
     }
 
     public void init() {
@@ -184,20 +175,16 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     @Override
     public void periodic() {
-
         updateOdometry();
 
-        field2d.setRobotPose(getPose());
+        swervePublisher.set(getSwerveModuleStates());
+        fieldRotPublisher.set(getRotation(Perspective.Field));
+        driverRotPublisher.set(getRotation(Perspective.Driver));
+        posePublisher.set(getFieldPose());
 
-        SmartDashboard.putData("Field", field2d);
-
-        swervePublisher.set(getSwerveModuleStates()); // AdvantageScope swerve states
-        rotationPublisher.set(getRotation());
-        posePublisher.set(getPose()); // AdvantageScope pose
-
-        SmartDashboard.putNumber("Robot X", getPose().getX());
-        SmartDashboard.putNumber("Robot Y", getPose().getY());
-        SmartDashboard.putNumber("Robot Rotation", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("Robot X", getFieldPose().getX());
+        SmartDashboard.putNumber("Robot Y", getFieldPose().getY());
+        SmartDashboard.putNumber("Robot Rotation", getFieldPose().getRotation().getDegrees());
     }
 
     private void updateOdometry() {
@@ -210,11 +197,11 @@ public class SwerveDrivetrain extends SubsystemBase {
         }
         
         updateModulePositions();
-        poseEstimator.update(getRotation(), modulePositions);
+        poseEstimator.update(getRotation(Perspective.Driver), modulePositions);
     }
 
     private void updateModulePositions() {
-        boolean flipDistances = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+        boolean flipDistances = false;
 
         double[] distances = new double[] {
             frontLeftModule.getDriveDistance() * (flipDistances ? -1 : 1),
@@ -243,14 +230,19 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * @return the angle of the robot (CCW positive (normal))
      */
-    public Rotation2d getRotation() {
+    public Rotation2d getRotation(Perspective perspective) {
         double raw = pigeonIMU.getYaw().getValueAsDouble(); // % 360;
-        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        return Rotation2d.fromDegrees(raw).plus(Rotation2d.fromDegrees(alliance == Alliance.Red ? 180 : 0));
+        Rotation2d rot = Rotation2d.fromDegrees(raw);
+
+        if (perspective == Perspective.Driver) return rot;
+        else {
+            Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+            return rot.plus(Rotation2d.fromDegrees(alliance == Alliance.Red ? 180 : 0));
+        }
     }
 
     public Translation2d getTranslation() {
-        return getPose().getTranslation();
+        return getFieldPose().getTranslation();
     }
 
     public double getThetaVelocity() {
@@ -264,14 +256,13 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRightModule.resetDriveEncoder();
     }
 
-    public void resetGyro() {
-        pigeonIMU.setYaw(0);
-    }
+    public void resetGyro() { setGyro(0); }
+    public void setGyro(double degrees) { pigeonIMU.setYaw(degrees); }
 
     /**
      * @param speeds speed of the chassis with -1 to 1 on translation
      */
-    public void driveTranslationRotationRaw(ChassisSpeeds speeds) {
+    public void driveTranslationRotationPower(ChassisSpeeds speeds) {
         if(speeds.vxMetersPerSecond + speeds.vyMetersPerSecond + speeds.omegaRadiansPerSecond == 0) {
             // if power isn't being applied, don't set the module rotation to zero
             setAllModuleDriveRawPower(0);
@@ -298,24 +289,33 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @param speeds speed of the chassis in m/s and rad/s
      */
     public void driveTranslationRotationVelocity(ChassisSpeeds speeds) {
+        driveTranslationRotationRaw(speeds, Constants.driveMaxSpeed);
+    }
+
+    /**
+     * @param speeds speed of the chassis in m/s and rad/s
+     */
+    public void driveTranslationRotationPowerNew(ChassisSpeeds speeds) {
+        driveTranslationRotationRaw(speeds, 1);
+    }
+
+    private void driveTranslationRotationRaw(ChassisSpeeds speeds, double maxSpeed) {
         if(speeds.vxMetersPerSecond + speeds.vyMetersPerSecond + speeds.omegaRadiansPerSecond == 0) {
             // if power isn't being applied, don't set the module rotation to zero
-            for (int i = 0; i < swerveArray.length; i++) {
-                swerveArray[i].setDriveVelocity(0);
-                swerveArray[i].setTurningTarget(swerveArray[i].getModuleRotation());
-            }
+            setAllModuleDriveRawPower(0);
+            selfTargetAllModuleAngles();
         } else {
             // if power, drive it
             SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds); //convert speeds to individual modules
 
-            SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.driveMaxSpeed); //normalize speeds to be all between min and max speed
+            SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeed);
             for (int i = 0; i < states.length; i++) {
                 //optimize module rotation (instead of a >90 degree turn, turn less and flip wheel direction)
                 states[i] = SwerveModuleState.optimize(states[i], swerveArray[i].getModuleRotation());
 
                 //set all the things
                 swerveArray[i].setTurningTarget(states[i].angle);
-                swerveArray[i].setDriveVelocity(states[i].speedMetersPerSecond);
+                swerveArray[i].setDrivePowerRaw(states[i].speedMetersPerSecond);
             }
         }
     }
@@ -334,9 +334,9 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * @return the pose of the robot in meters
      */
-    public Pose2d getPose() {
+    public Pose2d getFieldPose() {
         Pose2d pose = poseEstimator.grabEstimatedPose();
-        return new Pose2d(pose.getX(), pose.getY(), getRotation());
+        return new Pose2d(pose.getX(), pose.getY(), getRotation(Perspective.Field));
     }
 
     /**
@@ -379,16 +379,31 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRightModule.selfTargetAngle();
     }
 
+    public void setPerspective() {
+        resetDriveDistances();
+        updateModulePositions();
+        resetGyro();
+        resetOdometry();
+    }
+
+    public void setPathplannerOdometry(Pose2d pose) {
+        boolean flip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+
+        // To handle non-zero starting angles
+        if (flip) setGyro(-pose.getRotation().getDegrees());
+        else setGyro(pose.getRotation().getDegrees());
+
+        resetOdometry(new Pose2d(pose.getX(), pose.getY(), pose.getRotation()
+            .plus(Rotation2d.fromDegrees(flip ? 180 : 0))));
+    }
+
     /**
-     * Resets the PoseEstimator to a specified pose
+     * Resets the PoseEstimator to a specified field pose
      */
     public void resetOdometry(Pose2d pose) {
-        // This is necessary because PathPlanner flips the ROTATION of the starting pose as well
-        // as the position for autons depending on the alliance, which we don't want.
-        boolean reFlip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+        poseEstimator.resetPosition(getRotation(Perspective.Field), new Pose2d(pose.getX(), pose.getY(),
+            pose.getRotation()), modulePositions);
 
-        poseEstimator.resetPosition(getRotation(), new Pose2d(pose.getX(), pose.getY(),
-            pose.getRotation().plus(Rotation2d.fromDegrees(reFlip ? 180 : 0))), modulePositions);
         updateOdometry();
     }
 
@@ -396,22 +411,14 @@ public class SwerveDrivetrain extends SubsystemBase {
      * Resets the PoseEstimator to a specified position with the gyro rotation
      */
     public void resetOdometry(Translation2d translation) {
-        resetOdometry(new Pose2d(translation, getRotation()));
+        resetOdometry(new Pose2d(translation, getRotation(Perspective.Field)));
     }
 
     /**
      * Resets the PoseEstimator to (0, 0) with the gyro rotation
      */
     private void resetOdometry() {
-        resetOdometry(new Pose2d(new Translation2d(), getRotation()));
-    }
-
-    /**
-     * Sets the PoseEstimator position to wherever the limelight thinks the
-     * robot currently is
-     */
-    public void visionResetOdometry() {
-        resetOdometry(new Pose2d(vision.getBlendedPose().getTranslation(), getRotation()));
+        resetOdometry(new Pose2d(new Translation2d(), getRotation(Perspective.Field)));
     }
 
     /**
@@ -428,10 +435,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         backRightModule.setTurningTarget(new Rotation2d(Math.atan2(-width, -length)));
     }
 
-    public TrajectoryConfig getDefaultConstraint() {
-        return new TrajectoryConfig(Constants.driveMaxSpeed, Constants.driveMaxAccel).setKinematics(kinematics);
-    }
-
     public void setDriveBrakeMode(boolean brake) {
         this.frontLeftModule.setDriveMode(brake);
         this.backLeftModule.setDriveMode(brake);
@@ -446,16 +449,10 @@ public class SwerveDrivetrain extends SubsystemBase {
         this.backRightModule.setTurnBrakeMode(brake);
     }
 
-    public void setField2dTrajectory(Trajectory trajectory) {
-        field2d.getObject("path").setTrajectory(trajectory);
-    }
-
     public ChassisSpeeds getSpeeds() {
         return kinematics.toChassisSpeeds(getSwerveModuleStates());
     }
 
-    public enum ModuleType {
-        Neo,
-        Falcon
-    }
+    public enum ModuleType { Neo, Falcon }
+    public enum Perspective { Driver, Field }
 }

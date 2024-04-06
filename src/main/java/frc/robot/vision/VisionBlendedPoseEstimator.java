@@ -12,6 +12,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 public class VisionBlendedPoseEstimator {
@@ -84,8 +85,10 @@ public class VisionBlendedPoseEstimator {
 
             // Ignore results that are outside of the field
             if (!VisionBlender.isInField(visionPos)) return;
+
+            if (visionBlender.getLatency(0) > 84) return;
             
-            poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp());
+            poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp(0));
         }    
     }
 
@@ -101,7 +104,7 @@ public class VisionBlendedPoseEstimator {
      */
     public boolean shouldUseVision() {
         // Change this if we ever need to disable vision for certain situations
-        return true;
+        return DriverStation.isTeleop();
     }
 
     /**

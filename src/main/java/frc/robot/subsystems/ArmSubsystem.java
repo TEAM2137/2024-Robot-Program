@@ -29,6 +29,9 @@ public class ArmSubsystem extends SubsystemBase {
 
         public static final double ARM_TRAP_ANGLE = 125.9;
         public static final double WRIST_TRAP_ANGLE = 100.7;
+
+        public static final double ARM_EXTEND_ANGLE = 136.8;
+        public static final double WRIST_EXTEND_ANGLE = 82.9;
     }
 
     private CANSparkMax rollers;
@@ -123,6 +126,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public Command trapPosition() {
         return setArmTarget(Constants.ARM_TRAP_ANGLE).andThen(setWristTarget(Constants.WRIST_TRAP_ANGLE));
+    }
+
+    public Command extendPosition() {
+        return setArmTarget(Constants.ARM_EXTEND_ANGLE).andThen(setWristTarget(Constants.WRIST_EXTEND_ANGLE));
     }
 
     @Override

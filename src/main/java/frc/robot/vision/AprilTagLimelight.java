@@ -10,6 +10,7 @@ public class AprilTagLimelight {
     
     private NetworkTable table;
     private NetworkTableEntry botposeEntry;
+    private NetworkTableEntry latencyEntry;
     
     private double[] pose;
     private Rotation2d rotation;
@@ -25,6 +26,7 @@ public class AprilTagLimelight {
 
     public void resetAlliance() {
         botposeEntry = table.getEntry("botpose_wpiblue");
+        latencyEntry = table.getEntry("tl");
     }
 
     /**
@@ -37,7 +39,7 @@ public class AprilTagLimelight {
         posX = pose[0];
         posY = pose[1];
         rotation = Rotation2d.fromDegrees(pose[5]);
-        latency = pose[6];
+        latency = latencyEntry.getDouble(0);
     }
 
     /**

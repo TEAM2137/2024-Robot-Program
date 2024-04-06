@@ -76,6 +76,10 @@ public class RobotContainer {
             .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, arm))
             .andThen(auto.disableTargetingCommand()));
 
+        NamedCommands.registerCommand("manual-shot", auto.disableTargetingCommand()
+            .andThen(shooter.setPivotTarget(ShooterSubsystem.Constants.manualClose))
+            .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
+
         NamedCommands.registerCommand("path-end-aim", auto.pathEndAimCommand());
 
         NamedCommands.registerCommand("speaker-aim", auto.enableTargetingCommand());
@@ -83,8 +87,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("intake-down", 
             CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
             
-        NamedCommands.registerCommand("stop-all", 
-            CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm));
+        NamedCommands.registerCommand("stop-all", auto.disableTargetingCommand()
+            .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm)));
         
         auto.configure();
 
