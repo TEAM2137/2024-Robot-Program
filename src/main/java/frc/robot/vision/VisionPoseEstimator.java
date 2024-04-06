@@ -15,7 +15,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
-public class VisionBlendedPoseEstimator {
+public class VisionPoseEstimator {
 
     public static class Constants {
         /*  Standard deviation for the module states pose.
@@ -52,7 +52,7 @@ public class VisionBlendedPoseEstimator {
      * @param modulePositions the current positions of the modules
      * @param visionBlender the vision blender to use for AprilTag data
      */
-    public VisionBlendedPoseEstimator(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
+    public VisionPoseEstimator(SwerveDriveKinematics kinematics, Rotation2d gyroAngle,
             SwerveModulePosition[] modulePositions, VisionBlender visionBlender) {
 
         this.visionBlender = visionBlender;

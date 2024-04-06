@@ -22,7 +22,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveDrivetrain.Perspective;
+import frc.robot.subsystems.swerve.positioning.RobotPositioner.Perspective;
 import frc.robot.util.LEDs;
 
 public class Teleop {
@@ -37,7 +37,7 @@ public class Teleop {
     // Declare controllers and necessary subsystems
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
-    private SwerveDrivetrain driveSubsystem;
+    private SwerveDrivetrain drivetrain;
     private LEDs leds;
 
     // The threshold for input on the controller sticks (0.0 - 1.0)
@@ -54,7 +54,7 @@ public class Teleop {
 
     // Grabs values from the RobotContainer
     public Teleop(SwerveDrivetrain driveSubsystem, CommandXboxController driverController, CommandXboxController operatorController, LEDs leds) {
-        this.driveSubsystem = driveSubsystem;
+        this.drivetrain = driveSubsystem;
         this.driverController = driverController;
         this.operatorController = operatorController;
         this.leds = leds;
@@ -69,7 +69,7 @@ public class Teleop {
 
         // +++ DRIVER +++
 
-        driverController.start().onTrue(Commands.runOnce(driveSubsystem::setPerspective)
+        driverController.start().onTrue(Commands.runOnce(drivetrain.positioner::resetPerspective)
             .andThen(RumbleSequences.rumbleOnce(driverController)));
 
         driverController.b().onTrue(
@@ -100,7 +100,7 @@ public class Teleop {
         driverController.x().onTrue(cancelTargeting().andThen(
             CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm)));
         // X Lock
-        driverController.y().whileTrue(Commands.run(() -> driveSubsystem.xLock()));
+        driverController.y().whileTrue(Commands.run(() -> drivetrain.xLock()));
 
         // Stow command
         driverController.leftBumper().onTrue(cancelTargeting().andThen(
@@ -155,8 +155,8 @@ public class Teleop {
         CommandScheduler.getInstance().schedule(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm));
 
         // Init teleop command
-        driveSubsystem.resetModuleAngles();
-        driveSubsystem.setDefaultCommand(getTeleopCommand(shooter, arm));
+        drivetrain.resetModuleAngles();
+        drivetrain.setDefaultCommand(getTeleopCommand(shooter, arm));
     }
 
     // Setup the teleop drivetrain command
@@ -176,10 +176,7 @@ public class Teleop {
                 prevOperatorY = operatorY;
 
                 // Controller + Pigeon inputs
-                Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-
-                double direction = driveSubsystem.getRotation(Perspective.Driver)
-                    .plus(Rotation2d.fromDegrees(alliance == Alliance.Red ? 180 : 0)).getRadians();
+                double direction = drivetrain.positioner.getRotation(Perspective.Driver).getRadians();
                 double controllerX = -driverController.getLeftX();
                 double controllerY = -driverController.getLeftY();
                 double rotationX = -driverController.getRightX();
@@ -221,9 +218,9 @@ public class Teleop {
                 if (isTargetingSpeaker) rot = targetUpdate(shooter, ShotLocation.SPEAKER);
                 if (isTargetingHome) rot = targetUpdate(shooter, ShotLocation.HOME);
 
-                driveSubsystem.driveTranslationRotationPower(new ChassisSpeeds(speedY, speedX, rot));
+                drivetrain.driveTranslationRotationPowerOld(new ChassisSpeeds(speedY, speedX, rot));
             },
-            driveSubsystem
+            drivetrain
         );
     }
 
@@ -284,15 +281,15 @@ public class Teleop {
                 else targetPos = new Translation2d(13.6, 6);
                 break;
         }
-        driveSubsystem.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
+        drivetrain.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
 
         // Get robot pose
-        Pose2d robotPose = driveSubsystem.getFieldPose();
+        Pose2d robotPose = drivetrain.positioner.getPose();
         
         // Calculate stuff
         double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
         double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
-        Rotation2d currentAngle = robotPose.getRotation();
+        Rotation2d currentAngle = drivetrain.positioner.getRotation(Perspective.Driver);
         Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle + Math.PI);
 
         double kP = 0.035; // The amount of force it turns to the target with

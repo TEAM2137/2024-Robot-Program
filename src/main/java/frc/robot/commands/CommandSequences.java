@@ -173,9 +173,9 @@ public class CommandSequences {
      * shoot a stored note once centered. This command takes 1.3 seconds to complete.
      * @return the command
      */
-    public static Command speakerAimAndShootCommand(SwerveDrivetrain driveSubsystem, VisionBlender vision,
+    public static Command speakerAimAndShootCommand(SwerveDrivetrain drivetrain, VisionBlender vision,
         TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return pointAndAimCommand(driveSubsystem, shooter, vision)
+        return pointAndAimCommand(drivetrain, shooter, vision)
             .alongWith(shooter.startAndRun(calculatedShooterSpeed, 0.5))
             .andThen(startShooterAndTransfer(calculatedShooterSpeed, shooter, transfer).withTimeout(0.5))
             .andThen(stopShooterAndTransfer(shooter, transfer));
@@ -185,7 +185,7 @@ public class CommandSequences {
      * Uses the limelight and AprilTags to just point towards the speaker, from
      * wherever the robot is on the field. The shooter will also aim for a shot.
      */
-    public static Command pointAndAimCommand(SwerveDrivetrain driveSubsystem, ShooterSubsystem shooter, VisionBlender vision) {
+    public static Command pointAndAimCommand(SwerveDrivetrain drivetrain, ShooterSubsystem shooter, VisionBlender vision) {
         return new RunCommand(
             () -> {
                 
@@ -199,7 +199,7 @@ public class CommandSequences {
             
                 vision.updateValues();
 
-                Pose2d robotPose = driveSubsystem.getFieldPose();
+                Pose2d robotPose = drivetrain.positioner.getPose();
                 
                 double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
                 double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
@@ -217,15 +217,15 @@ public class CommandSequences {
                 // shooter.setPivotTargetRaw(Math.max(Math.min(shootAngle, ShooterSubsystem.Constants.maxAngle),
                 //     ShooterSubsystem.Constants.minAngle));
 
-                driveSubsystem.driveTranslationRotationPower(
+                drivetrain.driveTranslationRotationPowerOld(
                     new ChassisSpeeds(0, 0, error * kP)
                 );
 
                 // Post debug values
                 SmartDashboard.putNumber("Distance", distance);
             },
-            driveSubsystem
-        ).withTimeout(1.3).andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0));
+            drivetrain
+        ).withTimeout(1.3).andThen(() -> drivetrain.setAllModuleDriveRawPower(0));
     }
 
     // +++ Utility +++
