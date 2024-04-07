@@ -1,22 +1,12 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TransferSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.vision.VisionBlender;
 
 /**
  * Static class containing all of the necessary command sequences for auton/teleop
@@ -144,17 +134,6 @@ public class CommandSequences {
             .andThen(shooter.stowPivot());
     }
 
-    // public static Command shootIntoArmCommand(ArmSubsystem trapper, ShooterSubsystem shooter) {
-    //     return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
-    //         .andThen(trapper.runRollers(-0.4))
-    //         .andThen(Commands.waitSeconds(0.4))
-    //         .andThen(shooter.startShooter(0.3))
-    //         .andThen(Commands.waitSeconds(1.5).until(trapper.beamBroken()))
-    //         .andThen(Commands.waitSeconds(1.5).until(trapper.beamClear()))
-    //         .andThen(trapper.stopRollers())
-    //         .andThen(shooter.stopShooter());
-    // }
-
     public static Command shootIntoArmCommand(ArmSubsystem arm, ShooterSubsystem shooter) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage2Angle)
             .andThen(Commands.waitSeconds(0.1))
@@ -164,68 +143,6 @@ public class CommandSequences {
             .andThen(Commands.waitSeconds(0.18))
             .andThen(arm.stopRollers())
             .andThen(shooter.stopShooter());
-    }
-
-    // +++ Vision +++
-
-    /**
-     * Uses the limelight and AprilTags to point towards the speaker and
-     * shoot a stored note once centered. This command takes 1.3 seconds to complete.
-     * @return the command
-     */
-    public static Command speakerAimAndShootCommand(SwerveDrivetrain drivetrain, VisionBlender vision,
-        TransferSubsystem transfer, ShooterSubsystem shooter) {
-        return pointAndAimCommand(drivetrain, shooter, vision)
-            .alongWith(shooter.startAndRun(calculatedShooterSpeed, 0.5))
-            .andThen(startShooterAndTransfer(calculatedShooterSpeed, shooter, transfer).withTimeout(0.5))
-            .andThen(stopShooterAndTransfer(shooter, transfer));
-    }
-
-    /**
-     * Uses the limelight and AprilTags to just point towards the speaker, from
-     * wherever the robot is on the field. The shooter will also aim for a shot.
-     */
-    public static Command pointAndAimCommand(SwerveDrivetrain drivetrain, ShooterSubsystem shooter, VisionBlender vision) {
-        return new RunCommand(
-            () -> {
-                
-                // Flips the aiming if the alliance is blue
-                DriverStation.getAlliance().ifPresent((alliance) -> isBlueAlliance = (alliance == Alliance.Blue));
-
-                // Sets where it should point (field space coords)
-                Translation2d targetPos;
-                if (isBlueAlliance) targetPos = new Translation2d(-0.4, 5.56);
-                else targetPos = new Translation2d(-0.4, 2.73);
-            
-                vision.updateValues();
-
-                Pose2d robotPose = drivetrain.positioner.getPose();
-                
-                double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
-                double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
-
-                Rotation2d currentAngle = robotPose.getRotation();
-                Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle);
-
-                double kP = 0.025; // The amount of force it turns to the target with
-                double error = -currentAngle.minus(targetAngle).getDegrees(); // Calculate error
-                if (error > 20) error = 20; if (error < -20) error = -20;
-
-                calculatedShooterSpeed = 0.8;
-
-                // Actually drive the swerve base and set the shooter target
-                // shooter.setPivotTargetRaw(Math.max(Math.min(shootAngle, ShooterSubsystem.Constants.maxAngle),
-                //     ShooterSubsystem.Constants.minAngle));
-
-                drivetrain.driveTranslationRotationPowerOld(
-                    new ChassisSpeeds(0, 0, error * kP)
-                );
-
-                // Post debug values
-                SmartDashboard.putNumber("Distance", distance);
-            },
-            drivetrain
-        ).withTimeout(1.3).andThen(() -> drivetrain.setAllModuleDriveRawPower(0));
     }
 
     // +++ Utility +++

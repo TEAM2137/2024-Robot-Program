@@ -51,7 +51,7 @@ public class Autonomous {
     public void periodic() {
         double rot = RobotContainer.getInstance().teleop.targetUpdate(shooter, ShotLocation.SPEAKER);
         if (pathEndTargeting) {
-            drivetrain.driveTranslationRotationPowerOld(new ChassisSpeeds(0, 0, rot));
+            drivetrain.driveTranslationRotationVelocity(new ChassisSpeeds(0, 0, rot));
         } else if (pathTargeting) {
             targetRotation = Optional.of(drivetrain.positioner.getRotation(Perspective.Driver)
                 .plus(new Rotation2d(rot / 2)));

@@ -77,10 +77,16 @@ public class RobotPositioner {
         return new Pose2d(pose.getX(), pose.getY(), getRotation(Perspective.Driver));
     }
 
+    /**
+     * @return The blue origin X-coordinate of the robot
+     */
     public double getX() {
         return getPose().getX();
     }
 
+    /**
+     * @return The blue origin Y-coordinate of the robot
+     */
     public double getY() {
         return getPose().getY();
     }
@@ -116,6 +122,9 @@ public class RobotPositioner {
         resetOdometry();
     }
 
+    /**
+     * PathPlanner specific method for resetting odometry
+     */
     public void setPathplannerOdometry(Pose2d pose) {
         boolean flip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
 
@@ -127,7 +136,7 @@ public class RobotPositioner {
     }
 
     /**
-     * Resets the PoseEstimator to a specified field pose
+     * Resets the Pose Estimator to a specified field pose
      */
     public void resetOdometry(Pose2d pose) {
         poseEstimator.resetPosition(getRotation(Perspective.Field), new Pose2d(pose.getX(), pose.getY(),
@@ -135,17 +144,17 @@ public class RobotPositioner {
     }
 
     /**
-     * Resets the PoseEstimator to a specified position with the gyro rotation
+     * Resets the Pose Estimator to a specified position with the gyro rotation
      */
     public void resetOdometry(Translation2d translation) {
         resetOdometry(new Pose2d(translation, getRotation(Perspective.Field)));
     }
 
     /**
-     * Resets the PoseEstimator to (0, 0) with the gyro rotation
+     * Resets the Pose Estimator to the current position and rotation of the robot
      */
     private void resetOdometry() {
-        resetOdometry(new Pose2d(new Translation2d(), getRotation(Perspective.Field)));
+        resetOdometry(getPose());
     }
 
     /**

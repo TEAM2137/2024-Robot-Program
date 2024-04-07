@@ -163,7 +163,6 @@ public class Teleop {
     public Command getTeleopCommand(ShooterSubsystem shooter, ArmSubsystem arm) {
         return new RunCommand(
             () -> {
-
                 double operatorY = operatorController.getRightY();
                 operatorY = Math.abs(operatorY) < stickDeadzone ? 0 : operatorY;
 
@@ -218,7 +217,7 @@ public class Teleop {
                 if (isTargetingSpeaker) rot = targetUpdate(shooter, ShotLocation.SPEAKER);
                 if (isTargetingHome) rot = targetUpdate(shooter, ShotLocation.HOME);
 
-                drivetrain.driveTranslationRotationPowerOld(new ChassisSpeeds(speedY, speedX, rot));
+                drivetrain.driveTranslationRotationPower(new ChassisSpeeds(speedY, speedX, rot));
             },
             drivetrain
         );

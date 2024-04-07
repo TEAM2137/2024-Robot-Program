@@ -122,6 +122,9 @@ public class SwerveDrivetrain extends SubsystemBase {
         }
 
         swerveArray = new SwerveModule[] {frontLeftModule, frontRightModule, backLeftModule, backRightModule};  
+
+        updateModulePositions();
+        positioner = new RobotPositioner(this, Constants.gyroID, kinematics, modulePositions, vision);
     }
 
     public void init() {}
@@ -187,29 +190,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         frontRightModule.resetDriveEncoder();
         backLeftModule.resetDriveEncoder();
         backRightModule.resetDriveEncoder();
-    }
-
-    public void driveTranslationRotationPowerOld(ChassisSpeeds speeds) {
-        if(speeds.vxMetersPerSecond + speeds.vyMetersPerSecond + speeds.omegaRadiansPerSecond == 0) {
-            // if power isn't being applied, don't set the module rotation to zero
-            setAllModuleDriveRawPower(0);
-            selfTargetAllModuleAngles();
-        } else {
-            //setDriveBrakeMode(speeds.omegaRadiansPerSecond > 0);
-
-            // if power, drive it
-            SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds); //convert speeds to individual modules
-
-            SwerveDriveKinematics.desaturateWheelSpeeds(states, 1); //normalize speeds to be all between -1 and 1
-            for (int i = 0; i < states.length; i++) {
-                //optimize module rotation (instead of a >90 degree turn, turn less and flip wheel direction)
-                states[i] = SwerveModuleState.optimize(states[i], swerveArray[i].getModuleRotation());
-
-                //set all the things
-                swerveArray[i].setTurningTarget(states[i].angle);
-                swerveArray[i].setDrivePowerRaw(states[i].speedMetersPerSecond);
-            }
-        }
     }
 
     /**
