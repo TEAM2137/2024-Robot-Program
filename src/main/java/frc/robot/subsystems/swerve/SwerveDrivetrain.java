@@ -127,8 +127,6 @@ public class SwerveDrivetrain extends SubsystemBase {
         positioner = new RobotPositioner(this, Constants.gyroID, kinematics, modulePositions, vision);
     }
 
-    public void init() {}
-
     public void displayCurrentOffsets() {
         SmartDashboard.putNumber("Offset FL", swerveArray[0].encoderOffset);
         SmartDashboard.putNumber("Offset FR", swerveArray[1].encoderOffset);

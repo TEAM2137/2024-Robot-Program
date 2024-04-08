@@ -112,8 +112,8 @@ public class RobotPositioner {
     public void setGyro(Rotation2d rotation) { pigeon.setYaw(rotation.getDegrees()); }
 
     /**
-     * Resets the perspective of the module state positioning and
-     * the gyro the the current state of the robot
+     * Resets the perspective of both the module state positioning and
+     * the gyro to the current state of the robot
      */
     public void resetPerspective() {
         drivetrain.resetDriveDistances();

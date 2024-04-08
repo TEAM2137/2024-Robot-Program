@@ -117,7 +117,6 @@ public class RobotContainer {
      * Called when teleop is enabled
      */
     public void runTeleop() {
-        driveSubsystem.init();
         vision.resetAlliances();
         
         // Cancel autonomous in case it's still running for whatever reason
@@ -131,7 +130,6 @@ public class RobotContainer {
      * Called when autonomous is enabled
      */
     public void runAutonomous() {
-        driveSubsystem.init();
         vision.resetAlliances();
 
         // Initialize auto

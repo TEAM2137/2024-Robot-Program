@@ -67,14 +67,6 @@ public class VisionBlender {
         // Create a new pose with the averaged values
         return new Pose2d(translation, rotation);
     }
-
-    /**
-     * @return the current limelight timestamp accounted for latency
-     */
-    public double getTimestamp(int limelight) {
-        if (limelights == null) return Timer.getFPGATimestamp();
-        return Timer.getFPGATimestamp() - limelights.get(limelight).getLatency() / 1000.0;
-    }
     
     /**
      * @return true if any of the limelights have a target
@@ -107,12 +99,6 @@ public class VisionBlender {
         SmartDashboard.putNumber("LL-Rotation", pose.getRotation().getDegrees());
     }
 
-    public static boolean isInField(Translation2d pos) {
-        if (pos.getX() < 0 || pos.getX() > 16.5) return false;
-        if (pos.getY() < 0 || pos.getY() > 8.1) return false;
-        return true;
-    }
-
     /**
      * Sets the current botpose entry of the limelights to the correct alliance
      */
@@ -120,7 +106,56 @@ public class VisionBlender {
         limelights.forEach(limelight -> limelight.resetAlliance());
     }
 
-    public double getLatency(int limelight) {
-        return limelights.get(limelight).getLatency();
+    /**
+     * @return A list of all the semi-valid readings from the limelights that are
+     * currently seeing april tags
+     */
+    public ArrayList<VisionReading> getReadings() {
+        ArrayList<VisionReading> readings = new ArrayList<>();
+
+        limelights.forEach(limelight -> {
+            if (!limelight.hasTarget()) return;
+
+            Pose2d visionPose = limelight.getPose();
+            if (visionPose == null) return;
+
+            readings.add(new VisionReading(visionPose.getX(), visionPose.getY(), limelight.getLatency()));
+        });
+
+        return readings;
+    }
+
+    public class VisionReading {
+        // TODO tune this better
+        private static final double LATENCY_CUTOFF = 84.0;
+
+        private final double x, y;
+        private final double latency;
+
+        public VisionReading(double x, double y, double latency) {
+            this.x = x; this.y = y;
+            this.latency = latency;
+        }
+
+        public double getX() { return x; }
+        public double getY() { return y; }
+
+        public double getLatency() {
+            return latency;
+        }
+
+        public double getTimestamp() {
+            return Timer.getFPGATimestamp() - latency / 1000.0;
+        }
+
+        public boolean isRecent() {
+            return latency < LATENCY_CUTOFF;
+        }
+
+        public boolean isInField() {
+            if (x < 0 || x > 16.5) return false;
+            if (y < 0 || y > 8.1) return false;
+            return true;
+        }
     }
 }

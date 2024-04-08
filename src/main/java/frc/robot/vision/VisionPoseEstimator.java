@@ -5,15 +5,14 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.vision.VisionBlender.VisionReading;
 
 public class VisionPoseEstimator {
 
@@ -33,10 +32,6 @@ public class VisionPoseEstimator {
             0.8, // Meters
             Units.degreesToRadians(20) // Radians
         );
-
-        // /*  Incoming vision poses will be ignored if they
-        //     are this far from the current estimate      */
-        // private static final double visionIgnoreRadius = 1.0; // Meters
     }
 
     public SwerveDrivePoseEstimator poseEstimator;
@@ -60,36 +55,28 @@ public class VisionPoseEstimator {
             new Pose2d(), Constants.stateStdDevs, Constants.visionStdDevs);
     }
 
-    public void init() {
-
-    }
-
     /**
-     * Updates the pose estimator with new vision values and swerve module positions
+     * Updates the pose estimator with valid vision values and the current swerve module positions
      * @param gyroAngle the measured angle of the gyro
      * @param modulePositions the current positions of the swerve modules
      */
     public void update(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroAngle, modulePositions);
 
+        if (!shouldUseVision()) return;
+
         visionBlender.updateValues();
         if (!visionBlender.hasTarget()) return;
 
-        Pose2d visionPose = visionBlender.getBlendedPose();
-        if (visionPose != null && shouldUseVision()) {
+        for (VisionReading reading : visionBlender.getReadings()) {
+            Pose2d visionPose = new Pose2d(reading.getX(), reading.getY() + 0.1, gyroAngle);
 
-            visionPose = new Pose2d(visionPose.getX(), visionPose.getY() + 0.1, gyroAngle);
+            // Ignore invalid vision readings
+            if (!reading.isInField() || !reading.isRecent()) continue;
+
             visionPosePublisher.set(visionPose);
-
-            Translation2d visionPos = visionPose.getTranslation();
-
-            // Ignore results that are outside of the field
-            if (!VisionBlender.isInField(visionPos)) return;
-
-            if (visionBlender.getLatency(0) > 84) return;
-            
-            poseEstimator.addVisionMeasurement(visionPose, visionBlender.getTimestamp(0));
-        }    
+            poseEstimator.addVisionMeasurement(visionPose, reading.getTimestamp());
+        }
     }
 
     /**
@@ -104,7 +91,8 @@ public class VisionPoseEstimator {
      */
     public boolean shouldUseVision() {
         // Change this if we ever need to disable vision for certain situations
-        return DriverStation.isTeleop();
+        // return DriverStation.isTeleop();
+        return true;
     }
 
     /**
