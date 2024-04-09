@@ -2,15 +2,18 @@ package frc.robot.vision;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionBlender {
+    private HashMap<AprilTagLimelight, StructPublisher<Pose2d>> posePublishers = new HashMap<>();
     private ArrayList<AprilTagLimelight> limelights = new ArrayList<>();
 
     /**
@@ -18,6 +21,11 @@ public class VisionBlender {
      */
     public VisionBlender(List<AprilTagLimelight> limelights) {
         this.limelights.addAll(limelights);
+
+        for (AprilTagLimelight limelight : limelights) {
+            posePublishers.put(limelight, NetworkTableInstance.getDefault()
+                .getStructTopic("VisionPose-" + limelight.getName(), Pose2d.struct).publish());
+        }
     }
 
     /**
@@ -72,11 +80,10 @@ public class VisionBlender {
      * @return true if any of the limelights have a target
      */
     public boolean hasTarget() {
-        if (limelights == null) return false;
+        if (limelights == null || limelights.isEmpty()) return false;
 
         for (AprilTagLimelight limelight : limelights) {
-            if (limelight.hasTarget()) return true;
-        }
+            if (limelight.hasTarget()) return true; }
 
         return false;
     }
@@ -86,17 +93,7 @@ public class VisionBlender {
      */
     public void updateValues() {
         if (limelights == null) return;
-        limelights.forEach((limelight) -> {
-            if (limelight.hasTarget()) limelight.updateValues();
-        });
-
-        Pose2d pose = getBlendedPose();
-        if (pose == null || pose.getRotation() == null) return;
-
-        // Post botpose to smart dashboard
-        SmartDashboard.putNumber("LL-PositionX", pose.getX());
-        SmartDashboard.putNumber("LL-PositionY", pose.getY());
-        SmartDashboard.putNumber("LL-Rotation", pose.getRotation().getDegrees());
+        limelights.forEach(limelight -> { if (limelight.hasTarget()) limelight.updateValues(); });
     }
 
     /**
@@ -119,30 +116,47 @@ public class VisionBlender {
             Pose2d visionPose = limelight.getPose();
             if (visionPose == null) return;
 
-            readings.add(new VisionReading(visionPose.getX(), visionPose.getY(), limelight.getLatency()));
+            readings.add(new VisionReading(visionPose.getX(), visionPose.getY(),
+                limelight.getLatency(), limelight));
         });
 
         return readings;
     }
 
+    /**
+     * Posts a vision pose from a limelight to the Network Tables
+     * @param visionPose The pose to be added to the table
+     * @param limelight The limelight that the pose belongs to
+     */
+    public void postLimelightPose(Pose2d visionPose, AprilTagLimelight limelight) {
+        if (!posePublishers.containsKey(limelight)) return;
+        StructPublisher<Pose2d> publisher = posePublishers.get(limelight);
+        publisher.set(visionPose);
+    }
+
+    /**
+     * A class that stores data from a single reading of a limelight
+     */
     public class VisionReading {
         // TODO tune this better
         private static final double LATENCY_CUTOFF = 84.0;
 
         private final double x, y;
         private final double latency;
+        private final AprilTagLimelight limelight;
 
-        public VisionReading(double x, double y, double latency) {
+        public VisionReading(double x, double y, double latency, AprilTagLimelight limelight) {
             this.x = x; this.y = y;
             this.latency = latency;
+            this.limelight = limelight;
         }
 
         public double getX() { return x; }
         public double getY() { return y; }
 
-        public double getLatency() {
-            return latency;
-        }
+        public double getLatency() { return latency; }
+        
+        public AprilTagLimelight getLimelight() { return limelight; }
 
         public double getTimestamp() {
             return Timer.getFPGATimestamp() - latency / 1000.0;

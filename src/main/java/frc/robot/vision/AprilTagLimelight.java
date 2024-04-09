@@ -7,6 +7,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class AprilTagLimelight {
+
+    private String name;
     
     private NetworkTable table;
     private NetworkTableEntry botposeEntry;
@@ -20,6 +22,7 @@ public class AprilTagLimelight {
     private double latency;
 
     public AprilTagLimelight(String name) {
+        this.name = name;
         table = NetworkTableInstance.getDefault().getTable(name);
         resetAlliance();
     }
@@ -40,6 +43,10 @@ public class AprilTagLimelight {
         posY = pose[1];
         rotation = Rotation2d.fromDegrees(pose[5]);
         latency = latencyEntry.getDouble(0);
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**

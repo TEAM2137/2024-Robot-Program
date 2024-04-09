@@ -5,19 +5,18 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.vision.VisionBlender.VisionReading;
 
 public class VisionPoseEstimator {
 
     public static class Constants {
-        /*  Standard deviation for the module states pose.
+        /** Standard deviation for the module states pose. <p>
             Increase these values to put less trust in the pose */
         private static final Vector<N3> stateStdDevs = VecBuilder.fill(
             0.05, // Meters
@@ -25,20 +24,22 @@ public class VisionPoseEstimator {
             Units.degreesToRadians(5) // Radians
         );
 
-        /*  Standard deviation for the limelight(s) pose.
+        /** Standard deviation for the limelight(s) pose. <p>
             Increase these values to put less trust in the pose */
         private static final Vector<N3> visionStdDevs = VecBuilder.fill(
             0.8, // Meters
             0.8, // Meters
             Units.degreesToRadians(20) // Radians
         );
+
+        /** Offsets the position of the received vision poses. <p>
+            I have absolutely no idea why this is currently necessary and
+            it's kind of concerning, but it seems to do the job. */
+        private static final Translation2d poseOffset = new Translation2d(0, 0.1);
     }
 
     public SwerveDrivePoseEstimator poseEstimator;
     public VisionBlender visionBlender;
-
-    private StructPublisher<Pose2d> visionPosePublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Vision Pose", Pose2d.struct).publish();
 
     /**
      * Creates a new vision-blended swerve pose estimator
@@ -69,12 +70,15 @@ public class VisionPoseEstimator {
         if (!visionBlender.hasTarget()) return;
 
         for (VisionReading reading : visionBlender.getReadings()) {
-            Pose2d visionPose = new Pose2d(reading.getX(), reading.getY() + 0.1, gyroAngle);
+            // Create the vision pose
+            Pose2d visionPose = new Pose2d(reading.getX() + Constants.poseOffset.getX(),
+                reading.getY() + Constants.poseOffset.getY(), gyroAngle);
 
             // Ignore invalid vision readings
             if (!reading.isInField() || !reading.isRecent()) continue;
 
-            visionPosePublisher.set(visionPose);
+            // Contribute the pose to the estimator
+            visionBlender.postLimelightPose(visionPose, reading.getLimelight());
             poseEstimator.addVisionMeasurement(visionPose, reading.getTimestamp());
         }
     }
