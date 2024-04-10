@@ -39,7 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
     // private double currentThreshold = 75;
 
     private double minPos = 125.0;
-    private double maxPos = 295.0;
+    private double maxPos = 275.0;
 
     private double pivotTarget = maxPos;
     private double rollerTarget = 0;

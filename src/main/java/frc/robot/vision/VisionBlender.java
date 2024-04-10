@@ -53,7 +53,7 @@ public class VisionBlender {
         // Add all valid vision poses to the list
         limelights.forEach(limelight -> {
             if (limelight != null && limelight.hasTarget()) {
-                Pose2d grabbedPose = limelight.getPose();
+                Pose2d grabbedPose = limelight.getPoseArray();
                 if (grabbedPose != null) currentPoses.add(grabbedPose);
             }
         });
@@ -91,9 +91,11 @@ public class VisionBlender {
     /**
      * Grabs and updates the data from each of the limelights
      */
-    public void updateValues() {
+    public void updateValues(Rotation2d fieldRotation, double rotationRate) {
         if (limelights == null) return;
-        limelights.forEach(limelight -> { if (limelight.hasTarget()) limelight.updateValues(); });
+        limelights.forEach(limelight -> {
+            if (limelight.hasTarget()) limelight.updateValues(fieldRotation, rotationRate);
+        });
     }
 
     /**
@@ -113,7 +115,7 @@ public class VisionBlender {
         limelights.forEach(limelight -> {
             if (!limelight.hasTarget()) return;
 
-            Pose2d visionPose = limelight.getPose();
+            Pose2d visionPose = limelight.getPoseArray();
             if (visionPose == null) return;
 
             readings.add(new VisionReading(visionPose.getX(), visionPose.getY(),

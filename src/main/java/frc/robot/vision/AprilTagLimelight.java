@@ -12,9 +12,10 @@ public class AprilTagLimelight {
     
     private NetworkTable table;
     private NetworkTableEntry botposeEntry;
+    private NetworkTableEntry orientationEntry;
     private NetworkTableEntry latencyEntry;
     
-    private double[] pose;
+    private double[] poseArray;
     private Rotation2d rotation;
     private double posX;
     private double posY;
@@ -28,21 +29,34 @@ public class AprilTagLimelight {
     }
 
     public void resetAlliance() {
-        botposeEntry = table.getEntry("botpose_wpiblue");
+        botposeEntry = table.getEntry("botpose_orb_wpiblue"); // Use the new botpose
+        orientationEntry = table.getEntry("robot_orientation_set"); // 2024.5.0 requires robot orientation
         latencyEntry = table.getEntry("tl");
     }
 
     /**
      * Updates the position of the robot using the aprilTags
      */
-    public void updateValues() {
-        pose = botposeEntry.getDoubleArray(new double[6]);
-        if (pose.length == 0) pose = new double[6];
-        
-        posX = pose[0];
-        posY = pose[1];
-        rotation = Rotation2d.fromDegrees(pose[5]);
+    public void updateValues(Rotation2d fieldRotation, double rotationRate) {
+        // Update pose
+        poseArray = botposeEntry.getDoubleArray(new double[6]);
+        if (poseArray.length == 0) poseArray = new double[6];
+        posX = poseArray[0];
+        posY = poseArray[1];
+        rotation = Rotation2d.fromDegrees(poseArray[5]);
+
+        // Update latency
         latency = latencyEntry.getDouble(0);
+
+        // Post orientation
+        double[] orientationArray = new double[6];
+        orientationArray[0] = fieldRotation.getDegrees();
+        orientationArray[1] = rotationRate;
+        orientationArray[2] = 0;
+        orientationArray[3] = 0;
+        orientationArray[4] = 0;
+        orientationArray[5] = 0;
+        orientationEntry.setDoubleArray(orientationArray);
     }
 
     public String getName() {
@@ -81,12 +95,12 @@ public class AprilTagLimelight {
      * @return true if the limelight is detecting an aprilTag, false if it isn't
      */
     public boolean hasTarget() {
-        pose = botposeEntry.getDoubleArray(new double[6]);
-        if (pose.length == 0 || pose[0] == 0) return false;
+        poseArray = botposeEntry.getDoubleArray(new double[6]);
+        if (poseArray.length == 0 || poseArray[0] == 0) return false;
         return true;
     }
 
-    public Pose2d getPose() {
+    public Pose2d getPoseArray() {
         return new Pose2d(getX(), getY(), getRotation());
     }
 }

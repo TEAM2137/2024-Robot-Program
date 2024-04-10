@@ -32,9 +32,7 @@ public class VisionPoseEstimator {
             Units.degreesToRadians(20) // Radians
         );
 
-        /** Offsets the position of the received vision poses. <p>
-            I have absolutely no idea why this is currently necessary and
-            it's kind of concerning, but it seems to do the job. */
+        /** Offsets the position of the received vision poses. */
         private static final Translation2d poseOffset = new Translation2d(0, 0.1);
     }
 
@@ -58,21 +56,21 @@ public class VisionPoseEstimator {
 
     /**
      * Updates the pose estimator with valid vision values and the current swerve module positions
-     * @param gyroAngle the measured angle of the gyro
+     * @param fieldGyroAngle the measured angle of the gyro
      * @param modulePositions the current positions of the swerve modules
      */
-    public void update(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
-        poseEstimator.updateWithTime(Timer.getFPGATimestamp(), gyroAngle, modulePositions);
+    public void update(Rotation2d fieldGyroAngle, SwerveModulePosition[] modulePositions) {
+        poseEstimator.updateWithTime(Timer.getFPGATimestamp(), fieldGyroAngle, modulePositions);
 
         if (!shouldUseVision()) return;
 
-        visionBlender.updateValues();
+        visionBlender.updateValues(fieldGyroAngle, 0);
         if (!visionBlender.hasTarget()) return;
 
         for (VisionReading reading : visionBlender.getReadings()) {
             // Create the vision pose
             Pose2d visionPose = new Pose2d(reading.getX() + Constants.poseOffset.getX(),
-                reading.getY() + Constants.poseOffset.getY(), gyroAngle);
+                reading.getY() + Constants.poseOffset.getY(), fieldGyroAngle);
 
             // Ignore invalid vision readings
             if (!reading.isInField() || !reading.isRecent()) continue;

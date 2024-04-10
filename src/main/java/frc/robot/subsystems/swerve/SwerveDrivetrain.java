@@ -310,6 +310,11 @@ public class SwerveDrivetrain extends SubsystemBase {
         return kinematics.toChassisSpeeds(getSwerveModuleStates());
     }
 
+    // TODO
+    public ChassisSpeeds getFieldSpeeds() {
+        return new ChassisSpeeds(0, 0, 0);
+    }
+
     public SwerveDriveKinematics getKinematics() {
         return kinematics;
     }

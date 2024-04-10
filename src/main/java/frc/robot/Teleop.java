@@ -234,7 +234,7 @@ public class Teleop {
         switch (location) {
             case SPEAKER:
                 // Increasing offset makes the robot shoot lower
-                shooter.setFromDistance(data.getSecond() + 0.33);
+                shooter.setFromDistance(data.getSecond() + 0.1);
                 break;
             // case HOME:
             default:
@@ -271,8 +271,8 @@ public class Teleop {
         Translation2d targetPos;
         switch (location) {
             case SPEAKER:
-                if (isBlueAlliance) targetPos = new Translation2d(0.1, 5.53);
-                else targetPos = new Translation2d(16.5, 5.53);
+                if (isBlueAlliance) targetPos = new Translation2d(0.1, 5.43);
+                else targetPos = new Translation2d(16.5, 5.43);
                 break;
             // case HOME
             default:
@@ -280,6 +280,7 @@ public class Teleop {
                 else targetPos = new Translation2d(13.6, 6);
                 break;
         }
+        targetPos = calculateMovingShots(targetPos);
         drivetrain.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
 
         // Get robot pose
@@ -288,7 +289,7 @@ public class Teleop {
         // Calculate stuff
         double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());
         double desiredAngle = Math.atan2(targetPos.getY() - robotPose.getY(), targetPos.getX() - robotPose.getX());
-        Rotation2d currentAngle = drivetrain.positioner.getRotation(Perspective.Driver);
+        Rotation2d currentAngle = drivetrain.positioner.getRotation(Perspective.Field);
         Rotation2d targetAngle = Rotation2d.fromRadians(desiredAngle + Math.PI);
 
         double kP = 0.035; // The amount of force it turns to the target with
@@ -299,6 +300,13 @@ public class Teleop {
         SmartDashboard.putNumber("Distance", distance);
 
         return new Pair<>(error * kP, distance);
+    }
+
+    private Translation2d calculateMovingShots(Translation2d targetPos) {
+        ChassisSpeeds speeds = drivetrain.getFieldSpeeds();
+        if (speeds == null) return targetPos;
+        targetPos.plus(new Translation2d(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond));
+        return targetPos;
     }
 
     public LEDs getLEDs() { return leds; }

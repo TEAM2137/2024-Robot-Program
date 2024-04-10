@@ -47,12 +47,12 @@ public class ShooterSubsystem extends SubsystemBase {
             angleMap.put(2.00, 44.3);
             angleMap.put(2.40, 50.0);
             angleMap.put(2.88, 54.8);
-            angleMap.put(3.33, 59.0);
-            angleMap.put(3.67, 60.8);
-            angleMap.put(3.67, 60.8);
-            angleMap.put(3.89, 62.9);
-            angleMap.put(4.27, 63.5);
-            angleMap.put(5.00, 64.0);
+            angleMap.put(3.33, 58.0);
+            angleMap.put(3.67, 59.8);
+            angleMap.put(3.67, 59.8);
+            angleMap.put(3.89, 60.7);
+            angleMap.put(4.27, 61.0);
+            angleMap.put(5.00, 61.5);
 
             // -- Power lookup table values
             powerMap.put(0.00, 0.55);

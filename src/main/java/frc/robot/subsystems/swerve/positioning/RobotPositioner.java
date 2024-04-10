@@ -32,9 +32,9 @@ public class RobotPositioner {
         pigeon.getConfigurator().apply(new Pigeon2Configuration());
         pigeon.reset();
 
-        resetPerspective();
         poseEstimator = new VisionPoseEstimator(drivetrain.getKinematics(),
             getRotation(Perspective.Field), modulePositions, vision);
+        resetPerspective();
     }
 
     /**
@@ -162,7 +162,7 @@ public class RobotPositioner {
      * @param modulePositions
      */
     public void update(SwerveModulePosition[] modulePositions) {
-        poseEstimator.update(getRotation(Perspective.Driver), modulePositions);
+        poseEstimator.update(getRotation(Perspective.Field), modulePositions);
     }
 
     public enum Perspective { Driver, Field }
