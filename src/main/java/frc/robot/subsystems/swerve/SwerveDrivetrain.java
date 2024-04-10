@@ -27,8 +27,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static final double length = Units.inchesToMeters(21.5);
         public static final double width = Units.inchesToMeters(21.5);
 
-        public static final double driveMaxSpeed = 3.5;
-        public static final double driveMaxAccel = 2.0;
+        public static final double driveMaxSpeed = 4.5;
+        public static final double driveMaxAccel = 3.75;
 
         public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(
             CanIDs.get("fl-drive"), 
