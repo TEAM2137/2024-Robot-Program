@@ -65,7 +65,7 @@ public class Autonomous {
 
     public void configure() {
         AutoBuilder.configureHolonomic(
-            drivetrain.positioner::getPose,
+            drivetrain.positioner::getFieldPose,
             drivetrain.positioner::setPathplannerOdometry,
             drivetrain::getSpeeds, // Robot Relative
             drivetrain::driveTranslationRotationVelocity, // Robot Relative

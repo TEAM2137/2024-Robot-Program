@@ -284,7 +284,7 @@ public class Teleop {
         drivetrain.targetPosePublisher.set(new Pose2d(targetPos, new Rotation2d(0)));
 
         // Get robot pose
-        Pose2d robotPose = drivetrain.positioner.getPose();
+        Pose2d robotPose = drivetrain.positioner.getFieldPose();
         
         // Calculate stuff
         double distance = Math.hypot(targetPos.getX() - robotPose.getX(), targetPos.getY() - robotPose.getY());

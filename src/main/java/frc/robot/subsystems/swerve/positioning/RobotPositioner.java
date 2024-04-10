@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotContainer;
@@ -24,6 +26,9 @@ public class RobotPositioner {
     private SwerveDrivetrain drivetrain;
     private Pigeon2 pigeon;
     private VisionPoseEstimator poseEstimator;
+
+    private StructPublisher<Pose2d> autoStartPose = NetworkTableInstance.getDefault()
+        .getStructTopic("Auto Start Pose", Pose2d.struct).publish();
 
     public RobotPositioner(SwerveDrivetrain drivetrain, int gyroID, SwerveDriveKinematics kinematics, SwerveModulePosition[] modulePositions, VisionBlender vision) {
         this.drivetrain = drivetrain;
@@ -64,7 +69,7 @@ public class RobotPositioner {
     /**
      * @return The current field perspective pose of the robot in meters
      */
-    public Pose2d getPose() {
+    public Pose2d getFieldPose() {
         Pose2d pose = poseEstimator.grabEstimatedPose();
         return new Pose2d(pose.getX(), pose.getY(), getRotation(Perspective.Field));
     }
@@ -81,14 +86,14 @@ public class RobotPositioner {
      * @return The blue origin X-coordinate of the robot
      */
     public double getX() {
-        return getPose().getX();
+        return getFieldPose().getX();
     }
 
     /**
      * @return The blue origin Y-coordinate of the robot
      */
     public double getY() {
-        return getPose().getY();
+        return getFieldPose().getY();
     }
 
     /**
@@ -116,23 +121,29 @@ public class RobotPositioner {
      * the gyro to the current state of the robot
      */
     public void resetPerspective() {
-        drivetrain.resetDriveDistances();
-        drivetrain.updateModulePositions();
+        resetDriveDistances();
         resetGyro();
         resetOdometry();
+    }
+
+    public void resetDriveDistances() {
+        drivetrain.resetDriveDistances();
+        drivetrain.updateModulePositions();
     }
 
     /**
      * PathPlanner specific method for resetting odometry
      */
     public void setPathplannerOdometry(Pose2d pose) {
-        boolean flip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-
+        autoStartPose.set(pose);
+        
         // To handle non-zero starting angles
-        setGyro(pose.getRotation().getDegrees());
-
-        resetOdometry(new Pose2d(pose.getX(), pose.getY(), pose.getRotation()
-            .plus(Rotation2d.fromDegrees(flip ? 180 : 0))));
+        boolean flip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+        // setGyro(pose.getRotation().getDegrees() + (flip ? 180 : 0));
+        
+        resetDriveDistances();
+        poseEstimator.resetPosition(getRotation(Perspective.Driver), new Pose2d(pose.getX(), pose.getY(),
+            pose.getRotation().plus(Rotation2d.fromDegrees(flip ? 180 : 0))), drivetrain.getModulePositions());
     }
 
     /**
@@ -154,7 +165,7 @@ public class RobotPositioner {
      * Resets the Pose Estimator to the current position and rotation of the robot
      */
     private void resetOdometry() {
-        resetOdometry(getPose());
+        resetOdometry(getFieldPose());
     }
 
     /**

@@ -144,7 +144,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         swervePublisher.set(getSwerveModuleStates());
         fieldRotPublisher.set(positioner.getRotation(Perspective.Field));
         driverRotPublisher.set(positioner.getRotation(Perspective.Driver));
-        posePublisher.set(positioner.getPose());
+        posePublisher.set(positioner.getFieldPose());
 
         SmartDashboard.putNumber("Robot X", positioner.getX());
         SmartDashboard.putNumber("Robot Y", positioner.getY());
