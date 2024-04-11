@@ -139,11 +139,10 @@ public class RobotPositioner {
         
         // To handle non-zero starting angles
         boolean flip = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-        // setGyro(pose.getRotation().getDegrees() + (flip ? 180 : 0));
+        setGyro(pose.getRotation().getDegrees() - (flip ? 180 : 0));
         
         resetDriveDistances();
-        poseEstimator.resetPosition(getRotation(Perspective.Driver), new Pose2d(pose.getX(), pose.getY(),
-            pose.getRotation().plus(Rotation2d.fromDegrees(flip ? 180 : 0))), drivetrain.getModulePositions());
+        poseEstimator.resetPosition(getRotation(Perspective.Driver), pose, drivetrain.getModulePositions());
     }
 
     /**

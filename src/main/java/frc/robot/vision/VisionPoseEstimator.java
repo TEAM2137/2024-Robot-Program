@@ -33,7 +33,7 @@ public class VisionPoseEstimator {
         );
 
         /** Offsets the position of the received vision poses. */
-        private static final Translation2d poseOffset = new Translation2d(0, 0);
+        private static final Translation2d poseOffset = new Translation2d(0, 0.1);
     }
 
     public SwerveDrivePoseEstimator poseEstimator;

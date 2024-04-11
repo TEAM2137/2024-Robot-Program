@@ -148,7 +148,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
         SmartDashboard.putNumber("Robot X", positioner.getX());
         SmartDashboard.putNumber("Robot Y", positioner.getY());
-        SmartDashboard.putNumber("Robot Rotation", positioner.getRotation(Perspective.Field).getDegrees());
+        SmartDashboard.putNumber("Robot Rotation", positioner.getRotation(Perspective.Driver).getDegrees());
     }
 
     private void updateOdometry() {
@@ -194,6 +194,10 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @param speeds The requested speeds of the chassis in m/s and rad/s
      */
     public void driveTranslationRotationVelocity(ChassisSpeeds speeds) {
+        driveTranslationRotationRaw(speeds, Constants.driveMaxSpeed);
+    }
+
+    public void driveTranslationRotationVelocityPathplanner(ChassisSpeeds speeds) {
         driveTranslationRotationRaw(speeds, Constants.driveMaxSpeed);
     }
 

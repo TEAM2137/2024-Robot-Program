@@ -53,13 +53,16 @@ public class Autonomous {
         if (pathEndTargeting) {
             drivetrain.driveTranslationRotationVelocity(new ChassisSpeeds(0, 0, rot));
         } else if (pathTargeting) {
-            targetRotation = Optional.of(drivetrain.positioner.getRotation(Perspective.Driver)
+            targetRotation = Optional.of(drivetrain.positioner.getRotation(Perspective.Field)
                 .plus(new Rotation2d(rot / 2)));
         }
     }
     
     public Optional<Rotation2d> getRotationTargetOverride() {
-        if (pathTargeting) return targetRotation;
+        if (pathTargeting) {
+            if (targetRotation != null) return targetRotation;
+            else return Optional.empty();
+        }
         else return Optional.empty();
     }
 
@@ -71,9 +74,9 @@ public class Autonomous {
             drivetrain::driveTranslationRotationVelocity, // Robot Relative
             new HolonomicPathFollowerConfig(
                 new PIDConstants(5.0, 0, 0), // Translation
-                new PIDConstants(5.0, 0, 0), // Rotation
+                new PIDConstants(4.8, 0, 0.02), // Rotation
                 SwerveDrivetrain.Constants.driveMaxSpeed,
-                0.26,
+                0.4,
                 new ReplanningConfig()
             ),
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,

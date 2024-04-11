@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4991787919518907,
-      "y": 4.109517305630104
+      "x": 0.6452516819624394,
+      "y": 4.391924892983831
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -18,25 +18,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "speaker-aim"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto 8-1 Fixed"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "path-end-aim"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "speaker-shoot"
+                  "name": "manual-shot"
                 }
               }
             ]
@@ -102,7 +84,7 @@
                           {
                             "type": "wait",
                             "data": {
-                              "waitTime": 1.0
+                              "waitTime": 2.0
                             }
                           },
                           {

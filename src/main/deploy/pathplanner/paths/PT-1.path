@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4894405992845207,
-        "y": 6.962807757169489
+        "x": 0.7231572233013988,
+        "y": 6.6706619771483915
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.025041195989866,
-        "y": 7.362073656531654
+        "x": 1.258757820006744,
+        "y": 7.069927876510556
       },
       "isLocked": false,
       "linkedName": "Angled Speaker Top"
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.75,
+    "maxAcceleration": 3.6,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

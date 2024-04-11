@@ -84,8 +84,8 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("speaker-aim", auto.enableTargetingCommand());
 
-        NamedCommands.registerCommand("intake-down", 
-            CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
+        NamedCommands.registerCommand("intake-down", //Commands.waitSeconds(1.5));
+           CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
             
         NamedCommands.registerCommand("stop-all", auto.disableTargetingCommand()
             .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm)));

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.030472227018001,
-        "y": 4.294542966310132
+        "x": 5.981781263681151,
+        "y": 4.138731883632214
       },
       "isLocked": false,
       "linkedName": "Auto 8 End 4"
@@ -20,8 +20,8 @@
         "y": 5.239147655045014
       },
       "prevControl": {
-        "x": 5.835708373670603,
-        "y": 4.343233929646981
+        "x": 5.767541024999013,
+        "y": 4.255590195640653
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.75,
+    "maxAcceleration": 3.6,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
