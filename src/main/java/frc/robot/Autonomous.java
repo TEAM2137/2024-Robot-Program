@@ -51,7 +51,7 @@ public class Autonomous {
     public void periodic() {
         double rot = RobotContainer.getInstance().teleop.targetUpdate(shooter, ShotLocation.SPEAKER);
         if (pathEndTargeting) {
-            drivetrain.driveTranslationRotationVelocity(new ChassisSpeeds(0, 0, rot));
+            drivetrain.driveVelocity(new ChassisSpeeds(0, 0, rot));
         } else if (pathTargeting) {
             targetRotation = Optional.of(drivetrain.positioner.getRotation(Perspective.Field)
                 .plus(new Rotation2d(rot / 2)));
@@ -71,7 +71,7 @@ public class Autonomous {
             drivetrain.positioner::getFieldPose,
             drivetrain.positioner::setPathplannerOdometry,
             drivetrain::getSpeeds, // Robot Relative
-            drivetrain::driveTranslationRotationVelocity, // Robot Relative
+            drivetrain::driveVelocity, // Robot Relative
             new HolonomicPathFollowerConfig(
                 new PIDConstants(5.0, 0, 0), // Translation
                 new PIDConstants(4.8, 0, 0.02), // Rotation

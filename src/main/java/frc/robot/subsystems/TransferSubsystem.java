@@ -105,7 +105,7 @@ public class TransferSubsystem extends SubsystemBase {
     public Command feedArmCommand() {
         return removeForceStop().andThen(runEnd(
             () -> {
-                beltMotor.set(0.4);
+                beltMotor.set(0.6);
             },
             () -> {
                 beltMotor.set(0);
@@ -113,7 +113,7 @@ public class TransferSubsystem extends SubsystemBase {
         ).until(() -> motorsStopped || !secondBeamBreak.get()))
         .andThen(runEnd(
             () -> {
-                beltMotor.set(0.4);
+                beltMotor.set(0.6);
             },
             () -> {
                 beltMotor.set(0);

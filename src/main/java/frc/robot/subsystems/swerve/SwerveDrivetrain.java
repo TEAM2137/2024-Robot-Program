@@ -27,8 +27,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         public static final double length = Units.inchesToMeters(21.5);
         public static final double width = Units.inchesToMeters(21.5);
 
-        public static final double driveMaxSpeed = 4.5;
-        public static final double driveMaxAccel = 3.75;
+        public static final double driveMaxSpeed = 3.5;
+        public static final double driveMaxAccel = 3.5;
 
         public static SwerveModuleConstants frontLeft = new SwerveModuleConstants(
             CanIDs.get("fl-drive"), 
@@ -193,40 +193,40 @@ public class SwerveDrivetrain extends SubsystemBase {
     /**
      * @param speeds The requested speeds of the chassis in m/s and rad/s
      */
-    public void driveTranslationRotationVelocity(ChassisSpeeds speeds) {
-        driveTranslationRotationRaw(speeds, Constants.driveMaxSpeed);
-    }
-
-    public void driveTranslationRotationVelocityPathplanner(ChassisSpeeds speeds) {
-        driveTranslationRotationRaw(speeds, Constants.driveMaxSpeed);
+    public void driveVelocity(ChassisSpeeds speeds) {
+        drive(speeds, DriveMode.RawPower);
     }
 
     /**
      * @param speeds The requested speeds of the chassis from 1 to -1
      */
-    public void driveTranslationRotationPower(ChassisSpeeds speeds) {
-        driveTranslationRotationRaw(speeds, 1);
+    public void drivePower(ChassisSpeeds speeds) {
+        drive(new ChassisSpeeds(speeds.vxMetersPerSecond * Constants.driveMaxSpeed,
+            speeds.vyMetersPerSecond * Constants.driveMaxSpeed, speeds.omegaRadiansPerSecond * Constants.driveMaxSpeed), DriveMode.RawPower);
     }
 
     /**
      * @param speeds The requested speeds of the chassis
      * @param maxSpeed The maximum possible value of the {@code ChassisSpeeds} object
      */
-    private void driveTranslationRotationRaw(ChassisSpeeds speeds, double maxSpeed) {
+    private void drive(ChassisSpeeds speeds, DriveMode driveMode) {
         if(speeds.vxMetersPerSecond + speeds.vyMetersPerSecond + speeds.omegaRadiansPerSecond == 0) {
             setAllModuleDriveRawPower(0);
             selfTargetAllModuleAngles();
         } else {
             // Convert speeds to individual modules
             SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+            SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.driveMaxSpeed);
 
-            SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeed);
             for (int i = 0; i < states.length; i++) {
                 // Optimize module rotation (instead of a >90 degree turn, turn less and flip wheel direction)
                 states[i] = SwerveModuleState.optimize(states[i], swerveArray[i].getModuleRotation());
 
                 swerveArray[i].setTurningTarget(states[i].angle);
-                swerveArray[i].setDrivePowerRaw(states[i].speedMetersPerSecond);
+                if (driveMode == DriveMode.Velocity)
+                    swerveArray[i].setDriveVelocity(states[i].speedMetersPerSecond);
+                else
+                    swerveArray[i].setDrivePowerRaw(states[i].speedMetersPerSecond / Constants.driveMaxSpeed);
             }
         }
     }
@@ -328,4 +328,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public enum ModuleType { Neo, Falcon }
+
+    public enum DriveMode { RawPower, Velocity }
 }

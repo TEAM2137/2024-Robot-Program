@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.swerve.SwerveDrivetrain.DriveMode;
 import frc.robot.util.PID;
 
 public class FalconModule extends SwerveModule {
@@ -31,15 +32,14 @@ public class FalconModule extends SwerveModule {
 
         public static final boolean invertDriveMotor = true;
         public static final boolean invertTurningMotor = true;
-        public static final boolean flipTurnDirection = true;
 
-        public static final double driveMotorRamp = 0.0;
+        public static final PID turningPIDConstants = new PID(220, 0, 4);
+        public static final SimpleMotorFeedforward turningFeedForward = 
+            new SimpleMotorFeedforward(0.7, 1.4, 0.2);
 
-        public static PID turningPIDConstants = new PID(220, 0, 4);
-        public static SimpleMotorFeedforward turningFeedForward = new SimpleMotorFeedforward(0.7, 1.4, 0.2);
-
-        public static PID drivePIDConstants = new PID(60, 0, 0.15);
-        public static SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.85, 2.38, 0.81);
+        public static final PID drivePIDConstants = new PID(60, 0, 0.15);
+        public static final SimpleMotorFeedforward driveFeedforward = 
+            new SimpleMotorFeedforward(0.85, 2.38, 0.81);
     }
 
     private TalonFX driveMotor;
@@ -170,10 +170,11 @@ public class FalconModule extends SwerveModule {
         turningMotor.setControl(turnPositionRequest.withPosition(targetAngle.getRotations()));
 
         switch(driveMode) {
-            case RawPower: //for use in teleop
+            case RawPower:
                 driveMotor.setControl(driveVoltageRequest.withOutput(driveRawPower * (reverseWheel ? -1 : 1)));
                 break;
-            case Velocity: //for use in auto and autonomous trajectories
+                
+            case Velocity:
                 driveMotor.setControl(driveVelocityRequest
                     .withVelocity(driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI))
                     .withFeedForward(driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1))
@@ -276,20 +277,6 @@ public class FalconModule extends SwerveModule {
     }
 
     public void setupCANFrames() {
-        // TODO: Figure out equivalents to these commented out CAN frames.
-
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
-        // driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
-
         driveMotor.getPosition().setUpdateFrequency(50);
         driveMotor.getSupplyCurrent().setUpdateFrequency(4);
         driveMotor.getStatorCurrent().setUpdateFrequency(4);
@@ -298,18 +285,6 @@ public class FalconModule extends SwerveModule {
         driveMotor.getAcceleration().setUpdateFrequency(10);
         driveMotor.getAppliedRotorPolarity().setUpdateFrequency(10);
 
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
-        // turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 100);
-
         turningMotor.getPosition().setUpdateFrequency(50);
         turningMotor.getSupplyCurrent().setUpdateFrequency(4);
         turningMotor.getStatorCurrent().setUpdateFrequency(4);
@@ -317,9 +292,5 @@ public class FalconModule extends SwerveModule {
         turningMotor.getControlMode().setUpdateFrequency(4);
         turningMotor.getAcceleration().setUpdateFrequency(10);
         turningMotor.getAppliedRotorPolarity().setUpdateFrequency(10);
-    }
-
-    private enum DriveMode {
-        RawPower, Velocity
     }
 }

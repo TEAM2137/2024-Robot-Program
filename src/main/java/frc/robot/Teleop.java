@@ -103,9 +103,12 @@ public class Teleop {
         driverController.y().whileTrue(Commands.run(() -> drivetrain.xLock()));
 
         // Stow command
-        driverController.leftBumper().onTrue(cancelTargeting().andThen(
-            CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm))
+        driverController.leftBumper().onTrue(cancelTargeting()
+            .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm))
             .andThen(RumbleSequences.rumbleDualPulse(driverController).andThen(shooter.stowPivot())));
+
+        driverController.povUp().onTrue(CommandSequences.shootIntoArmCommand(arm, shooter)
+            .andThen(arm.trapPosition()).andThen(shooter.setPivotTarget(60)));
 
         // +++ OPERATOR +++
 
@@ -217,7 +220,7 @@ public class Teleop {
                 if (isTargetingSpeaker) rot = targetUpdate(shooter, ShotLocation.SPEAKER);
                 if (isTargetingHome) rot = targetUpdate(shooter, ShotLocation.HOME);
 
-                drivetrain.driveTranslationRotationPower(new ChassisSpeeds(speedY, speedX, rot));
+                drivetrain.drivePower(new ChassisSpeeds(speedY, speedX, rot));
             },
             drivetrain
         );
