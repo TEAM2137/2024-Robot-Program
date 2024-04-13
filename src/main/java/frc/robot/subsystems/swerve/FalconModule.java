@@ -6,7 +6,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -25,7 +25,7 @@ import frc.robot.util.PID;
 public class FalconModule extends SwerveModule {
 
     public static class Constants {
-        public static final double driveRatio = 1 / 6.75;
+        public static final double driveRatio = 6.75;
         public static final double measuredWheelDiameter = Units.inchesToMeters(4.211398961984912);
 
         public static final double turningRatio = 21.42857;
@@ -38,8 +38,9 @@ public class FalconModule extends SwerveModule {
             new SimpleMotorFeedforward(0.7, 1.4, 0.2);
 
         public static final PID drivePIDConstants = new PID(60, 0, 0.15);
+        public static final PID driveVelocityPIDConstants = new PID(0.1, 0, 0.01);
         public static final SimpleMotorFeedforward driveFeedforward = 
-            new SimpleMotorFeedforward(0.85, 2.38, 0.81);
+            new SimpleMotorFeedforward(0, 0.28, 0);
     }
 
     private TalonFX driveMotor;
@@ -50,7 +51,7 @@ public class FalconModule extends SwerveModule {
     private boolean reverseWheel;
 
     private double driveRawPower;
-    private double driveVelocityTarget;
+    private double driveMetersPerSecond;
     private SimpleMotorFeedforward driveFeedForward;
     private DriveMode driveMode = DriveMode.RawPower;
 
@@ -59,7 +60,7 @@ public class FalconModule extends SwerveModule {
 
     private final MotionMagicVoltage turnPositionRequest = new MotionMagicVoltage(0);
     private final DutyCycleOut driveVoltageRequest = new DutyCycleOut(0);
-    private final VelocityDutyCycle driveVelocityRequest = new VelocityDutyCycle(0);
+    private final VelocityVoltage driveVelocityRequest = new VelocityVoltage(0);
 
     /**
      * Creats a swerve module
@@ -90,7 +91,7 @@ public class FalconModule extends SwerveModule {
             .withRotorToSensorRatio(Constants.driveRatio); // Again, params are missing. should have 10 second timeout. maybe it'll be fine?
 
         // Setup drive pid
-        PID drivePIDConstants = Constants.drivePIDConstants;
+        PID drivePIDConstants = Constants.driveVelocityPIDConstants; // TODO change this
         this.driveFeedForward = Constants.driveFeedforward;
 
         driveMotorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -147,6 +148,8 @@ public class FalconModule extends SwerveModule {
         config.MagnetSensor.MagnetOffset = -encoderOffset;
         encoder.getConfigurator().apply(config);
 
+        driveVelocityRequest.UpdateFreqHz = 0;
+
         homeTurningMotor();
 
         this.selfTargetAngle();
@@ -171,13 +174,17 @@ public class FalconModule extends SwerveModule {
 
         switch(driveMode) {
             case RawPower:
-                driveMotor.setControl(driveVoltageRequest.withOutput(driveRawPower * (reverseWheel ? -1 : 1)));
+                driveMotor.setControl(driveVoltageRequest
+                    .withOutput(driveRawPower * (reverseWheel ? -1 : 1)));
                 break;
                 
             case Velocity:
+                double driveRotationsPerSecond = driveMetersPerSecond * 
+                    (Constants.driveRatio / (Math.PI * Constants.measuredWheelDiameter));
+
                 driveMotor.setControl(driveVelocityRequest
-                    .withVelocity(driveVelocityTarget / (Constants.measuredWheelDiameter * Math.PI))
-                    .withFeedForward(driveFeedForward.calculate(driveVelocityTarget) / 12.0 * (reverseWheel ? -1 : 1))
+                    .withVelocity(driveRotationsPerSecond * (reverseWheel ? -1 : 1))
+                    .withFeedForward(driveFeedForward.calculate(driveRotationsPerSecond) * (reverseWheel ? -1 : 1))
                 );
                 break;
         }
@@ -226,7 +233,7 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public void setDriveVelocity(double velocity) {
-        driveVelocityTarget = velocity;
+        driveMetersPerSecond = velocity;
         driveMode = DriveMode.Velocity;
     }
 
@@ -235,7 +242,7 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public double getDriveVelocity() {
-        return driveMotor.getVelocity().getValueAsDouble() * Constants.driveRatio *
+        return driveMotor.getVelocity().getValueAsDouble() / Constants.driveRatio *
                 (Math.PI * Constants.measuredWheelDiameter);
     }
 
@@ -244,7 +251,7 @@ public class FalconModule extends SwerveModule {
      */
     @Override
     public double getDriveDistance() {
-        return driveMotor.getPosition().getValueAsDouble() * Constants.driveRatio *
+        return driveMotor.getPosition().getValueAsDouble() / Constants.driveRatio *
                 (Constants.measuredWheelDiameter * Math.PI);
     }
 

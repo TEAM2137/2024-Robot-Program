@@ -194,7 +194,7 @@ public class SwerveDrivetrain extends SubsystemBase {
      * @param speeds The requested speeds of the chassis in m/s and rad/s
      */
     public void driveVelocity(ChassisSpeeds speeds) {
-        drive(speeds, DriveMode.RawPower);
+        drive(speeds, DriveMode.Velocity);
     }
 
     /**
@@ -202,7 +202,8 @@ public class SwerveDrivetrain extends SubsystemBase {
      */
     public void drivePower(ChassisSpeeds speeds) {
         drive(new ChassisSpeeds(speeds.vxMetersPerSecond * Constants.driveMaxSpeed,
-            speeds.vyMetersPerSecond * Constants.driveMaxSpeed, speeds.omegaRadiansPerSecond * Constants.driveMaxSpeed), DriveMode.RawPower);
+            speeds.vyMetersPerSecond * Constants.driveMaxSpeed, speeds.omegaRadiansPerSecond * Constants.driveMaxSpeed),
+            DriveMode.Velocity); // TODO switch this back after testing (IMPORTANT)
     }
 
     /**
