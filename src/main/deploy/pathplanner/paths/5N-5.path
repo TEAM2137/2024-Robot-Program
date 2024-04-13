@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.431595314057681,
-        "y": 0.6738266424509712
+        "x": 7.909943411820395,
+        "y": 7.439979197870614
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.431595314057681,
-        "y": 0.6738266424509713
+        "x": 6.909943411820395,
+        "y": 7.439979197870614
       },
       "isLocked": false,
-      "linkedName": "Auto 5 End 3"
+      "linkedName": "5N End 4"
     },
     {
       "anchor": {
-        "x": 2.063459017091444,
-        "y": 4.280222756977305
+        "x": 3.255087316817576,
+        "y": 5.803962829752469
       },
       "prevControl": {
-        "x": 2.0919305653640206,
-        "y": 0.5409594171789491
+        "x": 3.8393788768597705,
+        "y": 6.436945353131514
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 5",
+  "folder": "5 Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

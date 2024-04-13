@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.1741479307395157,
-        "y": 4.57695055366386
+        "x": 2.42,
+        "y": 4.197161039636433
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.060660531577473,
-        "y": 2.2484669677964053
+        "x": 1.7675410912862157,
+        "y": 5.872130178424058
       },
       "isLocked": false,
-      "linkedName": "Auto 6 End 2"
+      "linkedName": "5N End 2"
     },
     {
       "anchor": {
-        "x": 8.455282201193109,
-        "y": 0.7790554133895939
+        "x": 2.85582141745541,
+        "y": 6.806996674491571
       },
       "prevControl": {
-        "x": 4.404194051567225,
-        "y": 1.0614630007433212
+        "x": 2.242315279411105,
+        "y": 6.281134270453595
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 6 End 3"
+      "linkedName": "5N End 3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 45.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,11 +45,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 45.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 6",
+  "folder": "5 Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

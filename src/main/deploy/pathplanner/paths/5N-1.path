@@ -3,48 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3981263620890236,
+        "x": 1.3,
         "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4438233048802198,
-        "y": 5.024065328899416
+        "x": 2.3,
+        "y": 5.55
       },
       "isLocked": false,
-      "linkedName": "Auto 5 End 1"
+      "linkedName": "Speaker Front"
     },
     {
       "anchor": {
-        "x": 2.64,
-        "y": 4.2
+        "x": 2.42,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 1.1695252464252412,
-        "y": 4.083238126459993
+        "x": 1.42,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Auto 5 End 2 (3534)"
+      "linkedName": "Auto 5 End 1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.85,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.45,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -54,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto 5",
+  "folder": "5 Note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

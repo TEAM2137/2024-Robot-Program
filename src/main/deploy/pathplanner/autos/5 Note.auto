@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Auto 5-1"
+                        "pathName": "5N-1"
                       }
                     },
                     {
@@ -78,7 +78,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Auto 5-2"
+                        "pathName": "5N-2"
                       }
                     },
                     {
@@ -122,7 +122,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Auto 5-3"
+                        "pathName": "5N-3"
                       }
                     },
                     {
@@ -141,9 +141,105 @@
                 }
               },
               {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.6
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake-down"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "5N-4"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake-down"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "5N-5"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 1.0
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "speaker-aim"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "named",
                 "data": {
-                  "name": "intake-down"
+                  "name": "path-end-aim"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.4
                 }
               }
             ]
@@ -153,18 +249,6 @@
           "type": "named",
           "data": {
             "name": "speaker-shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "speaker-shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stop-all"
           }
         },
         {

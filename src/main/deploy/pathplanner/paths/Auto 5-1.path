@@ -12,15 +12,15 @@
         "y": 5.55
       },
       "isLocked": false,
-      "linkedName": "Auto 5 Start 1"
+      "linkedName": "Speaker Front"
     },
     {
       "anchor": {
-        "x": 2.3981263620890236,
+        "x": 2.42,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.8981263620890236,
+        "x": 1.92,
         "y": 5.55
       },
       "nextControl": null,
@@ -33,7 +33,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.6,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

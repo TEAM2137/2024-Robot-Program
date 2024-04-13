@@ -3,6 +3,7 @@
   "robotLength": 0.87,
   "holonomicMode": true,
   "pathFolders": [
+    "A1 Auto",
     "Auto 1",
     "Auto 1 (5 notes)",
     "Auto 10",
@@ -17,7 +18,7 @@
     "Auto 9",
     "Evil Path",
     "Green Auto",
-    "A1 Auto",
+    "5 Note",
     "Note Elimination",
     "Only Top Center",
     "Preloaded Top",
@@ -29,7 +30,7 @@
     "Testing"
   ],
   "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.6,
+  "defaultMaxAccel": 3.75,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 3.5
