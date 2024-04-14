@@ -12,7 +12,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.swerve.positioning.RobotPositioner;
 import frc.robot.subsystems.swerve.positioning.RobotPositioner.Perspective;
 import frc.robot.util.CanIDs;
@@ -96,6 +100,23 @@ public class SwerveDrivetrain extends SubsystemBase {
     private StructPublisher<Rotation2d> driverRotPublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Driver Space Rotation", Rotation2d.struct).publish();
 
+    public final SysIdRoutine calibrationRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            (Measure<Voltage> volts) -> {
+                for (int i = 0; i < swerveArray.length; i++) {
+                    swerveArray[i].setDriveVoltage(volts.in(edu.wpi.first.units.Units.Volts));
+                }
+            },
+            log -> {
+                for (int i = 0; i < swerveArray.length; i++) {
+                    swerveArray[i].sysidLog(log);
+                }
+            },
+
+            this
+        )
+    );
     /**
      * Creates a swerve drivetrain (uses values from constants)
      */
@@ -328,4 +349,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     public enum ModuleType { Neo, Falcon }
+
+    // SYSID MOTOR CALIBRATION ROUTINES
+    public Command sysIdQuasistatic(SysIdRoutine.Direction dir) {
+        return calibrationRoutine.quasistatic(dir);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction dir) {
+        return calibrationRoutine.dynamic(dir);
+    }
 }
