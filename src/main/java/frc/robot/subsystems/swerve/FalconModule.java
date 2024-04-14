@@ -18,7 +18,12 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Measure;
 import frc.robot.util.PID;
 
 public class FalconModule extends SwerveModule {
@@ -317,6 +322,18 @@ public class FalconModule extends SwerveModule {
         turningMotor.getControlMode().setUpdateFrequency(4);
         turningMotor.getAcceleration().setUpdateFrequency(10);
         turningMotor.getAppliedRotorPolarity().setUpdateFrequency(10);
+    }
+
+    @Override
+    public void sysidLog(SysIdRoutineLog log) {
+        Measure<Voltage> voltage = edu.wpi.first.units.Units.Volts.of(driveMotor.getMotorVoltage().getValue());
+        Measure<Angle> rotations = edu.wpi.first.units.Units.Rotations.of(driveMotor.getPosition().getValue());
+        Measure<Velocity<Angle>> rps = edu.wpi.first.units.Units.RotationsPerSecond.of(driveMotor.getVelocity().getValue());
+
+        log.motor(moduleName)
+            .voltage(voltage)
+            .angularPosition(rotations)
+            .angularVelocity(rps);
     }
 
     private enum DriveMode {

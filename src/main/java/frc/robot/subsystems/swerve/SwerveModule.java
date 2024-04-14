@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 
@@ -35,4 +36,5 @@ public abstract class SwerveModule extends SubsystemBase {
     public abstract void selfTargetAngle();
     public abstract void setDriveMode(boolean brake);
     public abstract void setTurnBrakeMode(boolean brake);
+    public abstract void sysidLog(SysIdRoutineLog log);
 }

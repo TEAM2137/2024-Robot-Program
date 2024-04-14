@@ -11,11 +11,17 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import frc.robot.util.PID;
 
 public class NeoModule extends SwerveModule {
@@ -252,6 +258,18 @@ public class NeoModule extends SwerveModule {
     @Override
     public void setTurnBrakeMode(boolean brake) {
         turningMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+
+    @Override
+    public void sysidLog(SysIdRoutineLog log) {
+        Measure<Voltage> voltage = edu.wpi.first.units.Units.Volts.of(driveMotor.get() * RobotController.getBatteryVoltage());
+        Measure<Angle> rotations = edu.wpi.first.units.Units.Rotations.of(driveEncoder.getPosition());
+        Measure<Velocity<Angle>> rps = edu.wpi.first.units.Units.RotationsPerSecond.of(driveEncoder.getVelocity() / 60);
+
+        log.motor(moduleName)
+            .voltage(voltage)
+            .angularPosition(rotations)
+            .angularVelocity(rps);
     }
 
     private enum DriveMode {
