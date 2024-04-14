@@ -124,9 +124,10 @@ public class Teleop {
         operatorController.a().onTrue(arm.runRollers(0.7));
         operatorController.a().onFalse(arm.stopRollers());
 
-        // Manual arm roller controls
-        operatorController.rightStick().whileTrue(arm.runRollers(operatorController.getRightY() * 0.15));
-        operatorController.rightStick().onFalse(arm.stopRollers());
+        // Emergency source intake
+        operatorController.leftStick().onTrue(shooter.setPivotTarget(35.0)
+            .andThen(shooter.startShooter(-0.75)));
+        operatorController.leftStick().onFalse(shooter.stopShooter().andThen(shooter.stowPivot()));
 
         // Arm for amp
         operatorController.rightTrigger().onTrue(arm.homePosition());

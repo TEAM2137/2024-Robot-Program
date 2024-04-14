@@ -30,13 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4,
-      "rotationDegrees": 10.0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 20.0,
       "rotateFast": false
     }
   ],
@@ -51,10 +46,10 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 0.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "Auto 11",
+  "folder": "Top 2",
   "previewStartingState": {
     "rotation": 60.0,
     "velocity": 0

@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.CommandSequences;
 import frc.robot.subsystems.*;
@@ -60,6 +62,10 @@ public class RobotContainer {
         driverController = new CommandXboxController(0);
         operatorController = new CommandXboxController(1);
 
+        // Post default dashboard values
+        if (!SmartDashboard.containsKey("Disable Intake"))
+            SmartDashboard.putBoolean("Disable Intake", false);
+
         // Initialize subsystems
         driveSubsystem = new SwerveDrivetrain(ModuleType.Falcon, vision);
         intake = new IntakeSubsystem();
@@ -84,8 +90,10 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("speaker-aim", auto.enableTargetingCommand());
 
-        NamedCommands.registerCommand("intake-down", //Commands.waitSeconds(1.5));
-           CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3));
+        NamedCommands.registerCommand("intake-down", new ConditionalCommand(
+            Commands.waitSeconds(1.5),
+            CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3),
+            () -> SmartDashboard.getBoolean("Disable Intake", false)));
             
         NamedCommands.registerCommand("stop-all", auto.disableTargetingCommand()
             .andThen(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm)));

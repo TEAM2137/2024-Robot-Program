@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.919681604487764,
-        "y": 6.027941261101977
+        "y": 5.9
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.536858245721236,
-        "y": 7.050451491175817
+        "y": 6.922510230073841
       },
       "isLocked": false,
       "linkedName": "OTC End 4"
@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Only Top Center",
+  "folder": "Top Center",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

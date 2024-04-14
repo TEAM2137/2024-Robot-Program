@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.880728833818285,
-        "y": 7.49
+        "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.880728833818285,
-        "y": 7.49
+        "y": 7.4
       },
       "isLocked": false,
       "linkedName": "OTC End 2"
@@ -28,23 +28,7 @@
       "linkedName": "OTC End 3"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.35,
-      "rotationDegrees": 5.0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.65,
-      "rotationDegrees": 10.0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.8,
-      "rotationDegrees": 15.0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Another slow down",
@@ -71,7 +55,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Only Top Center",
+  "folder": "Top Center",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

@@ -130,12 +130,6 @@
                       "data": {
                         "name": "path-end-aim"
                       }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.4
-                      }
                     }
                   ]
                 }
@@ -147,7 +141,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.6
+                        "waitTime": 0.4
                       }
                     },
                     {
@@ -160,6 +154,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "speaker-shoot"
           }
         },
         {
@@ -209,7 +209,7 @@
                       }
                     },
                     {
-                      "type": "parallel",
+                      "type": "sequential",
                       "data": {
                         "commands": [
                           {
