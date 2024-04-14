@@ -37,4 +37,5 @@ public abstract class SwerveModule extends SubsystemBase {
     public abstract void setDriveMode(boolean brake);
     public abstract void setTurnBrakeMode(boolean brake);
     public abstract void sysidLog(SysIdRoutineLog log);
+    public abstract void setDriveVoltage(double volts);
 }

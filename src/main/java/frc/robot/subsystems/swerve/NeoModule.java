@@ -272,6 +272,11 @@ public class NeoModule extends SwerveModule {
             .angularVelocity(rps);
     }
 
+    @Override
+    public void setDriveVoltage(double volts) {
+        driveMotor.setVoltage(volts);
+    }
+
     private enum DriveMode {
         RawPower, Velocity
     }
