@@ -27,13 +27,13 @@ public class ArmSubsystem extends SubsystemBase {
         public static final double ARM_AMP_ANGLE = 145.6;
         public static final double WRIST_AMP_ANGLE = 150.2;
 
-        public static final double ARM_TRAP_ANGLE = 125.9;
-        public static final double WRIST_TRAP_ANGLE = 100.7;
+        public static final double ARM_TRAP_ANGLE = 138.3;
+        public static final double WRIST_TRAP_ANGLE = 122.3;
 
         public static final double ARM_EXTEND_ANGLE = 136.8;
         public static final double WRIST_EXTEND_ANGLE = 82.9;
     }
-
+ 
     private CANSparkMax rollers;
 
     private CANSparkMax wristMotor;

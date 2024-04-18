@@ -31,7 +31,7 @@ public class Teleop {
     private final boolean fieldCentricRotation = false;
 
     // Set speeds
-    private final double slowSpeed = 0.4;
+    private final double slowSpeed = 0.3;
     private final double normalSpeed = 1.0;
 
     // Declare controllers and necessary subsystems
@@ -108,7 +108,7 @@ public class Teleop {
             .andThen(RumbleSequences.rumbleDualPulse(driverController).andThen(shooter.stowPivot())));
 
         driverController.povUp().onTrue(CommandSequences.shootIntoArmCommand(arm, shooter)
-            .andThen(arm.trapPosition()).andThen(shooter.setPivotTarget(60)));
+            .andThen(arm.extendPosition()).andThen(shooter.setPivotTarget(60)));
 
         // +++ OPERATOR +++
 

@@ -166,12 +166,6 @@
           "data": {
             "name": "stop-all"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stop-all"
-          }
         }
       ]
     }
