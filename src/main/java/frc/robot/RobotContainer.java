@@ -81,8 +81,9 @@ public class RobotContainer {
             .andThen(() -> driveSubsystem.setAllModuleDriveRawPower(0))
             .andThen(CommandSequences.transferToShooterCommand(intake, transfer, shooter, arm))
             .andThen(auto.disableTargetingCommand()));
-
+    
         NamedCommands.registerCommand("manual-shot", auto.disableTargetingCommand()
+            .andThen(Commands.waitSeconds(1.0))
             .andThen(shooter.setPivotTarget(ShooterSubsystem.Constants.manualClose))
             .andThen(CommandSequences.rawShootCommand(0.7, transfer, shooter)));
 

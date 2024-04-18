@@ -2,31 +2,31 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.356139746680443,
-      "y": 5.5410316277334815
+      "x": 0.72,
+      "y": 6.67
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "path-end-aim"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 1.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "manual-shot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stop-all"
+            "name": "speaker-shoot"
           }
         }
       ]

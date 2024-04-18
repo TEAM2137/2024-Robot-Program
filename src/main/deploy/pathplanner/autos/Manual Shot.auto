@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "manual-shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop-all"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Comp Autos",
+  "choreoAuto": false
+}
