@@ -1,0 +1,64 @@
+@import "/edu/wpi/first/shuffleboard/app/midnight.css";
+
+.root {
+    -swatch-blue: rgb(15, 16, 49);
+    -swatch-light-blue: derive(-swatch-blue, +30%);
+    -swatch-yellow: rgb(255, 205, 5);
+
+    -swatch-100: -swatch-light-blue;
+    -swatch-200: -swatch-100;
+    -swatch-300: -swatch-100;
+    -swatch-400: -swatch-100;
+    -swatch-500: -swatch-yellow;
+
+    -swatch-gray: #090e17;
+    -swatch-light-gray: derive(-swatch-blue, -14%);
+
+    -fx-background: -swatch-gray;
+    -fx-color: -swatch-light-gray;
+
+    -confirmation-color-confirmed: rgb(18, 191, 18);
+    -confirmation-color-error: rgb(237, 68, 68);
+}
+
+.toggle-button, .button, .button:default {
+    -fx-background-radius: 10;
+}
+
+.toggle-button:selected, .button:selected {
+    -fx-background-radius: 10;
+}
+
+.menu-bar {
+    -fx-background-color: -swatch-light-blue;
+}
+
+.tree-table-view .column-header, .table-view .column-header {
+    -fx-background-color: -swatch-blue;
+}
+
+.tile {
+    -fx-background-color: -fx-color;
+    -fx-effect: dropshadow(gaussian, #101010, 6, 0.1, 0, 4);
+    -fx-background-radius: 15;
+}
+
+.tile:selected {
+    -fx-background-color: -fx-color;
+    -fx-border-radius: 15;
+    -fx-effect: dropshadow(gaussian, -swatch-100, 6, 0.1, 0, 4);
+}
+
+.tile:selected .tile-title-bar {
+    -fx-background-color: -swatch-500;
+    -fx-border-radius: 10;
+}
+
+.tile-title-bar {
+    -fx-background-color: -swatch-100;
+    -fx-background-radius: 10;
+}
+
+.tile .label {
+    -fx-text-fill: -fx-text-base-color;
+}
