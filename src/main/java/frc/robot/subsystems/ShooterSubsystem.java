@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(1.0, 0, 0.01); // TODO tune this
         public static PID flywheelPID = new PID(1.0, 0, 0.01); //TODO: tune this
 
-        public static double armStage1Angle = 53.92;
+        public static double armStage1Angle = 40;
         public static double armStage2Angle = 4.6;
         public static double minAngle = 10;
         public static double manualClose = 36.0;
@@ -217,6 +217,8 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotMotor.set(error - 0.005);
 
         // Display values
+        SmartDashboard.putNumber("Shooter Top Power", topMotor.get());
+        SmartDashboard.putNumber("Shooter Bottom Power", bottomMotor.get());
         SmartDashboard.putNumber("Shooter Position", pivotEncoder.getPosition());
         SmartDashboard.updateValues();
     }

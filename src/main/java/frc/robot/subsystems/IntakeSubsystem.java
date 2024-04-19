@@ -26,8 +26,8 @@ import frc.robot.util.PID;
 public class IntakeSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static double pivotKP = 0.00356; // Power the pivot moves to its target with
-        public static double rollersKP = 0.0001; // Power the rollers move to their targets with
+        public static double pivotP = 0.00356; // Power the pivot moves to its target with
+        public static double rollersP = 0.00356; // Power the rollers move to their targets with
         public static double pivotMotorLimit = 0.4; // Max power of the pivot motor
         public static double rollerMotorLimit = 0.75; // Max power of the pivot motor
         public static double gravityMod = 0.85; // Reduces power moving the pivot down
@@ -36,10 +36,8 @@ public class IntakeSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
 
-    // private double currentThreshold = 75;
-
-    private double minPos = 125.0;
-    private double maxPos = 275.0;
+    private double minPos = 77.42;
+    private double maxPos = 242.1;
 
     private double pivotTarget = maxPos;
     private double rollerTarget = 0;
@@ -113,12 +111,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         super.periodic();
 
-        double pivotError = Math.max(Math.min((pivotTarget - pivotEncoder.getPosition()) * Constants.pivotKP,
+        double pivotError = Math.max(Math.min((pivotTarget - pivotEncoder.getPosition()) * Constants.pivotP,
             /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
         if (pivotError < 0) pivotError *= Constants.gravityMod; // Reduce power going down
         pivotMotor.set(pivotError);
 
-        double rollersError = Math.max(Math.min(rollerTarget - rollerMotor.get() * Constants.pivotKP,
+        /*  I don't even remember why we did this instead of just setting
+            the motor power, nor do I know why we are using the pivot motor
+            limit, but its too late to change it now I guess */
+        double rollersError = Math.max(Math.min(rollerTarget - rollerMotor.get() * Constants.rollersP,
             /* Max motor speed */ Constants.pivotMotorLimit), /* Min motor speed */ -Constants.pivotMotorLimit);
         rollerMotor.set(rollersError);
 
@@ -128,6 +129,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         SmartDashboard.putBoolean("Intake Sensor", noteSensor.get());
         SmartDashboard.putNumber("Intake Position", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Intake Power", rollerMotor.get());
         SmartDashboard.updateValues();
     }
 

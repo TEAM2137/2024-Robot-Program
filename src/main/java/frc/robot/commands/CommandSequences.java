@@ -87,7 +87,7 @@ public class CommandSequences {
      * Once a note is detected in the transfer, the command will end and everything stops.
      * @return the command
      */
-    public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer) {
+    public static Command intakeNoteCommand(IntakeSubsystem intake, TransferSubsystem transfer) {
         return (transfer.intakeNoteCommand()
             .alongWith(intake.deployIntake()))
             .andThen(intake.stopRollers()
@@ -99,9 +99,8 @@ public class CommandSequences {
      * to stop the rollers.
      * @return the command
      */
-    public static Command autonStartIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
-        return
-            intake.moveIntakeDown()
+    public static Command autoIntakeNoteCommand(IntakeSubsystem intake, TransferSubsystem transfer) {
+        return intake.moveIntakeDown()
             .andThen(intake.startRollers())
             .alongWith(transfer.intakeNoteCommand());
     }
@@ -111,7 +110,7 @@ public class CommandSequences {
      * back up.
      * @return the command
      */
-    public static Command autonStopIntake(IntakeSubsystem intake, TransferSubsystem transfer) {
+    public static Command autoStopIntakeCommand(IntakeSubsystem intake, TransferSubsystem transfer) {
         return
             intake.stopRollers()
             .andThen(transfer.transferForceStop())
@@ -124,10 +123,10 @@ public class CommandSequences {
      * Moves a stored note into the arm
      * @return the command
      */
-    public static Command moveToShooterForArmCommand(ArmSubsystem arm, ShooterSubsystem shooter, TransferSubsystem transfer) {
+    public static Command moveToShooterCommand(ArmSubsystem arm, ShooterSubsystem shooter, TransferSubsystem transfer) {
         return shooter.setPivotTarget(ShooterSubsystem.Constants.armStage1Angle)
-            .andThen(Commands.waitSeconds(0.3))
-            .andThen(shooter.startShooter(0.04))
+            .andThen(Commands.waitSeconds(0.1))
+            .andThen(shooter.startShooter(0.05))
             .andThen(transfer.feedArmCommand())
             .andThen(shooter.stopShooter())
             .andThen(Commands.waitSeconds(0.2))

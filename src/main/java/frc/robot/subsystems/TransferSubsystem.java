@@ -94,7 +94,7 @@ public class TransferSubsystem extends SubsystemBase {
     public Command feedShooterCommand() {
         return removeForceStop().andThen(runEnd(
             () -> {
-                beltMotor.set(0.9);
+                beltMotor.set(1.0);
             },
             () -> {
                 beltMotor.set(0);
@@ -136,6 +136,7 @@ public class TransferSubsystem extends SubsystemBase {
                 .until(() -> inBeamBreak.get()));
         }
 
+        SmartDashboard.putNumber("Transfer Power", beltMotor.get());
         SmartDashboard.putBoolean("Has Ring", !inBeamBreak.get());
         SmartDashboard.updateValues();
     }

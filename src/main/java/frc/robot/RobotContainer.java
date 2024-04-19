@@ -93,7 +93,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("intake-down", new ConditionalCommand(
             Commands.waitSeconds(1.5),
-            CommandSequences.intakeAndTransfer(intake, transfer).withTimeout(3),
+            CommandSequences.intakeNoteCommand(intake, transfer).withTimeout(3),
             () -> SmartDashboard.getBoolean("Disable Intake", false)));
             
         NamedCommands.registerCommand("stop-all", auto.disableTargetingCommand()

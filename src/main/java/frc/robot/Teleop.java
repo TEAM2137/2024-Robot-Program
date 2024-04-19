@@ -94,7 +94,7 @@ public class Teleop {
         }));
 
         // Intake phase
-        driverController.rightTrigger().onTrue(CommandSequences.intakeAndTransfer(intake, transfer)
+        driverController.rightTrigger().onTrue(CommandSequences.intakeNoteCommand(intake, transfer)
             .andThen(RumbleSequences.rumbleOnce(driverController)));
         // Force stop
         driverController.x().onTrue(cancelTargeting().andThen(
@@ -148,7 +148,7 @@ public class Teleop {
         operatorController.back().onTrue(arm.trapPosition());
 
         // Shooter manual toggle
-        operatorController.y().onTrue(CommandSequences.moveToShooterForArmCommand(arm, shooter, transfer));
+        operatorController.y().onTrue(CommandSequences.moveToShooterCommand(arm, shooter, transfer));
         operatorController.b().onTrue(CommandSequences.shootIntoArmCommand(arm, shooter));
 
         // +++ End controller bindings +++

@@ -18,7 +18,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "manual-shot"
+                  "name": "path-end-aim"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "speaker-shoot"
                 }
               }
             ]
@@ -45,7 +57,7 @@
                           {
                             "type": "wait",
                             "data": {
-                              "waitTime": 0.4
+                              "waitTime": 0.3
                             }
                           },
                           {
@@ -69,7 +81,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.45
                 }
               },
               {
@@ -165,7 +177,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 0.45
                 }
               },
               {

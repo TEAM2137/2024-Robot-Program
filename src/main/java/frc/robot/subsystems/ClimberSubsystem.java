@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.CanIDs;
@@ -54,5 +56,8 @@ public class ClimberSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+
+        SmartDashboard.putNumber("Climber Power", climbLeft.get());
+        SmartDashboard.updateValues();
     }
 }
