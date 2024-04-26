@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3550002094073008,
-        "y": 3.4678334178495174
+        "x": 1.4827362513562519,
+        "y": 3.38889104824473
       },
       "isLocked": false,
       "linkedName": "Angled Speaker Bottom"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.25,
-        "y": 0.77
+        "y": 0.92
       },
       "prevControl": {
-        "x": 4.101529923700416,
-        "y": 0.8186909633368494
+        "x": 3.9329232698360457,
+        "y": 0.92
       },
       "nextControl": null,
       "isLocked": false,

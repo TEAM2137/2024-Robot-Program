@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.583152022769052,
-        "y": 5.55
+        "x": 2.7,
+        "y": 2.95
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.626411888790564,
-        "y": 4.703547058339669
+        "x": 3.3037679453769346,
+        "y": 0.23304424580379401
       },
       "isLocked": false,
-      "linkedName": "Auto 5 End 1"
+      "linkedName": "Auto 8 End 3"
     },
     {
       "anchor": {
-        "x": 2.55,
-        "y": 4.15
+        "x": 8.172874613839383,
+        "y": 0.7595790280548544
       },
       "prevControl": {
-        "x": 1.6614272146931013,
-        "y": 4.25712011934107
+        "x": 7.172874613839383,
+        "y": 0.7595790280548544
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "5N End 2"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "5 Note",
+  "folder": "Auto 8",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

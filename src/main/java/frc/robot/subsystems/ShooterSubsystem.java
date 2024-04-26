@@ -23,15 +23,15 @@ import frc.robot.util.PID;
 public class ShooterSubsystem extends SubsystemBase {
 
     public static class Constants {
-        public static PID pivotPID = new PID(1.0, 0, 0.01); // TODO tune this
-        public static PID flywheelPID = new PID(1.0, 0, 0.01); //TODO: tune this
+        public static PID pivotPID = new PID(1.0, 0, 0.01);
+        public static PID flywheelPID = new PID(1.0, 0, 0.01);
 
         public static double armStage1Angle = 40;
         public static double armStage2Angle = 4.6;
         public static double minAngle = 10;
         public static double manualClose = 36.0;
 
-        public static double maximumRPMError = 10.0; //TODO: Check if this value is even realistic
+        public static double maximumRPMError = 10.0;
 
         public static LookupTable angleLookup;
         public static LookupTable powerLookup;
@@ -40,7 +40,7 @@ public class ShooterSubsystem extends SubsystemBase {
             TreeMap<Double, Double> angleMap = new TreeMap<Double, Double>();
             TreeMap<Double, Double> powerMap = new TreeMap<Double, Double>();
 
-            // -- Angle lookup table values
+            /* -- Angle lookup table values -- */
             angleMap.put(0.20, 33.0);
             angleMap.put(1.39, 33.0);
             angleMap.put(1.72, 40.0);
@@ -53,9 +53,9 @@ public class ShooterSubsystem extends SubsystemBase {
             angleMap.put(4.27, 61.3);
             angleMap.put(5.00, 61.7);
 
-            // -- Power lookup table values
-            powerMap.put(0.00, 0.5);
-            powerMap.put(1.40, 0.55);
+            /* -- Power lookup table values -- */
+            powerMap.put(0.00, 0.6);
+            powerMap.put(1.40, 0.62);
             powerMap.put(2.00, 0.65);
             powerMap.put(5.00, 0.7);
 

@@ -148,7 +148,8 @@ public class Teleop {
         operatorController.back().onTrue(arm.trapPosition());
 
         // Shooter manual toggle
-        operatorController.y().onTrue(CommandSequences.moveToShooterCommand(arm, shooter, transfer));
+        operatorController.y().onTrue(CommandSequences.stopAllSubsystems(intake, transfer, shooter, arm)
+            .andThen(CommandSequences.moveToShooterCommand(arm, shooter, transfer)));
         operatorController.b().onTrue(CommandSequences.shootIntoArmCommand(arm, shooter));
 
         // +++ End controller bindings +++
