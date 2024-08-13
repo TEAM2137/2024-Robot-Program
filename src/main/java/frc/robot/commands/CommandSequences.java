@@ -159,7 +159,7 @@ public class CommandSequences {
     }
 
     public static Command climberUpCommand(ClimberSubsystem climber) {
-        return climber.runClimber(0.6);
+        return climber.runClimber(0.75); // Was at 0.6
     }
 
     public static Command climberDownCommand(ClimberSubsystem climber) {

@@ -149,6 +149,7 @@ public class RobotPositioner {
      * Resets the Pose Estimator to a specified field pose
      */
     public void resetOdometry(Pose2d pose) {
+        System.out.println("Reset odometry to " + pose);
         poseEstimator.resetPosition(getRotation(Perspective.Field), new Pose2d(pose.getX(), pose.getY(),
             pose.getRotation()), drivetrain.getModulePositions());
     }

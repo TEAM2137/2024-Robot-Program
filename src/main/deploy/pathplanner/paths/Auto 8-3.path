@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.25,
-        "y": 0.92
+        "x": 7.7,
+        "y": 0.82
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.25,
-        "y": 0.9200000000000002
+        "x": 6.7,
+        "y": 0.82
       },
       "isLocked": false,
       "linkedName": "Auto 8 End 2"
     },
     {
       "anchor": {
-        "x": 2.7,
-        "y": 2.95
+        "x": 1.4827362513562519,
+        "y": 3.9829208009542953
       },
       "prevControl": {
-        "x": 3.9659650467580887,
-        "y": 1.3431982098839645
+        "x": 2.3396972060848045,
+        "y": 1.9865913041434635
       },
       "nextControl": null,
       "isLocked": false,

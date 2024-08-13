@@ -243,7 +243,7 @@ public class Teleop {
                 break;
             // case HOME:
             default:
-                shooter.setPowerRaw(0.4f);
+                shooter.setPowerRaw(0.425);
                 shooter.setPivotTargetRaw(42.5);
                 break;
         }
@@ -281,7 +281,7 @@ public class Teleop {
                 break;
             // case HOME
             default:
-                if (isBlueAlliance) targetPos = new Translation2d(3.0, 6);
+                if (isBlueAlliance) targetPos = new Translation2d(3.0, 6.8);
                 else targetPos = new Translation2d(13.6, 6);
                 break;
         }
