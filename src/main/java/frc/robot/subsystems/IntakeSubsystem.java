@@ -36,8 +36,8 @@ public class IntakeSubsystem extends SubsystemBase {
         public static PID pivotPID = new PID(0.01, 0.02, 0.03, 0.04);
     }
 
-    private double minPos = 77.42;
-    private double maxPos = 242.1;
+    private double minPos = 39.32;
+    private double maxPos = 190.01;
 
     private double pivotTarget = maxPos;
     private double rollerTarget = 0;
@@ -64,7 +64,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         pivotEncoder = pivotMotor.getAbsoluteEncoder();
         pivotEncoder.setPositionConversionFactor(360);
-        pivotEncoder.setZeroOffset(350);
+        pivotEncoder.setZeroOffset(0);
     }
 
     public void init() {
